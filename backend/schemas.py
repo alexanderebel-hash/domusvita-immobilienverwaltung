@@ -304,3 +304,114 @@ class Token(BaseModel):
 class TokenData(BaseModel):
     email: Optional[str] = None
     user_id: Optional[str] = None
+
+
+# ==================== HANDWERKER PORTAL SCHEMAS ====================
+
+class HandwerkerLoginRequest(BaseModel):
+    handwerker_id: str
+    pin: Optional[str] = None
+
+class HandwerkerLoginResponse(BaseModel):
+    success: bool
+    token: str
+    handwerker_id: str
+    name: str
+    specialty: Optional[str] = None
+
+class HandwerkerTicketStatus(str, Enum):
+    UNTERWEGS = "Unterwegs"
+    VOR_ORT = "Vor Ort"
+    IN_ARBEIT = "In Arbeit"
+    ERLEDIGT = "Erledigt"
+    MATERIAL_FEHLT = "Material fehlt"
+
+class TicketPhotoCategory(str, Enum):
+    VORHER = "Vorher"
+    WAEHREND = "Während"
+    NACHHER = "Nachher"
+
+class TicketPhotoCreate(BaseModel):
+    ticket_id: str
+    category: str = "Während"
+    description: Optional[str] = None
+
+class TicketPhotoResponse(BaseModel):
+    id: str
+    ticket_id: str
+    category: str
+    photo_url: str
+    thumbnail_url: Optional[str] = None
+    description: Optional[str] = None
+    uploaded_by: str
+    uploaded_at: datetime
+    
+    class Config:
+        from_attributes = True
+
+class WorkReportCreate(BaseModel):
+    ticket_id: str
+    description: str
+    materials_used: Optional[str] = None
+    work_hours: float = 0
+    material_cost: float = 0
+    labor_cost: float = 0
+    tenant_signature: Optional[str] = None  # Base64 encoded signature
+    notes: Optional[str] = None
+
+class WorkReportResponse(BaseModel):
+    id: str
+    ticket_id: str
+    description: str
+    materials_used: Optional[str] = None
+    work_hours: float
+    material_cost: float
+    labor_cost: float
+    total_cost: float
+    tenant_signature: Optional[str] = None
+    notes: Optional[str] = None
+    created_by: str
+    created_at: datetime
+    
+    class Config:
+        from_attributes = True
+
+class StatusUpdateCreate(BaseModel):
+    ticket_id: str
+    status: str
+    note: Optional[str] = None
+    location: Optional[str] = None  # GPS coordinates if available
+
+class StatusUpdateResponse(BaseModel):
+    id: str
+    ticket_id: str
+    status: str
+    note: Optional[str] = None
+    location: Optional[str] = None
+    timestamp: datetime
+    updated_by: str
+    
+    class Config:
+        from_attributes = True
+
+class HandwerkerTicketResponse(BaseModel):
+    id: str
+    property_id: str
+    property_name: str
+    property_address: str
+    property_city: str
+    title: str
+    description: Optional[str] = None
+    status: str
+    priority: str
+    category: Optional[str] = None
+    scheduled_date: Optional[datetime] = None
+    tenant_name: Optional[str] = None
+    tenant_phone: Optional[str] = None
+    photos: List[TicketPhotoResponse] = []
+    status_updates: List[StatusUpdateResponse] = []
+    work_report: Optional[WorkReportResponse] = None
+    created_at: datetime
+    
+    class Config:
+        from_attributes = True
