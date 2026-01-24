@@ -1045,65 +1045,102 @@ async def seed_database():
         {"id": generate_id(), "name": "Elektro Weber", "role": "Handwerker", "email": "info@elektro-weber.de", "phone": "+49 30 55544433", "company": "Weber Elektrotechnik", "specialty": "Elektrik", "rating": 5, "created_at": to_iso(now()), "updated_at": to_iso(now())},
         {"id": generate_id(), "name": "Sanitär König", "role": "Handwerker", "email": "info@koenig-sanitaer.de", "phone": "+49 30 66677788", "company": "König Sanitär GmbH", "specialty": "Sanitär", "rating": 4, "created_at": to_iso(now()), "updated_at": to_iso(now())},
         {"id": generate_id(), "name": "Stadtwerke Berlin", "role": "Versorger", "email": "service@stadtwerke-berlin.de", "phone": "+49 30 11122233", "company": "Stadtwerke Berlin AG", "created_at": to_iso(now()), "updated_at": to_iso(now())},
-        {"id": generate_id(), "name": "Bezirksamt Neukölln", "role": "Behörde", "email": "info@ba-neukoelln.berlin.de", "phone": "+49 30 90239-0", "address": "Karl-Marx-Straße 83, 12043 Berlin", "created_at": to_iso(now()), "updated_at": to_iso(now())}
+        {"id": generate_id(), "name": "Bezirksamt Treptow-Köpenick", "role": "Behörde", "email": "info@ba-tk.berlin.de", "phone": "+49 30 90297-0", "address": "Alt-Köpenick 21, 12555 Berlin", "created_at": to_iso(now()), "updated_at": to_iso(now())}
     ]
     await db.contacts.insert_many(contacts)
     
-    # Sample Properties
+    # REAL Properties from DomusVita data
     properties = [
-        {"id": generate_id(), "name": "Pflegewohngemeinschaft Sterndamm", "address": "Sterndamm 10", "city": "Berlin", "postal_code": "12109", "property_type": "Pflegewohngemeinschaft", "status": "Eigentum", "units_count": 8, "image_url": "https://images.unsplash.com/photo-1664813954641-1ffcb7b55fd1?w=800", "description": "Moderne Pflegewohngemeinschaft mit 8 Einheiten", "created_at": to_iso(now()), "updated_at": to_iso(now())},
-        {"id": generate_id(), "name": "Mehrfamilienhaus Prenzlauer Berg", "address": "Schönhauser Allee 45", "city": "Berlin", "postal_code": "10437", "property_type": "Mehrfamilienhaus", "status": "Eigentum", "units_count": 12, "image_url": "https://images.unsplash.com/photo-1664813953897-ada06817c48c?w=800", "description": "Altbau mit 12 Wohneinheiten", "created_at": to_iso(now()), "updated_at": to_iso(now())},
-        {"id": generate_id(), "name": "Gewerbeobjekt Mitte", "address": "Friedrichstraße 123", "city": "Berlin", "postal_code": "10117", "property_type": "Gewerbe", "status": "Untervermietet", "units_count": 4, "image_url": "https://images.unsplash.com/photo-1664813953310-ea2953c0ec99?w=800", "description": "Büroflächen in zentraler Lage", "created_at": to_iso(now()), "updated_at": to_iso(now())},
-        {"id": generate_id(), "name": "Seniorenresidenz am Park", "address": "Parkstraße 22", "city": "München", "postal_code": "80333", "property_type": "Pflegewohngemeinschaft", "status": "Gemietet", "units_count": 16, "image_url": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=800", "description": "Exklusive Seniorenresidenz", "created_at": to_iso(now()), "updated_at": to_iso(now())},
-        {"id": generate_id(), "name": "Stadtwohnung Charlottenburg", "address": "Kurfürstendamm 88", "city": "Berlin", "postal_code": "10709", "property_type": "Wohnung", "status": "Eigentum", "units_count": 1, "image_url": "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=800", "description": "Luxuriöse Stadtwohnung", "created_at": to_iso(now()), "updated_at": to_iso(now())}
+        {"id": generate_id(), "name": "Büro DV Gesundheit Kreuzberg (Neu)", "address": "Waldemarstraße 5", "city": "Berlin", "postal_code": "10999", "property_type": "Büro", "status": "Eigentum", "units_count": 1, "image_url": "https://images.unsplash.com/photo-1497366216548-37526070297c?w=800", "description": "Bürostandort im Bezirk Friedrichshain-Kreuzberg.", "created_at": to_iso(now()), "updated_at": to_iso(now())},
+        {"id": generate_id(), "name": "Haus Hebron", "address": "Hartriegelstraße 132", "city": "Berlin", "postal_code": "12439", "property_type": "Pflegewohngemeinschaft", "status": "Eigentum", "units_count": 8, "image_url": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=800", "description": "Pflegeeinrichtung und Wohngemeinschaft im Bezirk Treptow-Köpenick.", "created_at": to_iso(now()), "updated_at": to_iso(now())},
+        {"id": generate_id(), "name": "Büro DV Gesundheit Treptow", "address": "Baumschulenstraße 24", "city": "Berlin", "postal_code": "12437", "property_type": "Büro", "status": "Eigentum", "units_count": 1, "image_url": "https://images.unsplash.com/photo-1497366811353-6870744d04b2?w=800", "description": "Bürostandort im Bezirk Treptow-Köpenick.", "created_at": to_iso(now()), "updated_at": to_iso(now())},
+        {"id": generate_id(), "name": "WG Kupferkessel & Mietwohnungen", "address": "Baumschulenstraße 64", "city": "Berlin", "postal_code": "12437", "property_type": "Pflegewohngemeinschaft", "status": "Eigentum", "units_count": 6, "image_url": "https://images.unsplash.com/photo-1564013799919-ab600027ffc6?w=800", "description": "Kombination aus ambulant betreuter Wohngemeinschaft und sechs Mietwohnungen im Bezirk Treptow-Köpenick.", "created_at": to_iso(now()), "updated_at": to_iso(now())},
+        {"id": generate_id(), "name": "Eilertstraße 1", "address": "Eilertstraße 1", "city": "Berlin", "postal_code": "14165", "property_type": "Wohnung", "status": "Eigentum", "units_count": 1, "image_url": "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=800", "description": "Immobilie im Bezirk Steglitz-Zehlendorf.", "created_at": to_iso(now()), "updated_at": to_iso(now())},
+        {"id": generate_id(), "name": "WG Drachenwiese", "address": "Rudower Straße 228", "city": "Berlin", "postal_code": "12557", "property_type": "Pflegewohngemeinschaft", "status": "Gemietet", "units_count": 12, "image_url": "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=800", "description": "Große ambulant betreute Wohngemeinschaft mit 12 Zimmern im Bezirk Treptow-Köpenick.", "created_at": to_iso(now()), "updated_at": to_iso(now())},
+        {"id": generate_id(), "name": "WG Drachenblick", "address": "Rudower Straße 226", "city": "Berlin", "postal_code": "12557", "property_type": "Pflegewohngemeinschaft", "status": "Gemietet", "units_count": 4, "image_url": "https://images.unsplash.com/photo-1600585154526-990dced4db0d?w=800", "description": "Kleinere ambulant betreute Wohngemeinschaft mit 4 Zimmern im Bezirk Treptow-Köpenick.", "created_at": to_iso(now()), "updated_at": to_iso(now())},
+        {"id": generate_id(), "name": "WG Sterndamm", "address": "Sterndamm 10", "city": "Berlin", "postal_code": "12109", "property_type": "Pflegewohngemeinschaft", "status": "Gemietet", "units_count": 8, "image_url": "https://images.unsplash.com/photo-1600573472591-ee6b68d14c68?w=800", "description": "Ambulant betreute Wohngemeinschaft im Bezirk Treptow-Köpenick.", "created_at": to_iso(now()), "updated_at": to_iso(now())},
+        {"id": generate_id(), "name": "Michael-Brückner-Straße 4", "address": "Michael-Brückner-Straße 4", "city": "Berlin", "postal_code": "12439", "property_type": "Wohnung", "status": "Gemietet", "units_count": 1, "image_url": "https://images.unsplash.com/photo-1600566753190-17f0baa2a6c3?w=800", "description": "Immobilie im Bezirk Treptow-Köpenick.", "created_at": to_iso(now()), "updated_at": to_iso(now())},
+        {"id": generate_id(), "name": "Michael-Brückner-Straße 5", "address": "Michael-Brückner-Straße 5", "city": "Berlin", "postal_code": "12439", "property_type": "Wohnung", "status": "Gemietet", "units_count": 1, "image_url": "https://images.unsplash.com/photo-1600585154526-990dced4db0d?w=800", "description": "Immobilie im Bezirk Treptow-Köpenick.", "created_at": to_iso(now()), "updated_at": to_iso(now())},
+        {"id": generate_id(), "name": "Siefos", "address": "Waldemarstraße 12", "city": "Berlin", "postal_code": "10999", "property_type": "Gewerbe", "status": "Gemietet", "units_count": 1, "image_url": "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=800", "description": "Immobilie im Bezirk Friedrichshain-Kreuzberg.", "created_at": to_iso(now()), "updated_at": to_iso(now())},
+        {"id": generate_id(), "name": "DV Gesundheit Kreuzberg (Alt)", "address": "Waldemarstraße 10a", "city": "Berlin", "postal_code": "10999", "property_type": "Büro", "status": "Gemietet", "units_count": 1, "image_url": "https://images.unsplash.com/photo-1497366216548-37526070297c?w=800", "description": "Bürostandort im Bezirk Friedrichshain-Kreuzberg.", "created_at": to_iso(now()), "updated_at": to_iso(now())},
+        {"id": generate_id(), "name": "Herzogin Luise Haus", "address": "Waldemarstraße 10a", "city": "Berlin", "postal_code": "10999", "property_type": "Pflegewohngemeinschaft", "status": "Gemietet", "units_count": 6, "image_url": "https://images.unsplash.com/photo-1600047509807-ba8f99d2cdde?w=800", "description": "Möglicherweise im gleichen Gebäude wie DV Gesundheit Kreuzberg (Alt). Im Bezirk Friedrichshain-Kreuzberg.", "created_at": to_iso(now()), "updated_at": to_iso(now())}
     ]
     await db.properties.insert_many(properties)
     
-    # Sample Units
+    # Sample Units for key properties
     units = []
-    for i, prop in enumerate(properties[:2]):
-        for j in range(min(3, prop["units_count"])):
-            units.append({
-                "id": generate_id(),
-                "property_id": prop["id"],
-                "unit_number": f"{j+1}",
-                "floor": j,
-                "rooms": 2 + (j % 3),
-                "area_sqm": 55 + (j * 10),
-                "rent_amount": 850 + (j * 150),
-                "is_vacant": j == 0,
-                "tenant_id": contacts[0]["id"] if j > 0 else None,
-                "created_at": to_iso(now())
-            })
+    # Units for Haus Hebron
+    for j in range(8):
+        units.append({
+            "id": generate_id(),
+            "property_id": properties[1]["id"],
+            "unit_number": f"Zimmer {j+1}",
+            "floor": j // 3,
+            "rooms": 1,
+            "area_sqm": 22 + (j * 2),
+            "rent_amount": 1200,
+            "is_vacant": j < 2,
+            "tenant_id": contacts[0]["id"] if j >= 2 else None,
+            "created_at": to_iso(now())
+        })
+    # Units for WG Kupferkessel
+    for j in range(6):
+        units.append({
+            "id": generate_id(),
+            "property_id": properties[3]["id"],
+            "unit_number": f"Wohnung {j+1}",
+            "floor": j // 2,
+            "rooms": 2,
+            "area_sqm": 45 + (j * 5),
+            "rent_amount": 750 + (j * 50),
+            "is_vacant": j == 0,
+            "tenant_id": contacts[0]["id"] if j > 0 else None,
+            "created_at": to_iso(now())
+        })
+    # Units for WG Drachenwiese
+    for j in range(12):
+        units.append({
+            "id": generate_id(),
+            "property_id": properties[5]["id"],
+            "unit_number": f"Zimmer {j+1}",
+            "floor": j // 4,
+            "rooms": 1,
+            "area_sqm": 18 + (j % 4) * 2,
+            "rent_amount": 1100,
+            "is_vacant": j < 1,
+            "tenant_id": contacts[0]["id"] if j >= 1 else None,
+            "created_at": to_iso(now())
+        })
     await db.units.insert_many(units)
     
     # Sample Contracts
     contracts_data = [
-        {"id": generate_id(), "property_id": properties[0]["id"], "contact_id": contacts[0]["id"], "contract_type": "Mietvertrag", "title": "Mietvertrag Einheit 1", "start_date": to_iso(now() - timedelta(days=365)), "end_date": to_iso(now() + timedelta(days=30)), "monthly_amount": 850, "is_active": True, "notice_period_days": 90, "created_at": to_iso(now()), "updated_at": to_iso(now())},
-        {"id": generate_id(), "property_id": properties[1]["id"], "contact_id": contacts[1]["id"], "contract_type": "Hauptmietvertrag", "title": "Hauptmietvertrag Prenzlauer Berg", "start_date": to_iso(now() - timedelta(days=730)), "end_date": to_iso(now() + timedelta(days=180)), "monthly_amount": 8500, "is_active": True, "auto_renew": True, "created_at": to_iso(now()), "updated_at": to_iso(now())},
-        {"id": generate_id(), "property_id": properties[0]["id"], "contract_type": "Versicherung", "title": "Gebäudeversicherung Sterndamm", "start_date": to_iso(now() - timedelta(days=180)), "end_date": to_iso(now() + timedelta(days=185)), "monthly_amount": 250, "is_active": True, "auto_renew": True, "created_at": to_iso(now()), "updated_at": to_iso(now())},
-        {"id": generate_id(), "property_id": properties[0]["id"], "contact_id": contacts[2]["id"], "contract_type": "Wartungsvertrag", "title": "Elektrowartung jährlich", "start_date": to_iso(now() - timedelta(days=90)), "end_date": to_iso(now() + timedelta(days=275)), "monthly_amount": 150, "is_active": True, "created_at": to_iso(now()), "updated_at": to_iso(now())}
+        {"id": generate_id(), "property_id": properties[1]["id"], "contact_id": contacts[0]["id"], "contract_type": "Mietvertrag", "title": "Mietvertrag Haus Hebron", "start_date": to_iso(now() - timedelta(days=365)), "end_date": to_iso(now() + timedelta(days=365)), "monthly_amount": 9600, "is_active": True, "notice_period_days": 90, "created_at": to_iso(now()), "updated_at": to_iso(now())},
+        {"id": generate_id(), "property_id": properties[5]["id"], "contact_id": contacts[1]["id"], "contract_type": "Hauptmietvertrag", "title": "Hauptmietvertrag WG Drachenwiese", "start_date": to_iso(now() - timedelta(days=730)), "end_date": to_iso(now() + timedelta(days=180)), "monthly_amount": 13200, "is_active": True, "auto_renew": True, "created_at": to_iso(now()), "updated_at": to_iso(now())},
+        {"id": generate_id(), "property_id": properties[3]["id"], "contract_type": "Versicherung", "title": "Gebäudeversicherung WG Kupferkessel", "start_date": to_iso(now() - timedelta(days=180)), "end_date": to_iso(now() + timedelta(days=185)), "monthly_amount": 250, "is_active": True, "auto_renew": True, "created_at": to_iso(now()), "updated_at": to_iso(now())},
+        {"id": generate_id(), "property_id": properties[1]["id"], "contact_id": contacts[2]["id"], "contract_type": "Wartungsvertrag", "title": "Elektrowartung Haus Hebron", "start_date": to_iso(now() - timedelta(days=90)), "end_date": to_iso(now() + timedelta(days=275)), "monthly_amount": 150, "is_active": True, "created_at": to_iso(now()), "updated_at": to_iso(now())}
     ]
     await db.contracts.insert_many(contracts_data)
     
     # Sample Maintenance Tickets
     tickets = [
-        {"id": generate_id(), "property_id": properties[0]["id"], "assigned_to_id": contacts[2]["id"], "title": "Heizung prüfen", "description": "Jährliche Heizungswartung", "status": "Offen", "priority": "Normal", "category": "Heizung", "scheduled_date": to_iso(now() + timedelta(days=7)), "created_at": to_iso(now()), "updated_at": to_iso(now())},
-        {"id": generate_id(), "property_id": properties[1]["id"], "assigned_to_id": contacts[3]["id"], "title": "Wasserschaden Keller", "description": "Feuchtigkeit festgestellt", "status": "In Bearbeitung", "priority": "Hoch", "category": "Sanitär", "created_at": to_iso(now()), "updated_at": to_iso(now())},
-        {"id": generate_id(), "property_id": properties[2]["id"], "title": "Reinigung Treppenhaus", "description": "Wöchentliche Reinigung", "status": "Offen", "priority": "Niedrig", "category": "Reinigung", "is_recurring": True, "recurrence_interval_days": 7, "created_at": to_iso(now()), "updated_at": to_iso(now())}
+        {"id": generate_id(), "property_id": properties[1]["id"], "assigned_to_id": contacts[2]["id"], "title": "Heizung prüfen", "description": "Jährliche Heizungswartung im Haus Hebron", "status": "Offen", "priority": "Normal", "category": "Heizung", "scheduled_date": to_iso(now() + timedelta(days=7)), "created_at": to_iso(now()), "updated_at": to_iso(now())},
+        {"id": generate_id(), "property_id": properties[5]["id"], "assigned_to_id": contacts[3]["id"], "title": "Wasserschaden Badezimmer", "description": "Feuchtigkeit in Zimmer 5 der WG Drachenwiese festgestellt", "status": "In Bearbeitung", "priority": "Hoch", "category": "Sanitär", "created_at": to_iso(now()), "updated_at": to_iso(now())},
+        {"id": generate_id(), "property_id": properties[3]["id"], "title": "Reinigung Treppenhaus", "description": "Wöchentliche Reinigung WG Kupferkessel", "status": "Offen", "priority": "Niedrig", "category": "Reinigung", "is_recurring": True, "recurrence_interval_days": 7, "created_at": to_iso(now()), "updated_at": to_iso(now())},
+        {"id": generate_id(), "property_id": properties[6]["id"], "assigned_to_id": contacts[2]["id"], "title": "Elektrik Prüfung", "description": "E-Check fällig in WG Drachenblick", "status": "Offen", "priority": "Normal", "category": "Elektrik", "scheduled_date": to_iso(now() + timedelta(days=14)), "created_at": to_iso(now()), "updated_at": to_iso(now())}
     ]
     await db.maintenance_tickets.insert_many(tickets)
     
     # Sample Documents
     documents = [
-        {"id": generate_id(), "property_id": properties[0]["id"], "name": "Mietvertrag_Einheit1.pdf", "category": "Vertrag", "file_url": "https://example.com/docs/mietvertrag1.pdf", "file_size": 245000, "file_type": "application/pdf", "created_at": to_iso(now())},
-        {"id": generate_id(), "property_id": properties[0]["id"], "name": "Grundriss_EG.pdf", "category": "Grundriss", "file_url": "https://example.com/docs/grundriss1.pdf", "file_size": 1200000, "file_type": "application/pdf", "created_at": to_iso(now())},
-        {"id": generate_id(), "property_id": properties[1]["id"], "name": "Versicherungspolice_2024.pdf", "category": "Vertrag", "file_url": "https://example.com/docs/versicherung.pdf", "file_size": 380000, "file_type": "application/pdf", "created_at": to_iso(now())}
+        {"id": generate_id(), "property_id": properties[1]["id"], "name": "Mietvertrag_HausHebron.pdf", "category": "Vertrag", "file_url": "https://example.com/docs/mietvertrag_hebron.pdf", "file_size": 245000, "file_type": "application/pdf", "created_at": to_iso(now())},
+        {"id": generate_id(), "property_id": properties[5]["id"], "name": "Grundriss_WG_Drachenwiese.pdf", "category": "Grundriss", "file_url": "https://example.com/docs/grundriss_drachenwiese.pdf", "file_size": 1200000, "file_type": "application/pdf", "created_at": to_iso(now())},
+        {"id": generate_id(), "property_id": properties[3]["id"], "name": "Versicherungspolice_2024.pdf", "category": "Vertrag", "file_url": "https://example.com/docs/versicherung_kupferkessel.pdf", "file_size": 380000, "file_type": "application/pdf", "created_at": to_iso(now())}
     ]
     await db.documents.insert_many(documents)
     
     return {
-        "message": "Datenbank erfolgreich befüllt",
+        "message": "Datenbank erfolgreich befüllt mit echten DomusVita-Immobiliendaten",
         "properties_count": len(properties),
         "contacts_count": len(contacts),
         "contracts_count": len(contracts_data),
