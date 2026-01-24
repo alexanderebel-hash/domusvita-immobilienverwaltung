@@ -658,6 +658,377 @@ Antworte immer auf Deutsch, sei hilfreich und präzise."""
             success=False
         )
 
+# ==================== HANDWERKER PORTAL ROUTES ====================
+
+# Simple token storage for handwerker sessions (in production use proper JWT)
+handwerker_sessions = {}
+
+@api_router.post("/handwerker/login", response_model=HandwerkerLoginResponse)
+async def handwerker_login(request: HandwerkerLoginRequest):
+    """Login for craftsmen using their contact ID"""
+    # Find handwerker by ID
+    handwerker = await db.contacts.find_one({
+        "id": request.handwerker_id,
+        "role": "Handwerker"
+    }, {"_id": 0})
+    
+    if not handwerker:
+        raise HTTPException(401, "Ungültige Handwerker-ID")
+    
+    # Generate session token
+    token = generate_id()
+    handwerker_sessions[token] = {
+        "handwerker_id": handwerker["id"],
+        "name": handwerker.get("name"),
+        "expires": (now() + timedelta(days=7)).isoformat()
+    }
+    
+    return HandwerkerLoginResponse(
+        success=True,
+        token=token,
+        handwerker_id=handwerker["id"],
+        name=handwerker.get("name", ""),
+        specialty=handwerker.get("specialty")
+    )
+
+@api_router.get("/handwerker/verify/{token}")
+async def verify_handwerker_token(token: str):
+    """Verify if a handwerker token is valid"""
+    session = handwerker_sessions.get(token)
+    if not session:
+        raise HTTPException(401, "Ungültiger Token")
+    
+    if from_iso(session["expires"]) < now():
+        del handwerker_sessions[token]
+        raise HTTPException(401, "Token abgelaufen")
+    
+    return {"valid": True, "handwerker_id": session["handwerker_id"], "name": session["name"]}
+
+@api_router.get("/handwerker/tickets/{handwerker_id}", response_model=List[HandwerkerTicketResponse])
+async def get_handwerker_tickets(handwerker_id: str, status: Optional[str] = None):
+    """Get all tickets assigned to a specific handwerker"""
+    query = {"assigned_to_id": handwerker_id}
+    if status:
+        query["status"] = status
+    
+    tickets = await db.maintenance_tickets.find(query, {"_id": 0}).to_list(100)
+    results = []
+    
+    for ticket in tickets:
+        # Get property info
+        prop = await db.properties.find_one({"id": ticket.get("property_id")}, {"_id": 0})
+        
+        # Get photos for this ticket
+        photos = await db.ticket_photos.find({"ticket_id": ticket["id"]}, {"_id": 0}).to_list(100)
+        for photo in photos:
+            photo["uploaded_at"] = from_iso(photo.get("uploaded_at"))
+        
+        # Get status updates
+        status_updates = await db.status_updates.find({"ticket_id": ticket["id"]}, {"_id": 0}).sort("timestamp", -1).to_list(50)
+        for update in status_updates:
+            update["timestamp"] = from_iso(update.get("timestamp"))
+        
+        # Get work report
+        work_report = await db.work_reports.find_one({"ticket_id": ticket["id"]}, {"_id": 0})
+        if work_report:
+            work_report["created_at"] = from_iso(work_report.get("created_at"))
+            work_report["total_cost"] = (work_report.get("material_cost", 0) or 0) + (work_report.get("labor_cost", 0) or 0)
+        
+        # Get tenant info if available
+        tenant_name = None
+        tenant_phone = None
+        if prop:
+            # Find tenant for this property
+            unit = await db.units.find_one({"property_id": prop["id"], "is_vacant": False})
+            if unit and unit.get("tenant_id"):
+                tenant = await db.contacts.find_one({"id": unit["tenant_id"]})
+                if tenant:
+                    tenant_name = tenant.get("name")
+                    tenant_phone = tenant.get("phone")
+        
+        results.append({
+            "id": ticket["id"],
+            "property_id": ticket.get("property_id"),
+            "property_name": prop.get("name") if prop else "Unbekannt",
+            "property_address": f"{prop.get('address', '')}, {prop.get('postal_code', '')} {prop.get('city', '')}" if prop else "",
+            "property_city": prop.get("city", "") if prop else "",
+            "title": ticket.get("title"),
+            "description": ticket.get("description"),
+            "status": ticket.get("status", "Offen"),
+            "priority": ticket.get("priority", "Normal"),
+            "category": ticket.get("category"),
+            "scheduled_date": from_iso(ticket.get("scheduled_date")),
+            "tenant_name": tenant_name,
+            "tenant_phone": tenant_phone,
+            "photos": photos,
+            "status_updates": status_updates,
+            "work_report": work_report,
+            "created_at": from_iso(ticket.get("created_at"))
+        })
+    
+    return results
+
+@api_router.get("/handwerker/ticket/{ticket_id}", response_model=HandwerkerTicketResponse)
+async def get_handwerker_ticket_detail(ticket_id: str):
+    """Get detailed ticket information for handwerker view"""
+    ticket = await db.maintenance_tickets.find_one({"id": ticket_id}, {"_id": 0})
+    if not ticket:
+        raise HTTPException(404, "Ticket nicht gefunden")
+    
+    # Get property info
+    prop = await db.properties.find_one({"id": ticket.get("property_id")}, {"_id": 0})
+    
+    # Get photos
+    photos = await db.ticket_photos.find({"ticket_id": ticket_id}, {"_id": 0}).to_list(100)
+    for photo in photos:
+        photo["uploaded_at"] = from_iso(photo.get("uploaded_at"))
+    
+    # Get status updates
+    status_updates = await db.status_updates.find({"ticket_id": ticket_id}, {"_id": 0}).sort("timestamp", -1).to_list(50)
+    for update in status_updates:
+        update["timestamp"] = from_iso(update.get("timestamp"))
+    
+    # Get work report
+    work_report = await db.work_reports.find_one({"ticket_id": ticket_id}, {"_id": 0})
+    if work_report:
+        work_report["created_at"] = from_iso(work_report.get("created_at"))
+        work_report["total_cost"] = (work_report.get("material_cost", 0) or 0) + (work_report.get("labor_cost", 0) or 0)
+    
+    # Get tenant info
+    tenant_name = None
+    tenant_phone = None
+    if prop:
+        unit = await db.units.find_one({"property_id": prop["id"], "is_vacant": False})
+        if unit and unit.get("tenant_id"):
+            tenant = await db.contacts.find_one({"id": unit["tenant_id"]})
+            if tenant:
+                tenant_name = tenant.get("name")
+                tenant_phone = tenant.get("phone")
+    
+    return {
+        "id": ticket["id"],
+        "property_id": ticket.get("property_id"),
+        "property_name": prop.get("name") if prop else "Unbekannt",
+        "property_address": f"{prop.get('address', '')}, {prop.get('postal_code', '')} {prop.get('city', '')}" if prop else "",
+        "property_city": prop.get("city", "") if prop else "",
+        "title": ticket.get("title"),
+        "description": ticket.get("description"),
+        "status": ticket.get("status", "Offen"),
+        "priority": ticket.get("priority", "Normal"),
+        "category": ticket.get("category"),
+        "scheduled_date": from_iso(ticket.get("scheduled_date")),
+        "tenant_name": tenant_name,
+        "tenant_phone": tenant_phone,
+        "photos": photos,
+        "status_updates": status_updates,
+        "work_report": work_report,
+        "created_at": from_iso(ticket.get("created_at"))
+    }
+
+@api_router.post("/handwerker/ticket/{ticket_id}/photo", response_model=TicketPhotoResponse)
+async def upload_ticket_photo(
+    ticket_id: str,
+    category: str = "Während",
+    description: Optional[str] = None,
+    handwerker_id: Optional[str] = None,
+    file: UploadFile = File(...)
+):
+    """Upload a photo for a maintenance ticket"""
+    # Verify ticket exists
+    ticket = await db.maintenance_tickets.find_one({"id": ticket_id})
+    if not ticket:
+        raise HTTPException(404, "Ticket nicht gefunden")
+    
+    # Read and compress image
+    content = await file.read()
+    
+    try:
+        # Compress image for mobile optimization
+        img = Image.open(io.BytesIO(content))
+        
+        # Convert to RGB if necessary
+        if img.mode in ('RGBA', 'P'):
+            img = img.convert('RGB')
+        
+        # Resize if too large (max 1920px width)
+        max_width = 1920
+        if img.width > max_width:
+            ratio = max_width / img.width
+            new_size = (max_width, int(img.height * ratio))
+            img = img.resize(new_size, Image.Resampling.LANCZOS)
+        
+        # Save compressed
+        output = io.BytesIO()
+        img.save(output, format='JPEG', quality=80, optimize=True)
+        compressed_content = output.getvalue()
+        
+        # Create thumbnail
+        thumb_size = (200, 200)
+        img.thumbnail(thumb_size, Image.Resampling.LANCZOS)
+        thumb_output = io.BytesIO()
+        img.save(thumb_output, format='JPEG', quality=70)
+        thumb_content = thumb_output.getvalue()
+        
+    except Exception as e:
+        logger.error(f"Image processing error: {e}")
+        compressed_content = content
+        thumb_content = content
+    
+    # Generate unique filename
+    photo_id = generate_id()
+    filename = f"{ticket_id}/{photo_id}.jpg"
+    thumb_filename = f"{ticket_id}/{photo_id}_thumb.jpg"
+    
+    # For now, store as base64 in MongoDB (in production use Azure Blob Storage)
+    photo_url = f"data:image/jpeg;base64,{base64.b64encode(compressed_content).decode()}"
+    thumbnail_url = f"data:image/jpeg;base64,{base64.b64encode(thumb_content).decode()}"
+    
+    # Save photo record
+    photo_doc = {
+        "id": photo_id,
+        "ticket_id": ticket_id,
+        "category": category,
+        "photo_url": photo_url,
+        "thumbnail_url": thumbnail_url,
+        "description": description,
+        "uploaded_by": handwerker_id or "system",
+        "uploaded_at": to_iso(now())
+    }
+    await db.ticket_photos.insert_one(photo_doc)
+    
+    photo_doc["uploaded_at"] = from_iso(photo_doc["uploaded_at"])
+    return photo_doc
+
+@api_router.delete("/handwerker/photo/{photo_id}")
+async def delete_ticket_photo(photo_id: str):
+    """Delete a ticket photo"""
+    result = await db.ticket_photos.delete_one({"id": photo_id})
+    if result.deleted_count == 0:
+        raise HTTPException(404, "Foto nicht gefunden")
+    return {"message": "Foto gelöscht"}
+
+@api_router.post("/handwerker/ticket/{ticket_id}/status", response_model=StatusUpdateResponse)
+async def update_ticket_status_handwerker(
+    ticket_id: str,
+    data: StatusUpdateCreate
+):
+    """Update ticket status from handwerker app"""
+    # Verify ticket exists
+    ticket = await db.maintenance_tickets.find_one({"id": ticket_id})
+    if not ticket:
+        raise HTTPException(404, "Ticket nicht gefunden")
+    
+    # Map handwerker status to main status
+    main_status_map = {
+        "Unterwegs": "In Bearbeitung",
+        "Vor Ort": "In Bearbeitung",
+        "In Arbeit": "In Bearbeitung",
+        "Erledigt": "Erledigt",
+        "Material fehlt": "In Bearbeitung"
+    }
+    
+    main_status = main_status_map.get(data.status, data.status)
+    
+    # Update main ticket status
+    update_data = {
+        "status": main_status,
+        "updated_at": to_iso(now())
+    }
+    if main_status == "Erledigt":
+        update_data["completed_date"] = to_iso(now())
+    
+    await db.maintenance_tickets.update_one(
+        {"id": ticket_id},
+        {"$set": update_data}
+    )
+    
+    # Create status update record
+    status_update = {
+        "id": generate_id(),
+        "ticket_id": ticket_id,
+        "status": data.status,
+        "note": data.note,
+        "location": data.location,
+        "timestamp": to_iso(now()),
+        "updated_by": ticket.get("assigned_to_id", "system")
+    }
+    await db.status_updates.insert_one(status_update)
+    
+    # TODO: Send notification to property manager/tenant
+    # This would integrate with email/SMS service
+    
+    status_update["timestamp"] = from_iso(status_update["timestamp"])
+    return status_update
+
+@api_router.get("/handwerker/ticket/{ticket_id}/status-history", response_model=List[StatusUpdateResponse])
+async def get_ticket_status_history(ticket_id: str):
+    """Get status history for a ticket"""
+    updates = await db.status_updates.find({"ticket_id": ticket_id}, {"_id": 0}).sort("timestamp", -1).to_list(100)
+    for update in updates:
+        update["timestamp"] = from_iso(update.get("timestamp"))
+    return updates
+
+@api_router.post("/handwerker/ticket/{ticket_id}/report", response_model=WorkReportResponse)
+async def create_work_report(ticket_id: str, data: WorkReportCreate):
+    """Create or update work report for a ticket"""
+    # Verify ticket exists
+    ticket = await db.maintenance_tickets.find_one({"id": ticket_id})
+    if not ticket:
+        raise HTTPException(404, "Ticket nicht gefunden")
+    
+    # Check if report exists
+    existing = await db.work_reports.find_one({"ticket_id": ticket_id})
+    
+    total_cost = (data.material_cost or 0) + (data.labor_cost or 0)
+    
+    report_doc = {
+        "id": existing["id"] if existing else generate_id(),
+        "ticket_id": ticket_id,
+        "description": data.description,
+        "materials_used": data.materials_used,
+        "work_hours": data.work_hours,
+        "material_cost": data.material_cost,
+        "labor_cost": data.labor_cost,
+        "total_cost": total_cost,
+        "tenant_signature": data.tenant_signature,
+        "notes": data.notes,
+        "created_by": ticket.get("assigned_to_id", "system"),
+        "created_at": to_iso(now())
+    }
+    
+    if existing:
+        await db.work_reports.update_one({"id": existing["id"]}, {"$set": report_doc})
+    else:
+        await db.work_reports.insert_one(report_doc)
+    
+    # Update ticket cost
+    await db.maintenance_tickets.update_one(
+        {"id": ticket_id},
+        {"$set": {"cost": total_cost, "updated_at": to_iso(now())}}
+    )
+    
+    report_doc["created_at"] = from_iso(report_doc["created_at"])
+    return report_doc
+
+@api_router.get("/handwerker/ticket/{ticket_id}/report", response_model=WorkReportResponse)
+async def get_work_report(ticket_id: str):
+    """Get work report for a ticket"""
+    report = await db.work_reports.find_one({"ticket_id": ticket_id}, {"_id": 0})
+    if not report:
+        raise HTTPException(404, "Arbeitsbericht nicht gefunden")
+    
+    report["created_at"] = from_iso(report.get("created_at"))
+    report["total_cost"] = (report.get("material_cost", 0) or 0) + (report.get("labor_cost", 0) or 0)
+    return report
+
+@api_router.get("/handwerker/status-options")
+async def get_handwerker_status_options():
+    """Get available status options for handwerker"""
+    return {
+        "statuses": ["Unterwegs", "Vor Ort", "In Arbeit", "Erledigt", "Material fehlt"],
+        "photo_categories": ["Vorher", "Während", "Nachher"]
+    }
+
 # ==================== SEED DATA ====================
 
 @api_router.post("/seed")
