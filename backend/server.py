@@ -9,7 +9,7 @@ from pydantic import BaseModel, Field, ConfigDict
 from typing import List, Optional
 import uuid
 from datetime import datetime, timezone
-from emergentintegrations.llm.chat import Chat, Message, Role
+from emergentintegrations.llm.chat import LlmChat
 import asyncio
 
 ROOT_DIR = Path(__file__).parent
