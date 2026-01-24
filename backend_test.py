@@ -137,6 +137,125 @@ class DomusVitaAPITester:
         }
         return self.run_test("AI Query", "POST", "ai/query", 200, data=query_data)
 
+    # ==================== HANDWERKER PORTAL TESTS ====================
+    
+    def test_get_handwerker_contacts(self):
+        """Test getting handwerker contacts for demo login"""
+        return self.run_test("Get Handwerker Contacts", "GET", "contacts", 200, params={"role": "Handwerker"})
+    
+    def test_handwerker_login(self):
+        """Test handwerker login with contact ID"""
+        # First get handwerker contacts to find a valid ID
+        success, contacts = self.run_test("Get Handwerker for Login", "GET", "contacts", 200, params={"role": "Handwerker"})
+        
+        if not success or not contacts:
+            print("❌ No handwerker contacts found for login test")
+            return False, None
+            
+        # Use first handwerker for login test
+        handwerker_id = contacts[0].get('id') if contacts else None
+        if not handwerker_id:
+            print("❌ No valid handwerker ID found")
+            return False, None
+            
+        login_data = {
+            "handwerker_id": handwerker_id
+        }
+        success, response = self.run_test("Handwerker Login", "POST", "handwerker/login", 200, data=login_data)
+        
+        if success:
+            token = response.get('token')
+            return success, {"token": token, "handwerker_id": handwerker_id}
+        return False, None
+    
+    def test_handwerker_verify_token(self, auth_data):
+        """Test handwerker token verification"""
+        if not auth_data or not auth_data.get('token'):
+            print("❌ Skipping token verification - no token available")
+            return False, {}
+        
+        token = auth_data['token']
+        return self.run_test("Verify Handwerker Token", "GET", f"handwerker/verify/{token}", 200)
+    
+    def test_get_handwerker_tickets(self, auth_data):
+        """Test getting tickets assigned to handwerker"""
+        if not auth_data or not auth_data.get('handwerker_id'):
+            print("❌ Skipping get tickets - no handwerker ID available")
+            return False, {}
+        
+        handwerker_id = auth_data['handwerker_id']
+        success, response = self.run_test("Get Handwerker Tickets", "GET", f"handwerker/tickets/{handwerker_id}", 200)
+        
+        if success and response:
+            # Return first ticket ID for further testing
+            ticket_id = response[0].get('id') if response else None
+            return success, {"tickets": response, "ticket_id": ticket_id}
+        return False, {}
+    
+    def test_get_handwerker_ticket_detail(self, ticket_data):
+        """Test getting detailed ticket information"""
+        if not ticket_data or not ticket_data.get('ticket_id'):
+            print("❌ Skipping ticket detail - no ticket ID available")
+            return False, {}
+        
+        ticket_id = ticket_data['ticket_id']
+        return self.run_test("Get Handwerker Ticket Detail", "GET", f"handwerker/ticket/{ticket_id}", 200)
+    
+    def test_handwerker_status_options(self):
+        """Test getting available status options for handwerker"""
+        return self.run_test("Get Handwerker Status Options", "GET", "handwerker/status-options", 200)
+    
+    def test_update_ticket_status(self, ticket_data):
+        """Test updating ticket status from handwerker"""
+        if not ticket_data or not ticket_data.get('ticket_id'):
+            print("❌ Skipping status update - no ticket ID available")
+            return False, {}
+        
+        ticket_id = ticket_data['ticket_id']
+        status_data = {
+            "ticket_id": ticket_id,
+            "status": "Unterwegs",
+            "note": "API Test - Status update",
+            "location": "Test Location"
+        }
+        return self.run_test("Update Ticket Status", "POST", f"handwerker/ticket/{ticket_id}/status", 200, data=status_data)
+    
+    def test_create_work_report(self, ticket_data):
+        """Test creating work report for ticket"""
+        if not ticket_data or not ticket_data.get('ticket_id'):
+            print("❌ Skipping work report - no ticket ID available")
+            return False, {}
+        
+        ticket_id = ticket_data['ticket_id']
+        report_data = {
+            "ticket_id": ticket_id,
+            "description": "API Test - Durchgeführte Arbeiten",
+            "materials_used": "Test Material, Test Werkzeug",
+            "work_hours": 2.5,
+            "material_cost": 50.0,
+            "labor_cost": 125.0,
+            "notes": "API Test Notizen"
+        }
+        return self.run_test("Create Work Report", "POST", f"handwerker/ticket/{ticket_id}/report", 200, data=report_data)
+    
+    def test_get_work_report(self, ticket_data):
+        """Test getting work report for ticket"""
+        if not ticket_data or not ticket_data.get('ticket_id'):
+            print("❌ Skipping get work report - no ticket ID available")
+            return False, {}
+        
+        ticket_id = ticket_data['ticket_id']
+        return self.run_test("Get Work Report", "GET", f"handwerker/ticket/{ticket_id}/report", 200)
+    
+    def test_get_status_history(self, ticket_data):
+        """Test getting status history for ticket"""
+        if not ticket_data or not ticket_data.get('ticket_id'):
+            print("❌ Skipping status history - no ticket ID available")
+            return False, {}
+        
+        ticket_id = ticket_data['ticket_id']
+        return self.run_test("Get Status History", "GET", f"handwerker/ticket/{ticket_id}/status-history", 200)
+
     def test_get_units(self):
         """Test get units endpoint"""
         return self.run_test("Get Units", "GET", "units", 200)
