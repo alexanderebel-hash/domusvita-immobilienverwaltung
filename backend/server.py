@@ -8,6 +8,9 @@ from pathlib import Path
 import os
 import logging
 import uuid
+import base64
+import io
+from PIL import Image
 
 from schemas import (
     PropertyCreate, PropertyUpdate, PropertyResponse,
@@ -17,7 +20,12 @@ from schemas import (
     MaintenanceTicketCreate, MaintenanceTicketUpdate, MaintenanceTicketResponse,
     DocumentCreate, DocumentResponse,
     DashboardStats, AIInsight, AIQueryRequest, AIQueryResponse,
-    UserCreate, UserResponse, Token
+    UserCreate, UserResponse, Token,
+    HandwerkerLoginRequest, HandwerkerLoginResponse,
+    TicketPhotoCreate, TicketPhotoResponse,
+    WorkReportCreate, WorkReportResponse,
+    StatusUpdateCreate, StatusUpdateResponse,
+    HandwerkerTicketResponse
 )
 
 # Load environment
