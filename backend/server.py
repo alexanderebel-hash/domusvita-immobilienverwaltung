@@ -1148,6 +1148,23 @@ async def seed_database():
         "documents_count": len(documents)
     }
 
+@api_router.post("/seed-database-reset")
+async def seed_database_reset():
+    """Reset and re-seed database with real DomusVita data"""
+    # Drop all collections
+    await db.properties.delete_many({})
+    await db.units.delete_many({})
+    await db.contacts.delete_many({})
+    await db.contracts.delete_many({})
+    await db.maintenance_tickets.delete_many({})
+    await db.documents.delete_many({})
+    await db.ticket_photos.delete_many({})
+    await db.status_updates.delete_many({})
+    await db.work_reports.delete_many({})
+    
+    # Re-seed with real data
+    return await seed_database()
+
 # Include router
 app.include_router(api_router)
 
