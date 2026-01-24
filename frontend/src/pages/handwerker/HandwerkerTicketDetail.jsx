@@ -481,20 +481,31 @@ export default function HandwerkerTicketDetail() {
               onChange={handlePhotoCapture}
               className="hidden"
             />
-            <Button
-              onClick={() => fileInputRef.current?.click()}
-              disabled={uploadingPhoto}
-              className="w-full h-14 text-lg rounded-xl bg-blue-500 hover:bg-blue-600"
-            >
-              {uploadingPhoto ? (
-                <Loader2 className="w-6 h-6 animate-spin" />
-              ) : (
-                <>
-                  <Camera className="w-6 h-6 mr-2" />
-                  Kamera öffnen
-                </>
-              )}
-            </Button>
+            <div className="flex gap-3 pt-2">
+              <Button
+                variant="outline"
+                onClick={() => setShowPhotoDialog(false)}
+                className="flex-1 bg-white/5 border-white/10 text-white hover:bg-white/10"
+                data-testid="photo-dialog-cancel"
+              >
+                Abbrechen
+              </Button>
+              <Button
+                onClick={() => fileInputRef.current?.click()}
+                disabled={uploadingPhoto}
+                className="flex-1 h-12 rounded-xl bg-blue-500 hover:bg-blue-600"
+                data-testid="photo-dialog-capture"
+              >
+                {uploadingPhoto ? (
+                  <Loader2 className="w-5 h-5 animate-spin" />
+                ) : (
+                  <>
+                    <Camera className="w-5 h-5 mr-2" />
+                    Kamera
+                  </>
+                )}
+              </Button>
+            </div>
           </div>
         </DialogContent>
       </Dialog>
