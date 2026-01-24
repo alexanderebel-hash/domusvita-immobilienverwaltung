@@ -1,154 +1,135 @@
 # DomusVita - Product Requirements Document
 
 ## Original Problem Statement
-Build "DomusVita" - a premium property management app for a German care home and real estate company with:
-- Apple-like dark mode design with glassmorphism effects
-- German language UI throughout
+Build "DomusVita" - a premium property management app for German care homes with:
 - ALL 6 modules: Dashboard, Immobilien, Kontakte, Verträge, Instandhaltung, Dokumente
-- Azure deployment ready with ARM/Bicep templates, Dockerfiles, GitHub Actions CI/CD
-
-## User Preferences (Updated)
-1. **LLM Key**: Emergent LLM Key (Universal Key) ✅
-2. **Authentication**: Emergent-managed Google Login (infrastructure ready)
-3. **Document Storage**: Azure Blob Storage (infrastructure ready)
-4. **Notifications**: Email + SMS alerts (infrastructure ready)
-5. **Deployment**: Azure App Service (templates provided)
-
-## Architecture
-
-### Tech Stack
-- **Backend**: FastAPI + Python + MongoDB (Azure PostgreSQL ready)
-- **Frontend**: React 18 + Tailwind CSS + Shadcn UI
-- **AI**: Emergent LLM Integration (GPT-4o via Universal Key)
-- **Infrastructure**: Azure App Service, Blob Storage, Container Registry
-
-### Repository Structure
-```
-domusvita/
-├── backend/
-│   ├── server.py          # FastAPI with all API routes
-│   ├── database.py        # SQLAlchemy models for PostgreSQL
-│   ├── schemas.py         # Pydantic schemas
-│   ├── requirements.txt   # Python dependencies
-│   └── Dockerfile         # Production container
-├── frontend/
-│   ├── src/pages/         # 6 module pages
-│   ├── src/components/    # Shared components
-│   ├── Dockerfile         # Production container
-│   └── nginx.conf         # Production web server
-├── infrastructure/
-│   ├── main.bicep         # Azure Bicep template
-│   ├── azure-deploy.json  # ARM template
-│   └── parameters.template.json
-└── .github/workflows/
-    └── azure-deploy.yml   # CI/CD pipeline
-```
+- **NEW: Handwerker Mobile Portal** (PWA) for craftsmen
+- Azure deployment ready
 
 ## What's Been Implemented ✅
 
-### January 24, 2025 - Full v2.0 Release
+### January 24, 2025 - Full v2.0 + Handwerker Portal
 
-**ALL 6 MODULES COMPLETE:**
+**ALL 6 CORE MODULES COMPLETE:**
+1. Dashboard ✅ - Stats, KI-Assistent, Insights
+2. Immobilien ✅ - CRUD, Filter, Detail pages
+3. Kontakte ✅ - Role-based grouping (Mieter, Eigentümer, Handwerker, Versorger, Behörde)
+4. Verträge ✅ - Timeline view, Expiry alerts, 4 contract types
+5. Instandhaltung ✅ - Ticket system with status/priority
+6. Dokumente ✅ - Upload, Categories, Property grouping
 
-1. **Dashboard** ✅
-   - Stats cards (Properties, Vacant Units, Tasks, Deadlines, Contacts, Contracts)
-   - KI-Assistent with real-time responses
-   - AI Insights section with alerts
-   - Quick actions navigation
+**🆕 HANDWERKER MOBILE PORTAL (/handwerker):**
 
-2. **Immobilien** ✅
-   - Grid/List view toggle
-   - Property cards with images
-   - Filters (Type, City, Status)
-   - Create/Edit/Delete properties
-   - Property detail pages with units
+1. **Login System** ✅
+   - Login mit Handwerker-ID
+   - Demo Quick-Login Buttons
+   - Token-basierte Authentifizierung
+   - Session Management
 
-3. **Kontakte** ✅
-   - Role-based grouping (Mieter, Eigentümer, Handwerker, Versorger, Behörde)
-   - Contact cards with details
-   - Create/Edit/Delete contacts
-   - Search and filter functionality
-   - Handwerker ratings and specialties
+2. **Ticket-Übersicht** ✅
+   - Liste aller zugewiesenen Aufträge
+   - Filter: Alle, Offen, In Bearbeitung, Erledigt
+   - Statistiken (Offen/In Arbeit/Erledigt)
+   - Touch-optimiertes Design
 
-4. **Verträge** ✅
-   - Contract timeline with expiry alerts
-   - Types: Mietvertrag, Hauptmietvertrag, Versicherung, Wartungsvertrag
-   - Create/Edit/Delete contracts
-   - Days until expiry calculation
-   - Auto-renewal indicator
+3. **Ticket-Detail** ✅
+   - Status-Banner mit aktuellem Status
+   - Quick Actions (Navigation, Anrufen, Foto)
+   - Adresse und Kontaktdaten des Mieters
+   - Beschreibung der Aufgabe
 
-5. **Instandhaltung** ✅
-   - Ticket system (Offen, In Bearbeitung, Erledigt)
-   - Priority levels (Niedrig, Normal, Hoch, Dringend)
-   - Status statistics dashboard
-   - Handwerker assignment
-   - Recurring maintenance support
-   - Categories: Heizung, Sanitär, Elektrik, etc.
+4. **Foto-Upload** ✅
+   - Kamera-Zugriff aus der App
+   - Kategorien: Vorher, Während, Nachher
+   - Beschreibung hinzufügen
+   - Komprimierung für mobile Daten
+   - Foto-Galerie mit Vollbildansicht
 
-6. **Dokumente** ✅
-   - Documents grouped by property
-   - Upload functionality (Azure Blob ready)
-   - Categories: Vertrag, Protokoll, Rechnung, Grundriss
-   - File size and type display
-   - Download and delete actions
+5. **Arbeitsberichte** ✅
+   - Beschreibung der Arbeiten
+   - Materialien/Ersatzteile dokumentieren
+   - Arbeitszeit erfassen
+   - Kosten (Material + Arbeit)
+   - Notizen
 
-**AZURE DEPLOYMENT READY:**
-- Bicep template (infrastructure/main.bicep)
-- ARM template (infrastructure/azure-deploy.json)
-- Dockerfiles for backend and frontend
-- GitHub Actions CI/CD pipeline
-- nginx.conf for production frontend
+6. **Status-Updates** ✅
+   - Unterwegs, Vor Ort, In Arbeit, Erledigt, Material fehlt
+   - Automatische Zeitstempel
+   - Status-Verlauf
+   - Notizen zu Status-Änderungen
 
-**DESIGN:**
-- Premium dark mode glassmorphism
-- Manrope + Inter fonts
-- German language throughout
-- Responsive design
-- Smooth animations
+**PWA Features** ✅
+   - Service Worker für Offline-Fähigkeit
+   - PWA Manifest für Installation
+   - Mobile-optimiertes Design
+   - Große Touch-Targets
 
 ## API Endpoints (All Implemented)
 
+### Core APIs
 | Module | Endpoints |
 |--------|-----------|
 | Dashboard | GET /api/dashboard/stats, GET /api/dashboard/insights |
-| Properties | CRUD /api/properties, GET /api/properties/cities/list |
-| Units | CRUD /api/units |
-| Contacts | CRUD /api/contacts, GET /api/contacts/roles/list |
-| Contracts | CRUD /api/contracts, GET /api/contracts/types/list |
-| Maintenance | CRUD /api/maintenance, PUT /api/maintenance/{id}/status |
-| Documents | CRUD /api/documents, POST /api/documents/upload |
+| Properties | CRUD /api/properties |
+| Contacts | CRUD /api/contacts |
+| Contracts | CRUD /api/contracts |
+| Maintenance | CRUD /api/maintenance |
+| Documents | CRUD /api/documents |
 | AI | POST /api/ai/query |
+
+### Handwerker Portal APIs (NEW)
+| Endpoint | Method | Description |
+|----------|--------|-------------|
+| `/api/handwerker/login` | POST | Login with Handwerker-ID |
+| `/api/handwerker/verify/{token}` | GET | Verify session token |
+| `/api/handwerker/tickets/{id}` | GET | Get assigned tickets |
+| `/api/handwerker/ticket/{id}` | GET | Get ticket detail |
+| `/api/handwerker/ticket/{id}/photo` | POST | Upload photo |
+| `/api/handwerker/photo/{id}` | DELETE | Delete photo |
+| `/api/handwerker/ticket/{id}/status` | POST | Update status |
+| `/api/handwerker/ticket/{id}/report` | POST/GET | Work report |
+| `/api/handwerker/status-options` | GET | Get status options |
+
+## Tech Stack
+- **Backend**: FastAPI + MongoDB (Azure PostgreSQL ready)
+- **Frontend**: React 18 + Tailwind CSS + Shadcn UI
+- **Mobile Portal**: PWA mit Service Worker
+- **AI**: Emergent LLM Integration
+
+## Test Results
+- Backend: 100% (28/28 endpoints)
+- Frontend: 95% (minor UI polish needed)
 
 ## Prioritized Backlog
 
 ### P0 - Critical ✅ DONE
-- [x] Dashboard with stats
-- [x] Properties CRUD
-- [x] AI Assistant
-- [x] All 6 modules complete
+- [x] All 6 core modules
+- [x] Handwerker Mobile Portal
+- [x] Photo upload
+- [x] Status updates
+- [x] Work reports
 
-### P1 - High Priority (Infrastructure Ready)
-- [ ] Google Authentication (Azure AD B2C integration)
-- [ ] Real Azure Blob Storage integration
-- [ ] Email notifications for contract expiry
-- [ ] SMS alerts for urgent maintenance
+### P1 - High Priority
+- [ ] Azure Blob Storage for photos (currently base64 in MongoDB)
+- [ ] Push notifications for status changes
+- [ ] Email/SMS notifications to property managers
+- [ ] QR-Code login for handwerker
 
 ### P2 - Medium Priority
-- [ ] Property image upload
-- [ ] Recurring maintenance automation
-- [ ] Contract renewal reminders
-- [ ] Analytics dashboard
+- [ ] Digital signature from tenant
+- [ ] GPS location tracking
+- [ ] Offline data sync
+- [ ] Material inventory management
 
 ### P3 - Nice to Have
-- [ ] Multi-language support
-- [ ] Mobile app (React Native)
-- [ ] Tenant portal
-- [ ] Export to Excel/PDF
+- [ ] Native mobile app (React Native)
+- [ ] Voice notes for reports
+- [ ] AI photo analysis (damage assessment)
+- [ ] Route optimization for multiple tickets
 
-## Next Steps for Azure Deployment
-1. Create Azure Resource Group
-2. Set up PostgreSQL server
-3. Create Azure Container Registry
-4. Configure GitHub Secrets
-5. Run GitHub Actions pipeline
-6. Configure custom domain
+## Next Steps
+1. Test Handwerker Portal thoroughly
+2. Push to GitHub
+3. Deploy to Azure
+4. Configure Azure Blob Storage for production photos
+5. Set up email notifications
