@@ -378,9 +378,10 @@ Antworte immer auf Deutsch und sei hilfreich und präzise."""
             system_message=system_prompt
         )
         
+        user_msg = UserMessage(text=request.query)
         response = await asyncio.to_thread(
             chat.send_message,
-            request.query
+            user_msg
         )
         
         return AIQueryResponse(response=response, success=True)
