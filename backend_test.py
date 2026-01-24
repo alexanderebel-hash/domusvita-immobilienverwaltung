@@ -319,6 +319,43 @@ def main():
     print("\n🤖 Testing AI Assistant...")
     tester.test_ai_query()
     
+    # ==================== HANDWERKER PORTAL TESTS ====================
+    print("\n🔨 Testing Handwerker Portal...")
+    
+    # Test handwerker contacts and login
+    tester.test_get_handwerker_contacts()
+    success, auth_data = tester.test_handwerker_login()
+    
+    if success and auth_data:
+        # Test token verification
+        tester.test_handwerker_verify_token(auth_data)
+        
+        # Test getting tickets
+        success, ticket_data = tester.test_get_handwerker_tickets(auth_data)
+        
+        if success and ticket_data and ticket_data.get('ticket_id'):
+            # Test ticket detail
+            tester.test_get_handwerker_ticket_detail(ticket_data)
+            
+            # Test status options
+            tester.test_handwerker_status_options()
+            
+            # Test status update
+            tester.test_update_ticket_status(ticket_data)
+            
+            # Test work report creation
+            tester.test_create_work_report(ticket_data)
+            
+            # Test getting work report
+            tester.test_get_work_report(ticket_data)
+            
+            # Test status history
+            tester.test_get_status_history(ticket_data)
+        else:
+            print("⚠️  Warning: No tickets found for handwerker - skipping ticket-specific tests")
+    else:
+        print("⚠️  Warning: Handwerker login failed - skipping handwerker portal tests")
+    
     # Print final results
     print("\n" + "=" * 50)
     print(f"📊 Final Results: {tester.tests_passed}/{tester.tests_run} tests passed")
