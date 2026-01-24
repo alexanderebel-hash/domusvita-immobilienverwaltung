@@ -1,0 +1,108 @@
+{
+  "brand_identity": {
+    "name": "DomusVita",
+    "description": "Premium property management for German care homes and real estate.",
+    "emotional_tone": "Trust, Stability, Care, Premium, Efficiency",
+    "design_philosophy": "Apple-like Glassmorphism, Dark Mode Default, Bento Grids",
+    "target_audience": "German property managers, care home administrators"
+  },
+  "typography": {
+    "headings": {
+      "family": "Manrope",
+      "weights": ["400", "600", "800"],
+      "usage": "Headings, KPIs, Navigation",
+      "import_url": "https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;800&display=swap"
+    },
+    "body": {
+      "family": "Inter",
+      "weights": ["300", "400", "500"],
+      "usage": "Body text, Tables, Inputs",
+      "import_url": "https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500&display=swap"
+    }
+  },
+  "colors": {
+    "mode": "dark",
+    "palette": {
+      "background": "#050505",
+      "foreground": "#FAFAFA",
+      "card": "rgba(255, 255, 255, 0.03)",
+      "card_border": "rgba(255, 255, 255, 0.08)",
+      "primary": "#3B82F6",
+      "primary_foreground": "#FFFFFF",
+      "secondary": "#27272A",
+      "secondary_foreground": "#FAFAFA",
+      "accent": "#10B981",
+      "destructive": "#EF4444",
+      "muted": "#737373"
+    },
+    "glassmorphism": {
+      "base": "bg-white/5 backdrop-blur-xl border border-white/10 shadow-2xl",
+      "hover": "hover:bg-white/10 hover:border-white/20 transition-all duration-300",
+      "active": "active:scale-[0.98]"
+    }
+  },
+  "layout_system": {
+    "spacing": {
+      "container_padding": "p-6 md:p-8 lg:p-12",
+      "element_gap": "gap-6",
+      "section_gap": "gap-12"
+    },
+    "grids": {
+      "dashboard": "grid grid-cols-1 md:grid-cols-8 lg:grid-cols-12 gap-6",
+      "list_view": "grid grid-cols-1 gap-4"
+    },
+    "bento_grid_rules": {
+      "hero": "col-span-full md:col-span-8 lg:col-span-8 row-span-2",
+      "stat": "col-span-2 md:col-span-4 lg:col-span-4",
+      "list": "col-span-full md:col-span-4 lg:col-span-4 row-span-2"
+    }
+  },
+  "components": {
+    "cards": {
+      "style": "glass",
+      "radius": "rounded-2xl",
+      "padding": "p-6"
+    },
+    "buttons": {
+      "primary": "bg-primary text-white hover:bg-primary/90 rounded-full px-6 py-2 font-medium transition-all",
+      "secondary": "bg-white/10 text-white hover:bg-white/20 rounded-full px-6 py-2 font-medium backdrop-blur-md border border-white/5"
+    },
+    "sidebar": {
+      "style": "fixed left-0 top-0 h-full w-64 bg-black/40 backdrop-blur-2xl border-r border-white/10 z-50",
+      "item_active": "bg-white/10 text-white border-r-2 border-primary",
+      "item_inactive": "text-muted-foreground hover:text-white hover:bg-white/5"
+    }
+  },
+  "assets": {
+    "images": {
+      "properties": [
+        "https://images.unsplash.com/photo-1664813954641-1ffcb7b55fd1?crop=entropy&cs=srgb&fm=jpg&q=85",
+        "https://images.unsplash.com/photo-1664813953897-ada06817c48c?crop=entropy&cs=srgb&fm=jpg&q=85",
+        "https://images.unsplash.com/photo-1664813953310-ea2953c0ec99?crop=entropy&cs=srgb&fm=jpg&q=85"
+      ],
+      "people": [
+        "https://images.unsplash.com/photo-1656313826909-1f89d1702a81?crop=entropy&cs=srgb&fm=jpg&q=85",
+        "https://images.unsplash.com/photo-1656313815939-6373a497bbf2?crop=entropy&cs=srgb&fm=jpg&q=85",
+        "https://images.unsplash.com/photo-1758518731468-98e90ffd7430?crop=entropy&cs=srgb&fm=jpg&q=85"
+      ]
+    },
+    "icons": "Lucide React (already installed)"
+  },
+  "instructions_to_main_agent": [
+    "1. SETUP: Import Manrope and Inter fonts in index.css immediately.",
+    "2. THEME: Force dark mode in tailwind.config.js or index.html. The app should feel like a premium dark mode experience.",
+    "3. GLASSMORPHISM: Do not use solid backgrounds for cards. Use the 'glassmorphism' utility classes defined in colors section.",
+    "4. LANGUAGE: All text MUST be in German (Dashboard, Immobilien, Kontakte, etc.).",
+    "5. DASHBOARD: Implement the Bento Grid layout. Use 'Recharts' for any charts, styled minimally (hide axes lines, use gradients).",
+    "6. SIDEBAR: Create a persistent vertical sidebar navigation.",
+    "7. ANIMATION: Add 'framer-motion' for page transitions and hover effects if possible, or use Tailwind 'transition-all duration-300'.",
+    "8. DATA-TESTID: Add data-testid attributes to all interactive elements (buttons, inputs, cards)."
+  ],
+  "universal_guidelines": [
+    "Avoid 'AI Slop' - no generic centered layouts.",
+    "Use 2-3x more spacing than typical.",
+    "Never use pure black (#000000) for backgrounds, use #050505 or #0A0A0A.",
+    "Interactive elements must have clear hover states.",
+    "Use 'sonner' for toasts."
+  ]
+}
