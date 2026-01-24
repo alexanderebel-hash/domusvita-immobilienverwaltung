@@ -360,7 +360,7 @@ async def query_ai_assistant(request: AIQueryRequest):
         vacant_units = await db.units.count_documents({"is_vacant": True})
         pending_tasks = await db.maintenance_tickets.count_documents({"status": {"$ne": "Erledigt"}})
         
-        context = f"""Du bist der DomusVita KI-Assistent für Immobilienverwaltung in Deutschland.
+        system_prompt = f"""Du bist der DomusVita KI-Assistent für Immobilienverwaltung in Deutschland.
         
 Aktuelle Daten:
 - Gesamtzahl Immobilien: {total_properties}
@@ -370,12 +370,12 @@ Aktuelle Daten:
 Antworte immer auf Deutsch und sei hilfreich und präzise."""
 
         if request.context:
-            context += f"\n\nZusätzlicher Kontext: {request.context}"
+            system_prompt += f"\n\nZusätzlicher Kontext: {request.context}"
 
-        chat = Chat(
+        chat = LlmChat(
             api_key=EMERGENT_LLM_KEY,
-            model="gpt-5.2",
-            system_prompt=context
+            model="gpt-4o",
+            system_prompt=system_prompt
         )
         
         response = await asyncio.to_thread(
