@@ -1,0 +1,191 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "appName": {
+      "type": "string",
+      "defaultValue": "domusvita",
+      "metadata": {
+        "description": "Name of the application"
+      }
+    },
+    "location": {
+      "type": "string",
+      "defaultValue": "[resourceGroup().location]",
+      "metadata": {
+        "description": "Location for all resources"
+      }
+    },
+    "sku": {
+      "type": "string",
+      "defaultValue": "B1",
+      "allowedValues": ["F1", "B1", "B2", "S1", "S2", "P1V2"],
+      "metadata": {
+        "description": "App Service Plan SKU"
+      }
+    },
+    "databaseServerName": {
+      "type": "string",
+      "metadata": {
+        "description": "Name of existing PostgreSQL server"
+      }
+    },
+    "databaseName": {
+      "type": "string",
+      "defaultValue": "domusvita",
+      "metadata": {
+        "description": "Name of the database"
+      }
+    },
+    "databaseAdminLogin": {
+      "type": "string",
+      "metadata": {
+        "description": "Database admin username"
+      }
+    },
+    "databaseAdminPassword": {
+      "type": "securestring",
+      "metadata": {
+        "description": "Database admin password"
+      }
+    },
+    "emergentLlmKey": {
+      "type": "securestring",
+      "metadata": {
+        "description": "Emergent LLM API Key"
+      }
+    }
+  },
+  "variables": {
+    "appServicePlanName": "[concat(parameters('appName'), '-plan')]",
+    "backendAppName": "[concat(parameters('appName'), '-api')]",
+    "frontendAppName": "[concat(parameters('appName'), '-web')]",
+    "storageAccountName": "[concat(replace(parameters('appName'), '-', ''), 'storage')]",
+    "containerName": "documents"
+  },
+  "resources": [
+    {
+      "type": "Microsoft.Storage/storageAccounts",
+      "apiVersion": "2021-09-01",
+      "name": "[variables('storageAccountName')]",
+      "location": "[parameters('location')]",
+      "sku": {
+        "name": "Standard_LRS"
+      },
+      "kind": "StorageV2",
+      "properties": {
+        "accessTier": "Hot",
+        "supportsHttpsTrafficOnly": true,
+        "allowBlobPublicAccess": false
+      }
+    },
+    {
+      "type": "Microsoft.Storage/storageAccounts/blobServices/containers",
+      "apiVersion": "2021-09-01",
+      "name": "[concat(variables('storageAccountName'), '/default/', variables('containerName'))]",
+      "dependsOn": [
+        "[resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName'))]"
+      ],
+      "properties": {
+        "publicAccess": "None"
+      }
+    },
+    {
+      "type": "Microsoft.Web/serverfarms",
+      "apiVersion": "2021-03-01",
+      "name": "[variables('appServicePlanName')]",
+      "location": "[parameters('location')]",
+      "sku": {
+        "name": "[parameters('sku')]"
+      },
+      "kind": "linux",
+      "properties": {
+        "reserved": true
+      }
+    },
+    {
+      "type": "Microsoft.Web/sites",
+      "apiVersion": "2021-03-01",
+      "name": "[variables('backendAppName')]",
+      "location": "[parameters('location')]",
+      "dependsOn": [
+        "[resourceId('Microsoft.Web/serverfarms', variables('appServicePlanName'))]",
+        "[resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName'))]"
+      ],
+      "kind": "app,linux,container",
+      "properties": {
+        "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', variables('appServicePlanName'))]",
+        "siteConfig": {
+          "linuxFxVersion": "DOCKER|domusvita/backend:latest",
+          "appSettings": [
+            {
+              "name": "DATABASE_URL",
+              "value": "[concat('postgresql+asyncpg://', parameters('databaseAdminLogin'), ':', parameters('databaseAdminPassword'), '@', parameters('databaseServerName'), '.postgres.database.azure.com:5432/', parameters('databaseName'))]"
+            },
+            {
+              "name": "AZURE_STORAGE_CONNECTION_STRING",
+              "value": "[concat('DefaultEndpointsProtocol=https;AccountName=', variables('storageAccountName'), ';AccountKey=', listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName')), '2021-09-01').keys[0].value, ';EndpointSuffix=core.windows.net')]"
+            },
+            {
+              "name": "AZURE_STORAGE_CONTAINER_NAME",
+              "value": "[variables('containerName')]"
+            },
+            {
+              "name": "EMERGENT_LLM_KEY",
+              "value": "[parameters('emergentLlmKey')]"
+            },
+            {
+              "name": "CORS_ORIGINS",
+              "value": "[concat('https://', variables('frontendAppName'), '.azurewebsites.net')]"
+            },
+            {
+              "name": "WEBSITES_PORT",
+              "value": "8000"
+            }
+          ],
+          "alwaysOn": "[not(equals(parameters('sku'), 'F1'))]"
+        },
+        "httpsOnly": true
+      }
+    },
+    {
+      "type": "Microsoft.Web/sites",
+      "apiVersion": "2021-03-01",
+      "name": "[variables('frontendAppName')]",
+      "location": "[parameters('location')]",
+      "dependsOn": [
+        "[resourceId('Microsoft.Web/serverfarms', variables('appServicePlanName'))]",
+        "[resourceId('Microsoft.Web/sites', variables('backendAppName'))]"
+      ],
+      "kind": "app,linux,container",
+      "properties": {
+        "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', variables('appServicePlanName'))]",
+        "siteConfig": {
+          "linuxFxVersion": "DOCKER|domusvita/frontend:latest",
+          "appSettings": [
+            {
+              "name": "REACT_APP_BACKEND_URL",
+              "value": "[concat('https://', variables('backendAppName'), '.azurewebsites.net')]"
+            }
+          ],
+          "alwaysOn": "[not(equals(parameters('sku'), 'F1'))]"
+        },
+        "httpsOnly": true
+      }
+    }
+  ],
+  "outputs": {
+    "frontendUrl": {
+      "type": "string",
+      "value": "[concat('https://', variables('frontendAppName'), '.azurewebsites.net')]"
+    },
+    "backendUrl": {
+      "type": "string",
+      "value": "[concat('https://', variables('backendAppName'), '.azurewebsites.net')]"
+    },
+    "storageAccountName": {
+      "type": "string",
+      "value": "[variables('storageAccountName')]"
+    }
+  }
+}

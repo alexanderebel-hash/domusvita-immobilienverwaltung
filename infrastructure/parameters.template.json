@@ -1,0 +1,33 @@
+# DomusVita - Azure Deployment Parameter Template
+# Copy this file to parameters.json and fill in your values
+
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "appName": {
+      "value": "domusvita"
+    },
+    "location": {
+      "value": "westeurope"
+    },
+    "sku": {
+      "value": "B1"
+    },
+    "databaseServerName": {
+      "value": "YOUR_POSTGRESQL_SERVER_NAME"
+    },
+    "databaseName": {
+      "value": "domusvita"
+    },
+    "databaseAdminLogin": {
+      "value": "YOUR_DB_ADMIN_USERNAME"
+    },
+    "databaseAdminPassword": {
+      "value": "YOUR_DB_ADMIN_PASSWORD"
+    },
+    "emergentLlmKey": {
+      "value": "YOUR_EMERGENT_LLM_KEY"
+    }
+  }
+}
