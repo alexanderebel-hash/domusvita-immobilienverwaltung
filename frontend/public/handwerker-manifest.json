@@ -1,0 +1,26 @@
+{
+  "name": "DomusVita Handwerker",
+  "short_name": "DV Handwerker",
+  "description": "Mobile App für DomusVita Handwerker",
+  "start_url": "/handwerker",
+  "scope": "/handwerker",
+  "display": "standalone",
+  "background_color": "#050505",
+  "theme_color": "#3B82F6",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "/logo192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/logo512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["business", "productivity"]
+}
