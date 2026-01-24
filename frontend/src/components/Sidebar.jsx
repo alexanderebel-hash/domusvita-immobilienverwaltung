@@ -13,10 +13,10 @@ import {
 const navItems = [
   { name: "Dashboard", path: "/", icon: LayoutDashboard },
   { name: "Immobilien", path: "/immobilien", icon: Building2 },
-  { name: "Kontakte", path: "/kontakte", icon: Users, disabled: true },
-  { name: "Verträge", path: "/vertraege", icon: FileText, disabled: true },
-  { name: "Instandhaltung", path: "/instandhaltung", icon: Wrench, disabled: true },
-  { name: "Dokumente", path: "/dokumente", icon: FolderOpen, disabled: true },
+  { name: "Kontakte", path: "/kontakte", icon: Users },
+  { name: "Verträge", path: "/vertraege", icon: FileText },
+  { name: "Instandhaltung", path: "/instandhaltung", icon: Wrench },
+  { name: "Dokumente", path: "/dokumente", icon: FolderOpen },
 ];
 
 export default function Sidebar() {
