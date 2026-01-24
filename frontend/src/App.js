@@ -8,6 +8,9 @@ import Kontakte from "./pages/Kontakte";
 import Vertraege from "./pages/Vertraege";
 import Instandhaltung from "./pages/Instandhaltung";
 import Dokumente from "./pages/Dokumente";
+import HandwerkerLogin from "./pages/handwerker/HandwerkerLogin";
+import HandwerkerTickets from "./pages/handwerker/HandwerkerTickets";
+import HandwerkerTicketDetail from "./pages/handwerker/HandwerkerTicketDetail";
 import "./App.css";
 
 function App() {
@@ -15,6 +18,7 @@ function App() {
     <div className="App min-h-screen bg-[#050505]">
       <BrowserRouter>
         <Routes>
+          {/* Main App Routes */}
           <Route element={<Layout />}>
             <Route path="/" element={<Dashboard />} />
             <Route path="/immobilien" element={<Immobilien />} />
@@ -24,6 +28,11 @@ function App() {
             <Route path="/instandhaltung" element={<Instandhaltung />} />
             <Route path="/dokumente" element={<Dokumente />} />
           </Route>
+          
+          {/* Handwerker Mobile Portal Routes - No Layout */}
+          <Route path="/handwerker" element={<HandwerkerLogin />} />
+          <Route path="/handwerker/tickets" element={<HandwerkerTickets />} />
+          <Route path="/handwerker/ticket/:ticketId" element={<HandwerkerTicketDetail />} />
         </Routes>
       </BrowserRouter>
       <Toaster position="top-right" theme="dark" />
