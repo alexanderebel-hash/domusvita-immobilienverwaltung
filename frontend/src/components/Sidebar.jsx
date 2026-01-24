@@ -47,17 +47,7 @@ export default function Sidebar() {
           const isActive = location.pathname === item.path;
           
           if (item.disabled) {
-            return (
-              <div
-                key={item.name}
-                className="flex items-center gap-3 px-4 py-3 rounded-xl text-white/30 cursor-not-allowed"
-                data-testid={`nav-${item.name.toLowerCase()}-disabled`}
-              >
-                <Icon className="w-5 h-5" />
-                <span className="text-sm font-medium">{item.name}</span>
-                <span className="ml-auto text-[10px] bg-white/10 px-2 py-0.5 rounded-full">Bald</span>
-              </div>
-            );
+            return null; // No disabled items anymore
           }
 
           return (
