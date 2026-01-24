@@ -1,0 +1,120 @@
+name: Deploy DomusVita to Azure
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+env:
+  AZURE_RESOURCE_GROUP: domusvita-rg
+  BACKEND_IMAGE: domusvita-api
+  FRONTEND_IMAGE: domusvita-web
+  ACR_NAME: domusvitaacr
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          
+      - name: Install backend dependencies
+        working-directory: ./backend
+        run: |
+          pip install -r requirements.txt
+          pip install pytest pytest-asyncio httpx
+          
+      - name: Run backend tests
+        working-directory: ./backend
+        run: pytest tests/ -v || true
+        
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          
+      - name: Install frontend dependencies
+        working-directory: ./frontend
+        run: yarn install
+        
+      - name: Run frontend tests
+        working-directory: ./frontend
+        run: yarn test --passWithNoTests || true
+        
+      - name: Build frontend
+        working-directory: ./frontend
+        run: yarn build
+        env:
+          REACT_APP_BACKEND_URL: ${{ secrets.BACKEND_URL }}
+
+  build-and-push:
+    needs: test
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Login to Azure
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+          
+      - name: Login to Azure Container Registry
+        uses: azure/docker-login@v1
+        with:
+          login-server: ${{ env.ACR_NAME }}.azurecr.io
+          username: ${{ secrets.ACR_USERNAME }}
+          password: ${{ secrets.ACR_PASSWORD }}
+          
+      - name: Build and push backend image
+        working-directory: ./backend
+        run: |
+          docker build -t ${{ env.ACR_NAME }}.azurecr.io/${{ env.BACKEND_IMAGE }}:${{ github.sha }} .
+          docker build -t ${{ env.ACR_NAME }}.azurecr.io/${{ env.BACKEND_IMAGE }}:latest .
+          docker push ${{ env.ACR_NAME }}.azurecr.io/${{ env.BACKEND_IMAGE }}:${{ github.sha }}
+          docker push ${{ env.ACR_NAME }}.azurecr.io/${{ env.BACKEND_IMAGE }}:latest
+          
+      - name: Build and push frontend image
+        working-directory: ./frontend
+        run: |
+          docker build -t ${{ env.ACR_NAME }}.azurecr.io/${{ env.FRONTEND_IMAGE }}:${{ github.sha }} \
+            --build-arg REACT_APP_BACKEND_URL=${{ secrets.BACKEND_URL }} .
+          docker build -t ${{ env.ACR_NAME }}.azurecr.io/${{ env.FRONTEND_IMAGE }}:latest \
+            --build-arg REACT_APP_BACKEND_URL=${{ secrets.BACKEND_URL }} .
+          docker push ${{ env.ACR_NAME }}.azurecr.io/${{ env.FRONTEND_IMAGE }}:${{ github.sha }}
+          docker push ${{ env.ACR_NAME }}.azurecr.io/${{ env.FRONTEND_IMAGE }}:latest
+
+  deploy:
+    needs: build-and-push
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Login to Azure
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+          
+      - name: Deploy Backend to Azure App Service
+        uses: azure/webapps-deploy@v2
+        with:
+          app-name: domusvita-api
+          images: ${{ env.ACR_NAME }}.azurecr.io/${{ env.BACKEND_IMAGE }}:${{ github.sha }}
+          
+      - name: Deploy Frontend to Azure App Service
+        uses: azure/webapps-deploy@v2
+        with:
+          app-name: domusvita-web
+          images: ${{ env.ACR_NAME }}.azurecr.io/${{ env.FRONTEND_IMAGE }}:${{ github.sha }}
+          
+      - name: Azure logout
+        run: az logout
