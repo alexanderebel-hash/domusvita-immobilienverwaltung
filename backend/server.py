@@ -379,10 +379,7 @@ Antworte immer auf Deutsch und sei hilfreich und präzise."""
         )
         
         user_msg = UserMessage(text=request.query)
-        response = await asyncio.to_thread(
-            chat.send_message,
-            user_msg
-        )
+        response = await chat.send_message(user_msg)
         
         return AIQueryResponse(response=response, success=True)
     except Exception as e:
