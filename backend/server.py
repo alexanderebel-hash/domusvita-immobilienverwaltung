@@ -374,8 +374,8 @@ Antworte immer auf Deutsch und sei hilfreich und präzise."""
 
         chat = LlmChat(
             api_key=EMERGENT_LLM_KEY,
-            model="gpt-4o",
-            system_prompt=system_prompt
+            session_id=str(uuid.uuid4()),
+            system_message=system_prompt
         )
         
         response = await asyncio.to_thread(
