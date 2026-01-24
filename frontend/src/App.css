@@ -1,34 +1,113 @@
-.App-logo {
-    height: 40vmin;
-    pointer-events: none;
-}
-
-@media (prefers-reduced-motion: no-preference) {
-    .App-logo {
-        animation: App-logo-spin infinite 20s linear;
-    }
-}
-
-.App-header {
-    background-color: #0f0f10;
+/* App-specific styles */
+.App {
     min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    font-size: calc(10px + 2vmin);
-    color: white;
 }
 
-.App-link {
-    color: #61dafb;
+/* Card hover effects */
+.property-card {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-@keyframes App-logo-spin {
-    from {
-        transform: rotate(0deg);
+.property-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+}
+
+/* Status badges */
+.status-badge {
+    @apply px-3 py-1 rounded-full text-xs font-medium;
+}
+
+.status-eigentum {
+    @apply bg-emerald-500/20 text-emerald-400 border border-emerald-500/30;
+}
+
+.status-gemietet {
+    @apply bg-blue-500/20 text-blue-400 border border-blue-500/30;
+}
+
+.status-untervermietet {
+    @apply bg-amber-500/20 text-amber-400 border border-amber-500/30;
+}
+
+/* Type badges */
+.type-badge {
+    @apply px-3 py-1 rounded-full text-xs font-medium bg-white/10 text-white/80;
+}
+
+/* Sidebar active state */
+.sidebar-item-active {
+    @apply bg-white/10 text-white border-r-2 border-blue-500;
+}
+
+/* Input focus styles */
+input:focus, textarea:focus, select:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.5);
+}
+
+/* Glassmorphism card styles */
+.glass-stat-card {
+    background: rgba(255, 255, 255, 0.03);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 1rem;
+    transition: all 0.3s ease;
+}
+
+.glass-stat-card:hover {
+    background: rgba(255, 255, 255, 0.06);
+    border-color: rgba(255, 255, 255, 0.15);
+}
+
+/* AI Chat styles */
+.ai-chat-container {
+    background: linear-gradient(145deg, rgba(59, 130, 246, 0.1), rgba(16, 185, 129, 0.05));
+}
+
+/* Quick action buttons */
+.quick-action-btn {
+    @apply flex items-center gap-3 p-4 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 hover:border-white/20 transition-all duration-300 cursor-pointer;
+}
+
+.quick-action-btn:hover {
+    transform: translateY(-2px);
+}
+
+/* Insight cards */
+.insight-card {
+    @apply flex items-start gap-3 p-4 rounded-xl transition-all duration-300;
+}
+
+.insight-warning {
+    @apply bg-amber-500/10 border border-amber-500/20;
+}
+
+.insight-info {
+    @apply bg-blue-500/10 border border-blue-500/20;
+}
+
+.insight-success {
+    @apply bg-emerald-500/10 border border-emerald-500/20;
+}
+
+/* Loading skeleton */
+@keyframes shimmer {
+    0% {
+        background-position: -200% 0;
     }
-    to {
-        transform: rotate(360deg);
+    100% {
+        background-position: 200% 0;
     }
+}
+
+.skeleton {
+    background: linear-gradient(
+        90deg,
+        rgba(255, 255, 255, 0.05) 25%,
+        rgba(255, 255, 255, 0.1) 50%,
+        rgba(255, 255, 255, 0.05) 75%
+    );
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite;
 }
