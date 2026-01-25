@@ -1388,7 +1388,7 @@ async def get_klienten(status: Optional[str] = None, wg_id: Optional[str] = None
     
     # Enhance with age and room info
     for k in klienten:
-        k["id"] = str(k.get("_id", k.get("id", "")))
+        # Keep original id field, just remove MongoDB _id
         if "_id" in k:
             del k["_id"]
         
