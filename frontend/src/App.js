@@ -11,6 +11,10 @@ import Dokumente from "./pages/Dokumente";
 import HandwerkerLogin from "./pages/handwerker/HandwerkerLogin";
 import HandwerkerTickets from "./pages/handwerker/HandwerkerTickets";
 import HandwerkerTicketDetail from "./pages/handwerker/HandwerkerTicketDetail";
+// Klientenmanagement
+import PflegeWGs from "./pages/PflegeWGs";
+import PflegeWGDetail from "./pages/PflegeWGDetail";
+import KlientenPipeline from "./pages/KlientenPipeline";
 import "./App.css";
 
 function App() {
@@ -27,6 +31,10 @@ function App() {
             <Route path="/vertraege" element={<Vertraege />} />
             <Route path="/instandhaltung" element={<Instandhaltung />} />
             <Route path="/dokumente" element={<Dokumente />} />
+            {/* Klientenmanagement Routes */}
+            <Route path="/pflege-wgs" element={<PflegeWGs />} />
+            <Route path="/pflege-wgs/:wgId" element={<PflegeWGDetail />} />
+            <Route path="/pflege-wgs/pipeline" element={<KlientenPipeline />} />
           </Route>
           
           {/* Handwerker Mobile Portal Routes - No Layout */}
