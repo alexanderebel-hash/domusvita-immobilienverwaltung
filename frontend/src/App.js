@@ -36,9 +36,11 @@ function App() {
             <Route path="/dokumente" element={<Dokumente />} />
             {/* Klientenmanagement Routes */}
             <Route path="/pflege-wgs" element={<PflegeWGs />} />
-            <Route path="/pflege-wgs/:wgId" element={<PflegeWGDetail />} />
             <Route path="/pflege-wgs/pipeline" element={<KlientenPipeline />} />
+            <Route path="/pflege-wgs/besichtigungen" element={<Besichtigungen />} />
+            <Route path="/pflege-wgs/klienten/neu" element={<NeuerKlient />} />
             <Route path="/pflege-wgs/klienten/:klientId" element={<KlientDetail />} />
+            <Route path="/pflege-wgs/:wgId" element={<PflegeWGDetail />} />
           </Route>
           
           {/* Handwerker Mobile Portal Routes - No Layout */}
