@@ -8,6 +8,7 @@ import {
   FolderOpen,
   Settings,
   Sparkles,
+  Heart,
 } from "lucide-react";
 
 const navItems = [
@@ -17,6 +18,10 @@ const navItems = [
   { name: "Verträge", path: "/vertraege", icon: FileText },
   { name: "Instandhaltung", path: "/instandhaltung", icon: Wrench },
   { name: "Dokumente", path: "/dokumente", icon: FolderOpen },
+];
+
+const pflegeItems = [
+  { name: "Pflege-WGs", path: "/pflege-wgs", icon: Heart },
 ];
 
 export default function Sidebar() {
