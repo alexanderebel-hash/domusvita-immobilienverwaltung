@@ -415,3 +415,218 @@ class HandwerkerTicketResponse(BaseModel):
     
     class Config:
         from_attributes = True
+
+
+# ==================== KLIENTENMANAGEMENT SCHEMAS ====================
+
+class KlientStatusEnum(str, Enum):
+    NEU = "neu"
+    ERSTGESPRAECH = "erstgespraech"
+    BESICHTIGUNG_GEPLANT = "besichtigung_geplant"
+    UNTERLAGEN_GESENDET = "unterlagen_gesendet"
+    ENTSCHEIDUNG_AUSSTEHEND = "entscheidung_ausstehend"
+    ZUSAGE = "zusage"
+    EINZUG_GEPLANT = "einzug_geplant"
+    BEWOHNER = "bewohner"
+    AUSZUG_GEPLANT = "auszug_geplant"
+    AUSGEZOGEN = "ausgezogen"
+    VERSTORBEN = "verstorben"
+    ABGESAGT = "abgesagt"
+
+class PflegegradEnum(str, Enum):
+    KEINER = "keiner"
+    BEANTRAGT = "beantragt"
+    GRAD_1 = "1"
+    GRAD_2 = "2"
+    GRAD_3 = "3"
+    GRAD_4 = "4"
+    GRAD_5 = "5"
+
+class DringlichkeitEnum(str, Enum):
+    SOFORT = "sofort"
+    VIER_WOCHEN = "4_wochen"
+    DREI_MONATE = "3_monate"
+    FLEXIBEL = "flexibel"
+
+class ZimmerStatusEnum(str, Enum):
+    FREI = "frei"
+    BELEGT = "belegt"
+    RESERVIERT = "reserviert"
+    RENOVIERUNG = "renovierung"
+
+class KommunikationTypEnum(str, Enum):
+    EMAIL_EIN = "email_ein"
+    EMAIL_AUS = "email_aus"
+    ANRUF_EIN = "anruf_ein"
+    ANRUF_AUS = "anruf_aus"
+    WHATSAPP_EIN = "whatsapp_ein"
+    WHATSAPP_AUS = "whatsapp_aus"
+    NOTIZ = "notiz"
+    BESICHTIGUNG = "besichtigung"
+
+# Pflege-WG Schemas
+class PflegeWGBase(BaseModel):
+    kurzname: str
+    kapazitaet: int = 8
+    grundriss_url: Optional[str] = None
+    konzept_url: Optional[str] = None
+    preisliste_url: Optional[str] = None
+    beschreibung: Optional[str] = None
+
+class PflegeWGResponse(PflegeWGBase):
+    id: str
+    property_id: str
+    property_name: Optional[str] = None
+    property_address: Optional[str] = None
+    freie_zimmer: int = 0
+    belegte_zimmer: int = 0
+    reservierte_zimmer: int = 0
+    created_at: datetime
+    
+    class Config:
+        from_attributes = True
+
+# Zimmer Schemas
+class ZimmerBase(BaseModel):
+    nummer: str
+    name: Optional[str] = None
+    flaeche_qm: Optional[float] = None
+    status: str = "frei"
+    position_x: int = 0
+    position_y: int = 0
+    breite: int = 100
+    hoehe: int = 100
+    notizen: Optional[str] = None
+
+class ZimmerCreate(ZimmerBase):
+    pflege_wg_id: str
+
+class ZimmerUpdate(BaseModel):
+    name: Optional[str] = None
+    flaeche_qm: Optional[float] = None
+    status: Optional[str] = None
+    position_x: Optional[int] = None
+    position_y: Optional[int] = None
+    breite: Optional[int] = None
+    hoehe: Optional[int] = None
+    notizen: Optional[str] = None
+
+class ZimmerResponse(ZimmerBase):
+    id: str
+    pflege_wg_id: str
+    aktueller_bewohner_id: Optional[str] = None
+    bewohner_name: Optional[str] = None
+    bewohner_alter: Optional[int] = None
+    bewohner_pflegegrad: Optional[str] = None
+    einzugsdatum: Optional[datetime] = None
+    
+    class Config:
+        from_attributes = True
+
+# Klient Schemas
+class KlientBase(BaseModel):
+    vorname: str
+    nachname: str
+    geburtsdatum: Optional[datetime] = None
+    geschlecht: Optional[str] = None
+    pflegegrad: str = "keiner"
+    besonderheiten: Optional[str] = None
+    diagnosen: Optional[str] = None
+    kontakt_name: Optional[str] = None
+    kontakt_beziehung: Optional[str] = None
+    kontakt_telefon: Optional[str] = None
+    kontakt_email: Optional[str] = None
+    anfrage_quelle: str = "email"
+    vermittler: Optional[str] = None
+    dringlichkeit: str = "flexibel"
+    bevorzugte_wgs: List[str] = []
+
+class KlientCreate(KlientBase):
+    pass
+
+class KlientUpdate(BaseModel):
+    vorname: Optional[str] = None
+    nachname: Optional[str] = None
+    geburtsdatum: Optional[datetime] = None
+    geschlecht: Optional[str] = None
+    pflegegrad: Optional[str] = None
+    besonderheiten: Optional[str] = None
+    diagnosen: Optional[str] = None
+    kontakt_name: Optional[str] = None
+    kontakt_beziehung: Optional[str] = None
+    kontakt_telefon: Optional[str] = None
+    kontakt_email: Optional[str] = None
+    status: Optional[str] = None
+    anfrage_quelle: Optional[str] = None
+    vermittler: Optional[str] = None
+    dringlichkeit: Optional[str] = None
+    bevorzugte_wgs: Optional[List[str]] = None
+    zimmer_id: Optional[str] = None
+    einzugsdatum: Optional[datetime] = None
+    auszugsdatum: Optional[datetime] = None
+    auszugsgrund: Optional[str] = None
+
+class KlientResponse(KlientBase):
+    id: str
+    status: str
+    foto_url: Optional[str] = None
+    zimmer_id: Optional[str] = None
+    zimmer_nummer: Optional[str] = None
+    wg_name: Optional[str] = None
+    einzugsdatum: Optional[datetime] = None
+    auszugsdatum: Optional[datetime] = None
+    anfrage_am: datetime
+    created_at: datetime
+    updated_at: datetime
+    alter: Optional[int] = None
+    
+    class Config:
+        from_attributes = True
+
+# Kommunikation Schemas
+class KommunikationCreate(BaseModel):
+    klient_id: str
+    typ: str
+    betreff: Optional[str] = None
+    inhalt: str
+    anhaenge: List[str] = []
+
+class KommunikationResponse(BaseModel):
+    id: str
+    klient_id: str
+    typ: str
+    betreff: Optional[str] = None
+    inhalt: str
+    anhaenge: List[str] = []
+    erstellt_von_name: Optional[str] = None
+    erstellt_am: datetime
+    
+    class Config:
+        from_attributes = True
+
+# Aktivität Schemas
+class AktivitaetResponse(BaseModel):
+    id: str
+    klient_id: str
+    benutzer_name: Optional[str] = None
+    aktion: str
+    vorher_wert: Optional[str] = None
+    nachher_wert: Optional[str] = None
+    timestamp: datetime
+    
+    class Config:
+        from_attributes = True
+
+# Pipeline Stats
+class PipelineStats(BaseModel):
+    status: str
+    anzahl: int
+    dringend: int = 0
+    
+class KlientenDashboard(BaseModel):
+    gesamt_klienten: int
+    bewohner: int
+    interessenten: int
+    freie_zimmer: int
+    pipeline: List[PipelineStats]
+    handlungsbedarf: List[dict]
