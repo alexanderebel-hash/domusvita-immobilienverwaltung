@@ -46,7 +46,8 @@ export default function Sidebar() {
       </div>
 
       {/* Navigation */}
-      <nav className="flex-1 p-4 space-y-1">
+      <nav className="flex-1 p-4 space-y-1 overflow-y-auto">
+        {/* Hauptnavigation */}
         {navItems.map((item) => {
           const Icon = item.icon;
           const isActive = location.pathname === item.path;
@@ -71,6 +72,33 @@ export default function Sidebar() {
             </NavLink>
           );
         })}
+        
+        {/* Pflege-WGs Sektion */}
+        <div className="pt-4 mt-4 border-t border-white/10">
+          <p className="px-4 py-2 text-xs font-semibold text-white/40 uppercase tracking-wider">
+            Klientenmanagement
+          </p>
+          {pflegeItems.map((item) => {
+            const Icon = item.icon;
+            const isActive = location.pathname.startsWith(item.path);
+
+            return (
+              <NavLink
+                key={item.name}
+                to={item.path}
+                data-testid={`nav-${item.name.toLowerCase().replace('-', '')}`}
+                className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 ${
+                  isActive
+                    ? "bg-gradient-to-r from-pink-500/20 to-purple-500/20 text-white border-r-2 border-pink-500"
+                    : "text-white/60 hover:text-white hover:bg-white/5"
+                }`}
+              >
+                <Icon className={`w-5 h-5 ${isActive ? 'text-pink-400' : ''}`} />
+                <span className="text-sm font-medium">{item.name}</span>
+              </NavLink>
+            );
+          })}
+        </div>
       </nav>
 
       {/* AI Assistant Teaser */}
