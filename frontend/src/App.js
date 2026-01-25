@@ -16,6 +16,8 @@ import PflegeWGs from "./pages/PflegeWGs";
 import PflegeWGDetail from "./pages/PflegeWGDetail";
 import KlientenPipeline from "./pages/KlientenPipeline";
 import KlientDetail from "./pages/KlientDetail";
+import NeuerKlient from "./pages/NeuerKlient";
+import Besichtigungen from "./pages/Besichtigungen";
 import "./App.css";
 
 function App() {
