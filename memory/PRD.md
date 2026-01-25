@@ -10,24 +10,37 @@ Build "DomusVita" - a premium property management app for German care homes with
 
 ## What's Been Implemented ✅
 
+### January 24, 2025 - v2.3 Echte Bewohnerdaten + Klienten-Detailansicht
+
+**ECHTE BEWOHNERDATEN INTEGRIERT:**
+- ✅ 34 echte Bewohner aus Excel-Import
+- ✅ 5 Pflege-WGs mit korrekten Kapazitäten
+- ✅ 5 freie Zimmer insgesamt
+
+**BELEGUNG (ECHTE DATEN):**
+| WG | Belegt | Kapazität | Frei |
+|----|--------|-----------|------|
+| Sterndamm | 10 | 10 | 0 |
+| Kupferkessel | 8 | 9 | 1 |
+| Kupferkessel Klein | 3 | 4 | 1 |
+| Drachenwiese | 11 | 12 | 1 |
+| Drachenblick | 2 | 4 | 2 |
+
+**KLIENTEN-DETAILANSICHT (Phase 2) COMPLETE:**
+- ✅ Übersicht-Tab: Persönliche Daten, Kontaktperson, Anfrage-Details, Wohnsituation
+- ✅ Kommunikation-Tab: Verlauf aller Interaktionen
+- ✅ Dokumente-Tab: Verträge, Vollmachten etc.
+- ✅ Verlauf-Tab: Aktivitätsprotokoll
+- ✅ Quick Actions: Anrufen, E-Mail, Neuer Eintrag
+- ✅ Status-Änderung per Klick auf Badge
+
 ### January 24, 2025 - v2.2 Klientenmanagement
 
-**NEW MODULE: KLIENTENMANAGEMENT COMPLETE:**
+**KLIENTENMANAGEMENT PHASE 1 COMPLETE:**
 - ✅ Pflege-WGs Übersicht mit 5 ambulant betreuten Wohngemeinschaften
 - ✅ Interaktive Grundrisse mit klickbaren Zimmern (echte Grundriss-Bilder)
 - ✅ Klienten-Pipeline (Kanban-Board) mit Drag & Drop
 - ✅ Dashboard-Statistiken für Pflege-WGs
-- ✅ 23 Zimmer mit Position für Grundriss-Overlay
-- ✅ 8 Beispiel-Klienten (3 Bewohner, 5 Interessenten)
-
-**5 PFLEGE-WGS:**
-| Name | Adresse | Kapazität | Grundriss |
-|------|---------|-----------|-----------|
-| Sterndamm | Sterndamm 10, 12109 Berlin | 3 Zimmer | ✅ |
-| Kupferkessel | Baumschulenstraße 64, 12437 Berlin | 6 Zimmer | - |
-| Kupferkessel Klein | Baumschulenstraße 64, 12437 Berlin | 4 Zimmer | ✅ |
-| Drachenwiese | Rudower Straße 228, 12557 Berlin | 12 Zimmer | ✅ |
-| Drachenblick | Rudower Straße 226, 12557 Berlin | 4 Zimmer | ✅ |
 
 ### January 24, 2025 - v2.1 Real Data Integration
 
