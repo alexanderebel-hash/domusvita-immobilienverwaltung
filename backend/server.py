@@ -1706,36 +1706,83 @@ async def seed_klienten_data():
     if existing > 0:
         return {"message": "Klientendaten bereits vorhanden", "zimmer_count": existing}
     
-    # Seed rooms for each WG
-    zimmer_data = [
-        # Sterndamm (3 Zimmer)
-        {"id": generate_id(), "pflege_wg_id": "wg-sterndamm", "nummer": "1", "name": "Zimmer 1", "flaeche_qm": 18.0, "status": "belegt", "position_x": 450, "position_y": 550, "breite": 200, "hoehe": 250},
-        {"id": generate_id(), "pflege_wg_id": "wg-sterndamm", "nummer": "2", "name": "Zimmer 2", "flaeche_qm": 20.0, "status": "belegt", "position_x": 450, "position_y": 150, "breite": 200, "hoehe": 300},
-        {"id": generate_id(), "pflege_wg_id": "wg-sterndamm", "nummer": "3", "name": "Zimmer 3", "flaeche_qm": 22.0, "status": "frei", "position_x": 200, "position_y": 50, "breite": 180, "hoehe": 200},
-        # Kupferkessel Klein (4 Zimmer)
-        {"id": generate_id(), "pflege_wg_id": "wg-kupferkessel-klein", "nummer": "1", "name": "Zimmer 1", "flaeche_qm": 16.0, "status": "belegt", "position_x": 550, "position_y": 550, "breite": 150, "hoehe": 200},
-        {"id": generate_id(), "pflege_wg_id": "wg-kupferkessel-klein", "nummer": "2", "name": "Zimmer 2", "flaeche_qm": 18.0, "status": "frei", "position_x": 480, "position_y": 180, "breite": 150, "hoehe": 200},
-        {"id": generate_id(), "pflege_wg_id": "wg-kupferkessel-klein", "nummer": "3", "name": "Zimmer 3", "flaeche_qm": 17.0, "status": "belegt", "position_x": 150, "position_y": 180, "breite": 150, "hoehe": 200},
-        {"id": generate_id(), "pflege_wg_id": "wg-kupferkessel-klein", "nummer": "4", "name": "Zimmer 4", "flaeche_qm": 15.0, "status": "frei", "position_x": 100, "position_y": 480, "breite": 120, "hoehe": 180},
-        # Drachenblick (4 Zimmer)
-        {"id": generate_id(), "pflege_wg_id": "wg-drachenblick", "nummer": "1", "name": "Zimmer 1", "flaeche_qm": 14.0, "status": "belegt", "position_x": 500, "position_y": 450, "breite": 150, "hoehe": 180},
-        {"id": generate_id(), "pflege_wg_id": "wg-drachenblick", "nummer": "2", "name": "Zimmer 2", "flaeche_qm": 16.0, "status": "belegt", "position_x": 500, "position_y": 150, "breite": 150, "hoehe": 200},
-        {"id": generate_id(), "pflege_wg_id": "wg-drachenblick", "nummer": "3", "name": "Zimmer 3", "flaeche_qm": 15.0, "status": "frei", "position_x": 120, "position_y": 150, "breite": 150, "hoehe": 200},
-        {"id": generate_id(), "pflege_wg_id": "wg-drachenblick", "nummer": "4", "name": "Zimmer 4", "flaeche_qm": 13.0, "status": "frei", "position_x": 100, "position_y": 400, "breite": 130, "hoehe": 180},
-        # Drachenwiese (12 Zimmer)
-        {"id": generate_id(), "pflege_wg_id": "wg-drachenwiese", "nummer": "1", "name": "Zimmer 1", "flaeche_qm": 24.5, "status": "belegt", "position_x": 80, "position_y": 120, "breite": 120, "hoehe": 100},
-        {"id": generate_id(), "pflege_wg_id": "wg-drachenwiese", "nummer": "2", "name": "Zimmer 2", "flaeche_qm": 22.0, "status": "belegt", "position_x": 80, "position_y": 230, "breite": 100, "hoehe": 90},
-        {"id": generate_id(), "pflege_wg_id": "wg-drachenwiese", "nummer": "3", "name": "Zimmer 3", "flaeche_qm": 17.6, "status": "belegt", "position_x": 80, "position_y": 330, "breite": 100, "hoehe": 85},
-        {"id": generate_id(), "pflege_wg_id": "wg-drachenwiese", "nummer": "4", "name": "Zimmer 4", "flaeche_qm": 17.1, "status": "frei", "position_x": 80, "position_y": 425, "breite": 100, "hoehe": 85},
-        {"id": generate_id(), "pflege_wg_id": "wg-drachenwiese", "nummer": "5", "name": "Zimmer 5", "flaeche_qm": 17.1, "status": "belegt", "position_x": 80, "position_y": 520, "breite": 100, "hoehe": 85},
-        {"id": generate_id(), "pflege_wg_id": "wg-drachenwiese", "nummer": "6", "name": "Zimmer 6", "flaeche_qm": 20.3, "status": "belegt", "position_x": 550, "position_y": 120, "breite": 110, "hoehe": 95},
-        {"id": generate_id(), "pflege_wg_id": "wg-drachenwiese", "nummer": "7", "name": "Zimmer 7", "flaeche_qm": 20.3, "status": "belegt", "position_x": 550, "position_y": 225, "breite": 110, "hoehe": 95},
-        {"id": generate_id(), "pflege_wg_id": "wg-drachenwiese", "nummer": "8", "name": "Zimmer 8", "flaeche_qm": 19.4, "status": "belegt", "position_x": 550, "position_y": 330, "breite": 110, "hoehe": 95},
-        {"id": generate_id(), "pflege_wg_id": "wg-drachenwiese", "nummer": "9", "name": "Zimmer 9", "flaeche_qm": 19.6, "status": "frei", "position_x": 550, "position_y": 435, "breite": 110, "hoehe": 90},
-        {"id": generate_id(), "pflege_wg_id": "wg-drachenwiese", "nummer": "10", "name": "Zimmer 10", "flaeche_qm": 22.4, "status": "belegt", "position_x": 550, "position_y": 535, "breite": 110, "hoehe": 95},
-        {"id": generate_id(), "pflege_wg_id": "wg-drachenwiese", "nummer": "11", "name": "Zimmer 11", "flaeche_qm": 19.3, "status": "belegt", "position_x": 295, "position_y": 535, "breite": 100, "hoehe": 90},
-        {"id": generate_id(), "pflege_wg_id": "wg-drachenwiese", "nummer": "12", "name": "Zimmer 12", "flaeche_qm": 21.9, "status": "belegt", "position_x": 405, "position_y": 535, "breite": 105, "hoehe": 95},
-    ]
+    # Seed rooms for each WG with correct capacities
+    zimmer_data = []
+    
+    # Sterndamm (10 Zimmer)
+    for i in range(1, 11):
+        zimmer_data.append({
+            "id": generate_id(), 
+            "pflege_wg_id": "wg-sterndamm", 
+            "nummer": str(i), 
+            "name": f"Zimmer {i}", 
+            "flaeche_qm": 18.0 + (i % 5),
+            "status": "belegt",  # Alle 10 belegt
+            "position_x": 50 + ((i-1) % 5) * 130,
+            "position_y": 50 + ((i-1) // 5) * 150,
+            "breite": 120, 
+            "hoehe": 130
+        })
+    
+    # Kupferkessel (9 Zimmer) - 8 belegt, 1 frei
+    for i in range(1, 10):
+        zimmer_data.append({
+            "id": generate_id(),
+            "pflege_wg_id": "wg-kupferkessel",
+            "nummer": str(i),
+            "name": f"Zimmer {i}",
+            "flaeche_qm": 17.0 + (i % 4),
+            "status": "belegt" if i <= 8 else "frei",
+            "position_x": 50 + ((i-1) % 3) * 140,
+            "position_y": 50 + ((i-1) // 3) * 140,
+            "breite": 130,
+            "hoehe": 120
+        })
+    
+    # Kupferkessel Klein (4 Zimmer) - 3 belegt, 1 frei
+    for i in range(1, 5):
+        zimmer_data.append({
+            "id": generate_id(),
+            "pflege_wg_id": "wg-kupferkessel-klein",
+            "nummer": str(i),
+            "name": f"Zimmer {i}",
+            "flaeche_qm": 15.0 + (i * 2),
+            "status": "belegt" if i <= 3 else "frei",
+            "position_x": 100 + ((i-1) % 2) * 200,
+            "position_y": 100 + ((i-1) // 2) * 200,
+            "breite": 150,
+            "hoehe": 150
+        })
+    
+    # Drachenwiese (12 Zimmer) - 11 belegt, 1 frei
+    for i in range(1, 13):
+        zimmer_data.append({
+            "id": generate_id(),
+            "pflege_wg_id": "wg-drachenwiese",
+            "nummer": str(i),
+            "name": f"Zimmer {i}",
+            "flaeche_qm": 17.0 + (i % 8),
+            "status": "belegt" if i <= 11 else "frei",
+            "position_x": 80 if i <= 5 else 550,
+            "position_y": 120 + ((i-1) % 6) * 85,
+            "breite": 110,
+            "hoehe": 75
+        })
+    
+    # Drachenblick (4 Zimmer) - 2 belegt, 2 frei
+    for i in range(1, 5):
+        zimmer_data.append({
+            "id": generate_id(),
+            "pflege_wg_id": "wg-drachenblick",
+            "nummer": str(i),
+            "name": f"Zimmer {i}",
+            "flaeche_qm": 13.0 + (i * 2),
+            "status": "belegt" if i <= 2 else "frei",
+            "position_x": 100 + ((i-1) % 2) * 250,
+            "position_y": 150 + ((i-1) // 2) * 200,
+            "breite": 150,
+            "hoehe": 150
+        })
     
     for z in zimmer_data:
         z["created_at"] = to_iso(now())
@@ -1743,49 +1790,86 @@ async def seed_klienten_data():
     
     await db.wg_zimmer.insert_many(zimmer_data)
     
-    # Seed sample clients
-    klienten_data = [
-        # Bewohner
-        {"id": generate_id(), "vorname": "Helga", "nachname": "Bergmann", "geburtsdatum": "1938-03-15", "geschlecht": "weiblich", "pflegegrad": "3", "besonderheiten": "Leichte Demenz, benötigt Rollator", "kontakt_name": "Thomas Bergmann", "kontakt_beziehung": "Sohn", "kontakt_telefon": "+49 30 12345678", "kontakt_email": "thomas.bergmann@email.de", "status": "bewohner", "anfrage_quelle": "empfehlung", "dringlichkeit": "flexibel"},
-        {"id": generate_id(), "vorname": "Werner", "nachname": "Fischer", "geburtsdatum": "1935-07-22", "geschlecht": "männlich", "pflegegrad": "4", "besonderheiten": "Diabetes, Sturzgefahr", "kontakt_name": "Petra Fischer", "kontakt_beziehung": "Tochter", "kontakt_telefon": "+49 30 98765432", "kontakt_email": "p.fischer@email.de", "status": "bewohner", "anfrage_quelle": "vermittlung", "dringlichkeit": "flexibel"},
-        {"id": generate_id(), "vorname": "Irmgard", "nachname": "Schulze", "geburtsdatum": "1940-11-08", "geschlecht": "weiblich", "pflegegrad": "2", "besonderheiten": "Mobil mit Gehhilfe", "kontakt_name": "Klaus Schulze", "kontakt_beziehung": "Ehemann", "kontakt_telefon": "+49 30 55544433", "kontakt_email": "schulze.klaus@email.de", "status": "bewohner", "anfrage_quelle": "email", "dringlichkeit": "flexibel"},
-        # Interessenten
-        {"id": generate_id(), "vorname": "Gerda", "nachname": "Hoffmann", "geburtsdatum": "1942-05-20", "geschlecht": "weiblich", "pflegegrad": "3", "besonderheiten": "Fortgeschrittene Demenz, benötigt 24h Betreuung", "kontakt_name": "Michael Hoffmann", "kontakt_beziehung": "Sohn", "kontakt_telefon": "+49 30 11122233", "kontakt_email": "m.hoffmann@email.de", "status": "neu", "anfrage_quelle": "email", "dringlichkeit": "sofort", "bevorzugte_wgs": ["wg-drachenwiese", "wg-drachenblick"]},
-        {"id": generate_id(), "vorname": "Hans-Jürgen", "nachname": "Meyer", "geburtsdatum": "1937-09-12", "geschlecht": "männlich", "pflegegrad": "2", "besonderheiten": "Leichte kognitive Einschränkungen", "kontakt_name": "Sabine Meyer", "kontakt_beziehung": "Tochter", "kontakt_telefon": "+49 30 44455566", "kontakt_email": "s.meyer@email.de", "status": "erstgespraech", "anfrage_quelle": "telefon", "dringlichkeit": "4_wochen", "bevorzugte_wgs": ["wg-sterndamm"]},
-        {"id": generate_id(), "vorname": "Elfriede", "nachname": "Wagner", "geburtsdatum": "1939-02-28", "geschlecht": "weiblich", "pflegegrad": "4", "besonderheiten": "Bettlägerig, PEG-Sonde", "kontakt_name": "Andrea Wagner", "kontakt_beziehung": "Tochter", "kontakt_telefon": "+49 30 77788899", "kontakt_email": "a.wagner@web.de", "status": "besichtigung_geplant", "anfrage_quelle": "vermittlung", "vermittler": "Vivantes Klinikum Neukölln", "dringlichkeit": "sofort", "bevorzugte_wgs": ["wg-drachenwiese"]},
-        {"id": generate_id(), "vorname": "Ingeborg", "nachname": "Becker", "geburtsdatum": "1944-08-05", "geschlecht": "weiblich", "pflegegrad": "3", "besonderheiten": "Diabetes, Herzinsuffizienz", "kontakt_name": "Frank Becker", "kontakt_beziehung": "Sohn", "kontakt_telefon": "+49 30 33344455", "kontakt_email": "fbecker@gmail.com", "status": "unterlagen_gesendet", "anfrage_quelle": "website", "dringlichkeit": "3_monate", "bevorzugte_wgs": ["wg-kupferkessel-klein", "wg-drachenblick"]},
-        {"id": generate_id(), "vorname": "Kurt", "nachname": "Richter", "geburtsdatum": "1936-12-18", "geschlecht": "männlich", "pflegegrad": "5", "besonderheiten": "Schwere Demenz, Weglauftendenz", "kontakt_name": "Monika Richter", "kontakt_beziehung": "Ehefrau", "kontakt_telefon": "+49 30 66677788", "kontakt_email": "monika.richter@t-online.de", "status": "entscheidung_ausstehend", "anfrage_quelle": "empfehlung", "dringlichkeit": "sofort", "bevorzugte_wgs": ["wg-drachenwiese"]},
+    # Create real residents as Klienten
+    klienten_data = []
+    zimmer_index = {"wg-sterndamm": 0, "wg-kupferkessel": 0, "wg-kupferkessel-klein": 0, "wg-drachenwiese": 0, "wg-drachenblick": 0}
+    
+    for wg_id, bewohner_liste in ECHTE_BEWOHNER_DATA.items():
+        wg_zimmer = [z for z in zimmer_data if z["pflege_wg_id"] == wg_id and z["status"] == "belegt"]
+        
+        for i, bew in enumerate(bewohner_liste):
+            klient_id = generate_id()
+            klient = {
+                "id": klient_id,
+                "vorname": bew["vorname"],
+                "nachname": bew["nachname"],
+                "status": "bewohner",
+                "anfrage_quelle": "email",
+                "dringlichkeit": "flexibel",
+                "einzugsdatum": bew["einzugsdatum"],
+                "anfrage_am": to_iso(now() - timedelta(days=365)),
+                "created_at": to_iso(now()),
+                "updated_at": to_iso(now()),
+                "bevorzugte_wgs": []
+            }
+            
+            # Assign to room if available
+            if i < len(wg_zimmer):
+                zimmer = wg_zimmer[i]
+                klient["zimmer_id"] = zimmer["id"]
+                # Update zimmer with bewohner
+                await db.wg_zimmer.update_one(
+                    {"id": zimmer["id"]},
+                    {"$set": {"aktueller_bewohner_id": klient_id}}
+                )
+            
+            klienten_data.append(klient)
+    
+    # Add some Interessenten (prospects) for the pipeline
+    interessenten = [
+        {"id": generate_id(), "vorname": "Gerda", "nachname": "Hoffmann", "geschlecht": "weiblich", "pflegegrad": "3", "besonderheiten": "Fortgeschrittene Demenz, benötigt 24h Betreuung", "kontakt_name": "Michael Hoffmann", "kontakt_beziehung": "Sohn", "kontakt_telefon": "+49 30 11122233", "kontakt_email": "m.hoffmann@email.de", "status": "neu", "anfrage_quelle": "email", "dringlichkeit": "sofort", "bevorzugte_wgs": ["wg-drachenwiese", "wg-drachenblick"]},
+        {"id": generate_id(), "vorname": "Hans-Jürgen", "nachname": "Meyer", "geschlecht": "männlich", "pflegegrad": "2", "besonderheiten": "Leichte kognitive Einschränkungen", "kontakt_name": "Sabine Meyer", "kontakt_beziehung": "Tochter", "kontakt_telefon": "+49 30 44455566", "kontakt_email": "s.meyer@email.de", "status": "erstgespraech", "anfrage_quelle": "telefon", "dringlichkeit": "4_wochen", "bevorzugte_wgs": ["wg-sterndamm"]},
+        {"id": generate_id(), "vorname": "Elfriede", "nachname": "Wagner", "geschlecht": "weiblich", "pflegegrad": "4", "besonderheiten": "Bettlägerig, PEG-Sonde", "kontakt_name": "Andrea Wagner", "kontakt_beziehung": "Tochter", "kontakt_telefon": "+49 30 77788899", "kontakt_email": "a.wagner@web.de", "status": "besichtigung_geplant", "anfrage_quelle": "vermittlung", "vermittler": "Vivantes Klinikum Neukölln", "dringlichkeit": "sofort", "bevorzugte_wgs": ["wg-drachenwiese"]},
+        {"id": generate_id(), "vorname": "Ingeborg", "nachname": "Becker", "geschlecht": "weiblich", "pflegegrad": "3", "besonderheiten": "Diabetes, Herzinsuffizienz", "kontakt_name": "Frank Becker", "kontakt_beziehung": "Sohn", "kontakt_telefon": "+49 30 33344455", "kontakt_email": "fbecker@gmail.com", "status": "unterlagen_gesendet", "anfrage_quelle": "website", "dringlichkeit": "3_monate", "bevorzugte_wgs": ["wg-kupferkessel-klein", "wg-drachenblick"]},
+        {"id": generate_id(), "vorname": "Kurt", "nachname": "Richter", "geschlecht": "männlich", "pflegegrad": "5", "besonderheiten": "Schwere Demenz, Weglauftendenz", "kontakt_name": "Monika Richter", "kontakt_beziehung": "Ehefrau", "kontakt_telefon": "+49 30 66677788", "kontakt_email": "monika.richter@t-online.de", "status": "entscheidung_ausstehend", "anfrage_quelle": "empfehlung", "dringlichkeit": "sofort", "bevorzugte_wgs": ["wg-drachenwiese"]},
     ]
     
-    for k in klienten_data:
+    for k in interessenten:
         k["anfrage_am"] = to_iso(now() - timedelta(days=hash(k["nachname"]) % 14))
         k["created_at"] = to_iso(now())
         k["updated_at"] = to_iso(now())
-        if "bevorzugte_wgs" not in k:
-            k["bevorzugte_wgs"] = []
     
+    klienten_data.extend(interessenten)
     await db.klienten.insert_many(klienten_data)
     
-    # Assign some clients to rooms
-    bewohner = [k for k in klienten_data if k["status"] == "bewohner"]
-    belegte_zimmer = [z for z in zimmer_data if z["status"] == "belegt"]
-    
-    for i, bew in enumerate(bewohner[:len(belegte_zimmer)]):
-        zimmer = belegte_zimmer[i]
-        await db.wg_zimmer.update_one(
-            {"id": zimmer["id"]},
-            {"$set": {"aktueller_bewohner_id": bew["id"]}}
-        )
-        await db.klienten.update_one(
-            {"id": bew["id"]},
-            {"$set": {"zimmer_id": zimmer["id"]}}
-        )
+    bewohner_count = len([k for k in klienten_data if k["status"] == "bewohner"])
+    interessenten_count = len([k for k in klienten_data if k["status"] != "bewohner"])
     
     return {
-        "message": "Klientendaten erfolgreich angelegt",
+        "message": "Echte Bewohnerdaten erfolgreich angelegt",
         "zimmer_count": len(zimmer_data),
-        "klienten_count": len(klienten_data)
+        "bewohner_count": bewohner_count,
+        "interessenten_count": interessenten_count,
+        "wgs": {
+            "Sterndamm": len([k for k in klienten_data if k.get("zimmer_id") and any(z["id"] == k["zimmer_id"] and z["pflege_wg_id"] == "wg-sterndamm" for z in zimmer_data)]),
+            "Kupferkessel": len(ECHTE_BEWOHNER_DATA.get("wg-kupferkessel", [])),
+            "Kupferkessel Klein": len(ECHTE_BEWOHNER_DATA.get("wg-kupferkessel-klein", [])),
+            "Drachenwiese": len(ECHTE_BEWOHNER_DATA.get("wg-drachenwiese", [])),
+            "Drachenblick": len(ECHTE_BEWOHNER_DATA.get("wg-drachenblick", []))
+        }
     }
+
+@api_router.post("/seed-klienten-reset")
+async def reset_klienten_data():
+    """Reset and re-seed Klientenmanagement data"""
+    await db.wg_zimmer.delete_many({})
+    await db.klienten.delete_many({})
+    await db.klient_kommunikation.delete_many({})
+    await db.klient_aktivitaeten.delete_many({})
+    await db.klient_dokumente.delete_many({})
+    await db.besichtigungen.delete_many({})
+    
+    return await seed_klienten_data()
 
 # Include router
 app.include_router(api_router)
