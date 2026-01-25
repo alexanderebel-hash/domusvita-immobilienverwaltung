@@ -74,14 +74,23 @@ export default function PflegeWGs() {
           <h1 className="text-3xl font-bold text-white">Pflege-Wohngemeinschaften</h1>
           <p className="text-white/60 mt-1">Klientenmanagement für ambulant betreute WGs</p>
         </div>
-        <div className="flex gap-3">
+        <div className="flex gap-3 flex-wrap">
           <Button 
             onClick={() => navigate('/pflege-wgs/pipeline')}
             className="bg-blue-600 hover:bg-blue-700"
             data-testid="pipeline-btn"
           >
             <Users className="w-4 h-4 mr-2" />
-            Anfragen-Pipeline
+            Pipeline
+          </Button>
+          <Button 
+            onClick={() => navigate('/pflege-wgs/besichtigungen')}
+            variant="outline"
+            className="border-white/20 text-white hover:bg-white/10"
+            data-testid="besichtigungen-btn"
+          >
+            <Calendar className="w-4 h-4 mr-2" />
+            Besichtigungen
           </Button>
           <Button 
             onClick={() => navigate('/pflege-wgs/klienten/neu')}
