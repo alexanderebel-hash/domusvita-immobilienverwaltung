@@ -1697,6 +1697,61 @@ async def assign_klient_to_zimmer(klient_id: str, zimmer_id: str):
     
     return {"message": "Zimmer zugewiesen"}
 
+# Besichtigungen Endpoints
+@api_router.get("/besichtigungen")
+async def get_besichtigungen():
+    """Get all scheduled viewings"""
+    besichtigungen = await db.besichtigungen.find({}).sort("termin", 1).to_list(100)
+    for b in besichtigungen:
+        b["id"] = str(b.get("_id", b.get("id", "")))
+        if "_id" in b:
+            del b["_id"]
+    return besichtigungen
+
+@api_router.post("/besichtigungen")
+async def create_besichtigung(data: dict):
+    """Create a new viewing appointment"""
+    besichtigung = {
+        "id": generate_id(),
+        "klient_id": data.get("klient_id"),
+        "pflege_wg_id": data.get("pflege_wg_id"),
+        "termin": data.get("termin"),
+        "notizen": data.get("notizen", ""),
+        "status": "geplant",
+        "created_at": to_iso(now())
+    }
+    
+    await db.besichtigungen.insert_one(besichtigung)
+    
+    # Update Klient status if still in early stages
+    klient = await db.klienten.find_one({"id": data.get("klient_id")})
+    if klient and klient.get("status") in ["neu", "erstgespraech"]:
+        await db.klienten.update_one(
+            {"id": data.get("klient_id")},
+            {"$set": {"status": "besichtigung_geplant", "updated_at": to_iso(now())}}
+        )
+        await db.klient_aktivitaeten.insert_one({
+            "id": generate_id(),
+            "klient_id": data.get("klient_id"),
+            "aktion": "Besichtigung geplant",
+            "timestamp": to_iso(now())
+        })
+    
+    return besichtigung
+
+@api_router.put("/besichtigungen/{besichtigung_id}")
+async def update_besichtigung(besichtigung_id: str, data: dict):
+    """Update a viewing"""
+    update_data = {k: v for k, v in data.items() if v is not None}
+    await db.besichtigungen.update_one({"id": besichtigung_id}, {"$set": update_data})
+    return {"message": "Besichtigung aktualisiert"}
+
+@api_router.delete("/besichtigungen/{besichtigung_id}")
+async def delete_besichtigung(besichtigung_id: str):
+    """Delete a viewing"""
+    await db.besichtigungen.delete_one({"id": besichtigung_id})
+    return {"message": "Besichtigung gelöscht"}
+
 # Seed Klientenmanagement Data
 @api_router.post("/seed-klienten")
 async def seed_klienten_data():
