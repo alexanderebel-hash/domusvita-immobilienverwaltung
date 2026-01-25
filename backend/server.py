@@ -1173,25 +1173,25 @@ async def seed_database_reset():
 
 # ==================== KLIENTENMANAGEMENT ENDPOINTS ====================
 
-# Pflege-WG Liste mit Grundrissen
+# Pflege-WG Liste mit Grundrissen - AKTUALISIERT mit echten Daten
 PFLEGE_WGS_DATA = [
     {
         "id": "wg-sterndamm",
         "kurzname": "Sterndamm",
         "property_name": "WG Sterndamm",
         "property_address": "Sterndamm 10, 12109 Berlin",
-        "kapazitaet": 3,
+        "kapazitaet": 10,
         "grundriss_url": "https://customer-assets.emergentagent.com/job_domushome/artifacts/gv8gcuns_Grundriss%20Sterndamm.png",
-        "beschreibung": "Ambulant betreute Wohngemeinschaft mit 3 Zimmern"
+        "beschreibung": "Ambulant betreute Wohngemeinschaft mit 10 Zimmern"
     },
     {
         "id": "wg-kupferkessel",
         "kurzname": "Kupferkessel",
-        "property_name": "WG Kupferkessel & Mietwohnungen",
+        "property_name": "WG Kupferkessel",
         "property_address": "Baumschulenstraße 64, 12437 Berlin",
-        "kapazitaet": 6,
+        "kapazitaet": 9,
         "grundriss_url": None,
-        "beschreibung": "Ambulant betreute Wohngemeinschaft mit 6 Zimmern"
+        "beschreibung": "Große ambulant betreute Wohngemeinschaft mit 9 Zimmern"
     },
     {
         "id": "wg-kupferkessel-klein",
@@ -1221,6 +1221,54 @@ PFLEGE_WGS_DATA = [
         "beschreibung": "Ambulant betreute Wohngemeinschaft mit 4 Zimmern"
     }
 ]
+
+# Echte Bewohnerdaten aus Excel-Import
+ECHTE_BEWOHNER_DATA = {
+    "wg-sterndamm": [
+        {"vorname": "Test-A", "nachname": "Testberg-01", "einzugsdatum": "2023-07-04"},
+        {"vorname": "Test-E", "nachname": "Testberg-05", "einzugsdatum": "2023-07-04"},
+        {"vorname": "Test-G", "nachname": "Testberg-07", "einzugsdatum": "2023-07-04"},
+        {"vorname": "Test-H", "nachname": "Testberg-08", "einzugsdatum": "2023-07-04"},
+        {"vorname": "Test-D", "nachname": "Testberg-04", "einzugsdatum": "2024-06-05"},
+        {"vorname": "Jürgen", "nachname": "Paetow", "einzugsdatum": "2024-06-05"},
+        {"vorname": "Test-F", "nachname": "Testberg-06", "einzugsdatum": "2025-07-18"},
+        {"vorname": "Test-B", "nachname": "Testberg-02", "einzugsdatum": "2025-11-14"},
+        {"vorname": "Test-I", "nachname": "Testberg-09", "einzugsdatum": "2025-11-25"},
+        {"vorname": "Test-C", "nachname": "Testberg-03", "einzugsdatum": "2026-01-21"}
+    ],
+    "wg-kupferkessel": [
+        {"vorname": "Test-K", "nachname": "Testberg-11", "einzugsdatum": "2023-07-04"},
+        {"vorname": "Test-N", "nachname": "Testberg-14", "einzugsdatum": "2023-07-04"},
+        {"vorname": "Test-Q", "nachname": "Testberg-17", "einzugsdatum": "2023-07-04"},
+        {"vorname": "Test-L", "nachname": "Testberg-12", "einzugsdatum": "2023-07-04"},
+        {"vorname": "Test-M", "nachname": "Testberg-13", "einzugsdatum": "2024-06-17"},
+        {"vorname": "Test-J", "nachname": "Testberg-10", "einzugsdatum": "2025-04-30"},
+        {"vorname": "Test-O", "nachname": "Testberg-15", "einzugsdatum": "2025-07-15"},
+        {"vorname": "Test-P", "nachname": "Testberg-16", "einzugsdatum": "2025-11-06"}
+    ],
+    "wg-kupferkessel-klein": [
+        {"vorname": "Test-R", "nachname": "Testberg-18", "einzugsdatum": "2023-07-04"},
+        {"vorname": "David", "nachname": "Guminski", "einzugsdatum": "2025-09-09"},
+        {"vorname": "Test-S", "nachname": "Testberg-19", "einzugsdatum": "2026-01-06"}
+    ],
+    "wg-drachenwiese": [
+        {"vorname": "Test-X", "nachname": "Testberg-24", "einzugsdatum": "2023-08-22"},
+        {"vorname": "Ursula", "nachname": "Lauermann", "einzugsdatum": "2023-09-04"},
+        {"vorname": "Test-AD", "nachname": "Testberg-30", "einzugsdatum": "2023-09-14"},
+        {"vorname": "Test-V", "nachname": "Testberg-22", "einzugsdatum": "2023-11-14"},
+        {"vorname": "Test-AB", "nachname": "Testberg-28", "einzugsdatum": "2024-06-05"},
+        {"vorname": "Test-Y", "nachname": "Testberg-25", "einzugsdatum": "2024-07-09"},
+        {"vorname": "Test-W", "nachname": "Testberg-23", "einzugsdatum": "2024-07-10"},
+        {"vorname": "Test-AC", "nachname": "Testberg-29", "einzugsdatum": "2025-01-24"},
+        {"vorname": "Test-U", "nachname": "Testberg-21", "einzugsdatum": "2025-03-04"},
+        {"vorname": "Test-Z", "nachname": "Testberg-26", "einzugsdatum": "2025-03-20"},
+        {"vorname": "Test-AA", "nachname": "Testberg-27", "einzugsdatum": "2025-11-06"}
+    ],
+    "wg-drachenblick": [
+        {"vorname": "Test-AF", "nachname": "Testberg-32", "einzugsdatum": "2025-04-08"},
+        {"vorname": "Test-AE", "nachname": "Testberg-31", "einzugsdatum": "2025-10-10"}
+    ]
+}
 
 @api_router.get("/pflege-wgs")
 async def get_pflege_wgs():
