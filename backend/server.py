@@ -1170,6 +1170,578 @@ async def seed_database_reset():
     # Re-seed with real data
     return await seed_database()
 
+
+# ==================== KLIENTENMANAGEMENT ENDPOINTS ====================
+
+# Pflege-WG Liste mit Grundrissen
+PFLEGE_WGS_DATA = [
+    {
+        "id": "wg-sterndamm",
+        "kurzname": "Sterndamm",
+        "property_name": "WG Sterndamm",
+        "property_address": "Sterndamm 10, 12109 Berlin",
+        "kapazitaet": 3,
+        "grundriss_url": "https://customer-assets.emergentagent.com/job_domushome/artifacts/gv8gcuns_Grundriss%20Sterndamm.png",
+        "beschreibung": "Ambulant betreute Wohngemeinschaft mit 3 Zimmern"
+    },
+    {
+        "id": "wg-kupferkessel",
+        "kurzname": "Kupferkessel",
+        "property_name": "WG Kupferkessel & Mietwohnungen",
+        "property_address": "Baumschulenstraße 64, 12437 Berlin",
+        "kapazitaet": 6,
+        "grundriss_url": None,
+        "beschreibung": "Ambulant betreute Wohngemeinschaft mit 6 Zimmern"
+    },
+    {
+        "id": "wg-kupferkessel-klein",
+        "kurzname": "Kupferkessel Klein",
+        "property_name": "WG Kupferkessel Klein",
+        "property_address": "Baumschulenstraße 64, 12437 Berlin",
+        "kapazitaet": 4,
+        "grundriss_url": "https://customer-assets.emergentagent.com/job_domushome/artifacts/suv923c5_KUPFERKESSEL%20KLEIN%20GRUNDRISS.png",
+        "beschreibung": "Kleinere Wohngemeinschaft mit 4 Zimmern"
+    },
+    {
+        "id": "wg-drachenwiese",
+        "kurzname": "Drachenwiese",
+        "property_name": "WG Drachenwiese",
+        "property_address": "Rudower Straße 228, 12557 Berlin",
+        "kapazitaet": 12,
+        "grundriss_url": "https://customer-assets.emergentagent.com/job_domushome/artifacts/afidfcuk_Grundriss%20WG%20Drachenwiese%20Gro%C3%9F.png",
+        "beschreibung": "Große ambulant betreute Wohngemeinschaft mit 12 Zimmern"
+    },
+    {
+        "id": "wg-drachenblick",
+        "kurzname": "Drachenblick",
+        "property_name": "WG Drachenblick",
+        "property_address": "Rudower Straße 226, 12557 Berlin",
+        "kapazitaet": 4,
+        "grundriss_url": "https://customer-assets.emergentagent.com/job_domushome/artifacts/fti3j6nz_Grundriss%20Drachenblick.png",
+        "beschreibung": "Ambulant betreute Wohngemeinschaft mit 4 Zimmern"
+    }
+]
+
+@api_router.get("/pflege-wgs")
+async def get_pflege_wgs():
+    """Get all Pflege-Wohngemeinschaften with room statistics"""
+    wgs = []
+    for wg_data in PFLEGE_WGS_DATA:
+        wg = wg_data.copy()
+        # Get room stats from database
+        zimmer = await db.wg_zimmer.find({"pflege_wg_id": wg["id"]}).to_list(100)
+        wg["freie_zimmer"] = len([z for z in zimmer if z.get("status") == "frei"])
+        wg["belegte_zimmer"] = len([z for z in zimmer if z.get("status") == "belegt"])
+        wg["reservierte_zimmer"] = len([z for z in zimmer if z.get("status") == "reserviert"])
+        wg["gesamt_zimmer"] = len(zimmer)
+        wgs.append(wg)
+    return wgs
+
+@api_router.get("/pflege-wgs/{wg_id}")
+async def get_pflege_wg(wg_id: str):
+    """Get single Pflege-WG with rooms"""
+    wg_data = next((w for w in PFLEGE_WGS_DATA if w["id"] == wg_id), None)
+    if not wg_data:
+        raise HTTPException(status_code=404, detail="WG nicht gefunden")
+    
+    wg = wg_data.copy()
+    zimmer = await db.wg_zimmer.find({"pflege_wg_id": wg_id}).to_list(100)
+    
+    # Enhance rooms with resident info
+    for z in zimmer:
+        z["id"] = str(z.get("_id", z.get("id", "")))
+        if "_id" in z:
+            del z["_id"]
+        if z.get("aktueller_bewohner_id"):
+            bewohner = await db.klienten.find_one({"id": z["aktueller_bewohner_id"]})
+            if bewohner:
+                z["bewohner_name"] = f"{bewohner.get('vorname', '')} {bewohner.get('nachname', '')}"
+                if bewohner.get("geburtsdatum"):
+                    try:
+                        geb = datetime.fromisoformat(str(bewohner["geburtsdatum"]).replace("Z", "+00:00"))
+                        z["bewohner_alter"] = (now() - geb).days // 365
+                    except:
+                        z["bewohner_alter"] = None
+                z["bewohner_pflegegrad"] = bewohner.get("pflegegrad")
+    
+    wg["zimmer"] = zimmer
+    wg["freie_zimmer"] = len([z for z in zimmer if z.get("status") == "frei"])
+    wg["belegte_zimmer"] = len([z for z in zimmer if z.get("status") == "belegt"])
+    
+    return wg
+
+@api_router.post("/pflege-wgs/{wg_id}/zimmer")
+async def create_zimmer(wg_id: str, zimmer: ZimmerCreate):
+    """Create a new room in a Pflege-WG"""
+    zimmer_dict = zimmer.model_dump()
+    zimmer_dict["id"] = generate_id()
+    zimmer_dict["pflege_wg_id"] = wg_id
+    zimmer_dict["created_at"] = to_iso(now())
+    zimmer_dict["updated_at"] = to_iso(now())
+    
+    await db.wg_zimmer.insert_one(zimmer_dict)
+    return zimmer_dict
+
+@api_router.put("/pflege-wgs/zimmer/{zimmer_id}")
+async def update_zimmer(zimmer_id: str, zimmer: ZimmerUpdate):
+    """Update a room"""
+    update_data = {k: v for k, v in zimmer.model_dump().items() if v is not None}
+    update_data["updated_at"] = to_iso(now())
+    
+    await db.wg_zimmer.update_one({"id": zimmer_id}, {"$set": update_data})
+    updated = await db.wg_zimmer.find_one({"id": zimmer_id})
+    if updated and "_id" in updated:
+        del updated["_id"]
+    return updated
+
+# Klienten Pipeline Status Labels
+PIPELINE_LABELS = {
+    "neu": "Neu eingegangen",
+    "erstgespraech": "Erstgespräch",
+    "besichtigung_geplant": "Besichtigung geplant",
+    "unterlagen_gesendet": "Unterlagen gesendet",
+    "entscheidung_ausstehend": "Entscheidung ausstehend",
+    "zusage": "Zusage",
+    "einzug_geplant": "Einzug geplant",
+    "bewohner": "Bewohner",
+    "abgesagt": "Abgesagt"
+}
+
+@api_router.get("/klienten/dashboard")
+async def get_klienten_dashboard():
+    """Get Klientenmanagement dashboard statistics"""
+    # Count all clients
+    alle_klienten = await db.klienten.find({}).to_list(1000)
+    
+    # Count by status
+    status_counts = {}
+    dringend_counts = {}
+    for k in alle_klienten:
+        status = k.get("status", "neu")
+        status_counts[status] = status_counts.get(status, 0) + 1
+        if k.get("dringlichkeit") == "sofort":
+            dringend_counts[status] = dringend_counts.get(status, 0) + 1
+    
+    # Build pipeline stats
+    pipeline = []
+    for status_key in ["neu", "erstgespraech", "besichtigung_geplant", "unterlagen_gesendet", "entscheidung_ausstehend", "zusage"]:
+        pipeline.append({
+            "status": status_key,
+            "label": PIPELINE_LABELS.get(status_key, status_key),
+            "anzahl": status_counts.get(status_key, 0),
+            "dringend": dringend_counts.get(status_key, 0)
+        })
+    
+    # Count free rooms
+    alle_zimmer = await db.wg_zimmer.find({"status": "frei"}).to_list(100)
+    
+    # Handlungsbedarf (actions needed)
+    handlungsbedarf = []
+    
+    # Unbearbeitete Anfragen
+    neue_anfragen = [k for k in alle_klienten if k.get("status") == "neu"]
+    if neue_anfragen:
+        aelteste = min([k.get("anfrage_am", k.get("created_at")) for k in neue_anfragen])
+        if isinstance(aelteste, str):
+            aelteste = datetime.fromisoformat(aelteste.replace("Z", "+00:00"))
+        tage = (now() - aelteste).days if aelteste else 0
+        handlungsbedarf.append({
+            "typ": "anfragen",
+            "prioritaet": "hoch" if tage >= 2 else "mittel",
+            "text": f"{len(neue_anfragen)} Anfragen unbearbeitet",
+            "details": f"Älteste: {tage} Tage" if tage > 0 else "Heute eingegangen"
+        })
+    
+    # Heutige Besichtigungen
+    heute = now().date()
+    besichtigungen_heute = await db.besichtigungen.find({
+        "termin": {"$gte": to_iso(datetime.combine(heute, datetime.min.time())),
+                   "$lt": to_iso(datetime.combine(heute, datetime.max.time()))}
+    }).to_list(10)
+    if besichtigungen_heute:
+        handlungsbedarf.append({
+            "typ": "besichtigung",
+            "prioritaet": "hoch",
+            "text": f"{len(besichtigungen_heute)} Besichtigung(en) heute",
+            "details": "Siehe Kalender"
+        })
+    
+    return {
+        "gesamt_klienten": len(alle_klienten),
+        "bewohner": status_counts.get("bewohner", 0),
+        "interessenten": len(alle_klienten) - status_counts.get("bewohner", 0) - status_counts.get("ausgezogen", 0) - status_counts.get("verstorben", 0) - status_counts.get("abgesagt", 0),
+        "freie_zimmer": len(alle_zimmer),
+        "pipeline": pipeline,
+        "handlungsbedarf": handlungsbedarf
+    }
+
+@api_router.get("/klienten")
+async def get_klienten(status: Optional[str] = None, wg_id: Optional[str] = None):
+    """Get all clients, optionally filtered by status or WG"""
+    query = {}
+    if status:
+        query["status"] = status
+    if wg_id:
+        query["bevorzugte_wgs"] = wg_id
+    
+    klienten = await db.klienten.find(query).sort("anfrage_am", -1).to_list(1000)
+    
+    # Enhance with age and room info
+    for k in klienten:
+        k["id"] = str(k.get("_id", k.get("id", "")))
+        if "_id" in k:
+            del k["_id"]
+        
+        # Calculate age
+        if k.get("geburtsdatum"):
+            try:
+                geb = datetime.fromisoformat(str(k["geburtsdatum"]).replace("Z", "+00:00"))
+                k["alter"] = (now() - geb).days // 365
+            except:
+                k["alter"] = None
+        
+        # Get room info if bewohner
+        if k.get("zimmer_id"):
+            zimmer = await db.wg_zimmer.find_one({"id": k["zimmer_id"]})
+            if zimmer:
+                k["zimmer_nummer"] = zimmer.get("nummer")
+                wg = next((w for w in PFLEGE_WGS_DATA if w["id"] == zimmer.get("pflege_wg_id")), None)
+                if wg:
+                    k["wg_name"] = wg.get("kurzname")
+    
+    return klienten
+
+@api_router.get("/klienten/{klient_id}")
+async def get_klient(klient_id: str):
+    """Get single client with all details"""
+    klient = await db.klienten.find_one({"id": klient_id})
+    if not klient:
+        raise HTTPException(status_code=404, detail="Klient nicht gefunden")
+    
+    klient["id"] = str(klient.get("_id", klient.get("id", "")))
+    if "_id" in klient:
+        del klient["_id"]
+    
+    # Get communications
+    kommunikation = await db.klient_kommunikation.find({"klient_id": klient_id}).sort("erstellt_am", -1).to_list(100)
+    for k in kommunikation:
+        k["id"] = str(k.get("_id", k.get("id", "")))
+        if "_id" in k:
+            del k["_id"]
+    klient["kommunikation"] = kommunikation
+    
+    # Get activities
+    aktivitaeten = await db.klient_aktivitaeten.find({"klient_id": klient_id}).sort("timestamp", -1).to_list(50)
+    for a in aktivitaeten:
+        a["id"] = str(a.get("_id", a.get("id", "")))
+        if "_id" in a:
+            del a["_id"]
+    klient["aktivitaeten"] = aktivitaeten
+    
+    # Get documents
+    dokumente = await db.klient_dokumente.find({"klient_id": klient_id}).to_list(50)
+    for d in dokumente:
+        d["id"] = str(d.get("_id", d.get("id", "")))
+        if "_id" in d:
+            del d["_id"]
+    klient["dokumente"] = dokumente
+    
+    # Calculate age
+    if klient.get("geburtsdatum"):
+        try:
+            geb = datetime.fromisoformat(str(klient["geburtsdatum"]).replace("Z", "+00:00"))
+            klient["alter"] = (now() - geb).days // 365
+        except:
+            klient["alter"] = None
+    
+    return klient
+
+@api_router.post("/klienten")
+async def create_klient(klient: KlientCreate):
+    """Create a new client"""
+    klient_dict = klient.model_dump()
+    klient_dict["id"] = generate_id()
+    klient_dict["status"] = "neu"
+    klient_dict["anfrage_am"] = to_iso(now())
+    klient_dict["created_at"] = to_iso(now())
+    klient_dict["updated_at"] = to_iso(now())
+    
+    await db.klienten.insert_one(klient_dict)
+    
+    # Log activity
+    await db.klient_aktivitaeten.insert_one({
+        "id": generate_id(),
+        "klient_id": klient_dict["id"],
+        "aktion": "Klient angelegt",
+        "nachher_wert": "neu",
+        "timestamp": to_iso(now())
+    })
+    
+    return klient_dict
+
+@api_router.put("/klienten/{klient_id}")
+async def update_klient(klient_id: str, klient: KlientUpdate):
+    """Update a client"""
+    existing = await db.klienten.find_one({"id": klient_id})
+    if not existing:
+        raise HTTPException(status_code=404, detail="Klient nicht gefunden")
+    
+    update_data = {k: v for k, v in klient.model_dump().items() if v is not None}
+    update_data["updated_at"] = to_iso(now())
+    
+    # Log status change
+    if "status" in update_data and update_data["status"] != existing.get("status"):
+        await db.klient_aktivitaeten.insert_one({
+            "id": generate_id(),
+            "klient_id": klient_id,
+            "aktion": "Status geändert",
+            "vorher_wert": existing.get("status"),
+            "nachher_wert": update_data["status"],
+            "timestamp": to_iso(now())
+        })
+        
+        # If becoming bewohner and has zimmer, update zimmer
+        if update_data["status"] == "bewohner" and update_data.get("zimmer_id"):
+            await db.wg_zimmer.update_one(
+                {"id": update_data["zimmer_id"]},
+                {"$set": {"status": "belegt", "aktueller_bewohner_id": klient_id}}
+            )
+    
+    await db.klienten.update_one({"id": klient_id}, {"$set": update_data})
+    
+    updated = await db.klienten.find_one({"id": klient_id})
+    if updated and "_id" in updated:
+        del updated["_id"]
+    return updated
+
+@api_router.delete("/klienten/{klient_id}")
+async def delete_klient(klient_id: str):
+    """Delete a client"""
+    # Free up room if occupied
+    klient = await db.klienten.find_one({"id": klient_id})
+    if klient and klient.get("zimmer_id"):
+        await db.wg_zimmer.update_one(
+            {"id": klient["zimmer_id"]},
+            {"$set": {"status": "frei", "aktueller_bewohner_id": None}}
+        )
+    
+    await db.klienten.delete_one({"id": klient_id})
+    await db.klient_kommunikation.delete_many({"klient_id": klient_id})
+    await db.klient_aktivitaeten.delete_many({"klient_id": klient_id})
+    await db.klient_dokumente.delete_many({"klient_id": klient_id})
+    
+    return {"message": "Klient gelöscht"}
+
+# Kommunikation
+@api_router.post("/klienten/{klient_id}/kommunikation")
+async def create_kommunikation(klient_id: str, komm: KommunikationCreate):
+    """Add communication entry for a client"""
+    komm_dict = komm.model_dump()
+    komm_dict["id"] = generate_id()
+    komm_dict["klient_id"] = klient_id
+    komm_dict["erstellt_am"] = to_iso(now())
+    
+    await db.klient_kommunikation.insert_one(komm_dict)
+    
+    # Log activity
+    typ_labels = {
+        "email_aus": "E-Mail gesendet",
+        "email_ein": "E-Mail erhalten",
+        "anruf_aus": "Anruf durchgeführt",
+        "anruf_ein": "Anruf erhalten",
+        "whatsapp_aus": "WhatsApp gesendet",
+        "whatsapp_ein": "WhatsApp erhalten",
+        "notiz": "Notiz hinzugefügt",
+        "besichtigung": "Besichtigung durchgeführt"
+    }
+    
+    await db.klient_aktivitaeten.insert_one({
+        "id": generate_id(),
+        "klient_id": klient_id,
+        "aktion": typ_labels.get(komm_dict["typ"], komm_dict["typ"]),
+        "timestamp": to_iso(now())
+    })
+    
+    return komm_dict
+
+@api_router.get("/klienten/{klient_id}/kommunikation")
+async def get_kommunikation(klient_id: str):
+    """Get all communication for a client"""
+    kommunikation = await db.klient_kommunikation.find({"klient_id": klient_id}).sort("erstellt_am", -1).to_list(100)
+    for k in kommunikation:
+        k["id"] = str(k.get("_id", k.get("id", "")))
+        if "_id" in k:
+            del k["_id"]
+    return kommunikation
+
+# Klienten Pipeline Drag & Drop
+@api_router.post("/klienten/{klient_id}/status")
+async def update_klient_status(klient_id: str, status: str):
+    """Quick status update for pipeline drag & drop"""
+    existing = await db.klienten.find_one({"id": klient_id})
+    if not existing:
+        raise HTTPException(status_code=404, detail="Klient nicht gefunden")
+    
+    old_status = existing.get("status")
+    
+    await db.klienten.update_one(
+        {"id": klient_id},
+        {"$set": {"status": status, "updated_at": to_iso(now())}}
+    )
+    
+    # Log activity
+    await db.klient_aktivitaeten.insert_one({
+        "id": generate_id(),
+        "klient_id": klient_id,
+        "aktion": "Status geändert",
+        "vorher_wert": old_status,
+        "nachher_wert": status,
+        "timestamp": to_iso(now())
+    })
+    
+    return {"message": "Status aktualisiert", "old_status": old_status, "new_status": status}
+
+# Zimmer Zuordnung
+@api_router.post("/klienten/{klient_id}/zimmer/{zimmer_id}")
+async def assign_klient_to_zimmer(klient_id: str, zimmer_id: str):
+    """Assign a client to a room"""
+    klient = await db.klienten.find_one({"id": klient_id})
+    if not klient:
+        raise HTTPException(status_code=404, detail="Klient nicht gefunden")
+    
+    zimmer = await db.wg_zimmer.find_one({"id": zimmer_id})
+    if not zimmer:
+        raise HTTPException(status_code=404, detail="Zimmer nicht gefunden")
+    
+    if zimmer.get("status") == "belegt" and zimmer.get("aktueller_bewohner_id") != klient_id:
+        raise HTTPException(status_code=400, detail="Zimmer ist bereits belegt")
+    
+    # Free old room if exists
+    if klient.get("zimmer_id") and klient["zimmer_id"] != zimmer_id:
+        await db.wg_zimmer.update_one(
+            {"id": klient["zimmer_id"]},
+            {"$set": {"status": "frei", "aktueller_bewohner_id": None}}
+        )
+    
+    # Assign new room
+    await db.wg_zimmer.update_one(
+        {"id": zimmer_id},
+        {"$set": {"status": "belegt", "aktueller_bewohner_id": klient_id}}
+    )
+    
+    # Update client
+    await db.klienten.update_one(
+        {"id": klient_id},
+        {"$set": {
+            "zimmer_id": zimmer_id,
+            "status": "bewohner",
+            "einzugsdatum": to_iso(now()),
+            "updated_at": to_iso(now())
+        }}
+    )
+    
+    # Log activity
+    wg = next((w for w in PFLEGE_WGS_DATA if w["id"] == zimmer.get("pflege_wg_id")), None)
+    await db.klient_aktivitaeten.insert_one({
+        "id": generate_id(),
+        "klient_id": klient_id,
+        "aktion": f"Zimmer {zimmer.get('nummer')} in {wg.get('kurzname', 'WG')} zugewiesen",
+        "nachher_wert": zimmer_id,
+        "timestamp": to_iso(now())
+    })
+    
+    return {"message": "Zimmer zugewiesen"}
+
+# Seed Klientenmanagement Data
+@api_router.post("/seed-klienten")
+async def seed_klienten_data():
+    """Seed Klientenmanagement with sample data"""
+    # Check if already seeded
+    existing = await db.wg_zimmer.count_documents({})
+    if existing > 0:
+        return {"message": "Klientendaten bereits vorhanden", "zimmer_count": existing}
+    
+    # Seed rooms for each WG
+    zimmer_data = [
+        # Sterndamm (3 Zimmer)
+        {"id": generate_id(), "pflege_wg_id": "wg-sterndamm", "nummer": "1", "name": "Zimmer 1", "flaeche_qm": 18.0, "status": "belegt", "position_x": 450, "position_y": 550, "breite": 200, "hoehe": 250},
+        {"id": generate_id(), "pflege_wg_id": "wg-sterndamm", "nummer": "2", "name": "Zimmer 2", "flaeche_qm": 20.0, "status": "belegt", "position_x": 450, "position_y": 150, "breite": 200, "hoehe": 300},
+        {"id": generate_id(), "pflege_wg_id": "wg-sterndamm", "nummer": "3", "name": "Zimmer 3", "flaeche_qm": 22.0, "status": "frei", "position_x": 200, "position_y": 50, "breite": 180, "hoehe": 200},
+        # Kupferkessel Klein (4 Zimmer)
+        {"id": generate_id(), "pflege_wg_id": "wg-kupferkessel-klein", "nummer": "1", "name": "Zimmer 1", "flaeche_qm": 16.0, "status": "belegt", "position_x": 550, "position_y": 550, "breite": 150, "hoehe": 200},
+        {"id": generate_id(), "pflege_wg_id": "wg-kupferkessel-klein", "nummer": "2", "name": "Zimmer 2", "flaeche_qm": 18.0, "status": "frei", "position_x": 480, "position_y": 180, "breite": 150, "hoehe": 200},
+        {"id": generate_id(), "pflege_wg_id": "wg-kupferkessel-klein", "nummer": "3", "name": "Zimmer 3", "flaeche_qm": 17.0, "status": "belegt", "position_x": 150, "position_y": 180, "breite": 150, "hoehe": 200},
+        {"id": generate_id(), "pflege_wg_id": "wg-kupferkessel-klein", "nummer": "4", "name": "Zimmer 4", "flaeche_qm": 15.0, "status": "frei", "position_x": 100, "position_y": 480, "breite": 120, "hoehe": 180},
+        # Drachenblick (4 Zimmer)
+        {"id": generate_id(), "pflege_wg_id": "wg-drachenblick", "nummer": "1", "name": "Zimmer 1", "flaeche_qm": 14.0, "status": "belegt", "position_x": 500, "position_y": 450, "breite": 150, "hoehe": 180},
+        {"id": generate_id(), "pflege_wg_id": "wg-drachenblick", "nummer": "2", "name": "Zimmer 2", "flaeche_qm": 16.0, "status": "belegt", "position_x": 500, "position_y": 150, "breite": 150, "hoehe": 200},
+        {"id": generate_id(), "pflege_wg_id": "wg-drachenblick", "nummer": "3", "name": "Zimmer 3", "flaeche_qm": 15.0, "status": "frei", "position_x": 120, "position_y": 150, "breite": 150, "hoehe": 200},
+        {"id": generate_id(), "pflege_wg_id": "wg-drachenblick", "nummer": "4", "name": "Zimmer 4", "flaeche_qm": 13.0, "status": "frei", "position_x": 100, "position_y": 400, "breite": 130, "hoehe": 180},
+        # Drachenwiese (12 Zimmer)
+        {"id": generate_id(), "pflege_wg_id": "wg-drachenwiese", "nummer": "1", "name": "Zimmer 1", "flaeche_qm": 24.5, "status": "belegt", "position_x": 80, "position_y": 120, "breite": 120, "hoehe": 100},
+        {"id": generate_id(), "pflege_wg_id": "wg-drachenwiese", "nummer": "2", "name": "Zimmer 2", "flaeche_qm": 22.0, "status": "belegt", "position_x": 80, "position_y": 230, "breite": 100, "hoehe": 90},
+        {"id": generate_id(), "pflege_wg_id": "wg-drachenwiese", "nummer": "3", "name": "Zimmer 3", "flaeche_qm": 17.6, "status": "belegt", "position_x": 80, "position_y": 330, "breite": 100, "hoehe": 85},
+        {"id": generate_id(), "pflege_wg_id": "wg-drachenwiese", "nummer": "4", "name": "Zimmer 4", "flaeche_qm": 17.1, "status": "frei", "position_x": 80, "position_y": 425, "breite": 100, "hoehe": 85},
+        {"id": generate_id(), "pflege_wg_id": "wg-drachenwiese", "nummer": "5", "name": "Zimmer 5", "flaeche_qm": 17.1, "status": "belegt", "position_x": 80, "position_y": 520, "breite": 100, "hoehe": 85},
+        {"id": generate_id(), "pflege_wg_id": "wg-drachenwiese", "nummer": "6", "name": "Zimmer 6", "flaeche_qm": 20.3, "status": "belegt", "position_x": 550, "position_y": 120, "breite": 110, "hoehe": 95},
+        {"id": generate_id(), "pflege_wg_id": "wg-drachenwiese", "nummer": "7", "name": "Zimmer 7", "flaeche_qm": 20.3, "status": "belegt", "position_x": 550, "position_y": 225, "breite": 110, "hoehe": 95},
+        {"id": generate_id(), "pflege_wg_id": "wg-drachenwiese", "nummer": "8", "name": "Zimmer 8", "flaeche_qm": 19.4, "status": "belegt", "position_x": 550, "position_y": 330, "breite": 110, "hoehe": 95},
+        {"id": generate_id(), "pflege_wg_id": "wg-drachenwiese", "nummer": "9", "name": "Zimmer 9", "flaeche_qm": 19.6, "status": "frei", "position_x": 550, "position_y": 435, "breite": 110, "hoehe": 90},
+        {"id": generate_id(), "pflege_wg_id": "wg-drachenwiese", "nummer": "10", "name": "Zimmer 10", "flaeche_qm": 22.4, "status": "belegt", "position_x": 550, "position_y": 535, "breite": 110, "hoehe": 95},
+        {"id": generate_id(), "pflege_wg_id": "wg-drachenwiese", "nummer": "11", "name": "Zimmer 11", "flaeche_qm": 19.3, "status": "belegt", "position_x": 295, "position_y": 535, "breite": 100, "hoehe": 90},
+        {"id": generate_id(), "pflege_wg_id": "wg-drachenwiese", "nummer": "12", "name": "Zimmer 12", "flaeche_qm": 21.9, "status": "belegt", "position_x": 405, "position_y": 535, "breite": 105, "hoehe": 95},
+    ]
+    
+    for z in zimmer_data:
+        z["created_at"] = to_iso(now())
+        z["updated_at"] = to_iso(now())
+    
+    await db.wg_zimmer.insert_many(zimmer_data)
+    
+    # Seed sample clients
+    klienten_data = [
+        # Bewohner
+        {"id": generate_id(), "vorname": "Helga", "nachname": "Bergmann", "geburtsdatum": "1938-03-15", "geschlecht": "weiblich", "pflegegrad": "3", "besonderheiten": "Leichte Demenz, benötigt Rollator", "kontakt_name": "Thomas Bergmann", "kontakt_beziehung": "Sohn", "kontakt_telefon": "+49 30 12345678", "kontakt_email": "thomas.bergmann@email.de", "status": "bewohner", "anfrage_quelle": "empfehlung", "dringlichkeit": "flexibel"},
+        {"id": generate_id(), "vorname": "Werner", "nachname": "Fischer", "geburtsdatum": "1935-07-22", "geschlecht": "männlich", "pflegegrad": "4", "besonderheiten": "Diabetes, Sturzgefahr", "kontakt_name": "Petra Fischer", "kontakt_beziehung": "Tochter", "kontakt_telefon": "+49 30 98765432", "kontakt_email": "p.fischer@email.de", "status": "bewohner", "anfrage_quelle": "vermittlung", "dringlichkeit": "flexibel"},
+        {"id": generate_id(), "vorname": "Irmgard", "nachname": "Schulze", "geburtsdatum": "1940-11-08", "geschlecht": "weiblich", "pflegegrad": "2", "besonderheiten": "Mobil mit Gehhilfe", "kontakt_name": "Klaus Schulze", "kontakt_beziehung": "Ehemann", "kontakt_telefon": "+49 30 55544433", "kontakt_email": "schulze.klaus@email.de", "status": "bewohner", "anfrage_quelle": "email", "dringlichkeit": "flexibel"},
+        # Interessenten
+        {"id": generate_id(), "vorname": "Gerda", "nachname": "Hoffmann", "geburtsdatum": "1942-05-20", "geschlecht": "weiblich", "pflegegrad": "3", "besonderheiten": "Fortgeschrittene Demenz, benötigt 24h Betreuung", "kontakt_name": "Michael Hoffmann", "kontakt_beziehung": "Sohn", "kontakt_telefon": "+49 30 11122233", "kontakt_email": "m.hoffmann@email.de", "status": "neu", "anfrage_quelle": "email", "dringlichkeit": "sofort", "bevorzugte_wgs": ["wg-drachenwiese", "wg-drachenblick"]},
+        {"id": generate_id(), "vorname": "Hans-Jürgen", "nachname": "Meyer", "geburtsdatum": "1937-09-12", "geschlecht": "männlich", "pflegegrad": "2", "besonderheiten": "Leichte kognitive Einschränkungen", "kontakt_name": "Sabine Meyer", "kontakt_beziehung": "Tochter", "kontakt_telefon": "+49 30 44455566", "kontakt_email": "s.meyer@email.de", "status": "erstgespraech", "anfrage_quelle": "telefon", "dringlichkeit": "4_wochen", "bevorzugte_wgs": ["wg-sterndamm"]},
+        {"id": generate_id(), "vorname": "Elfriede", "nachname": "Wagner", "geburtsdatum": "1939-02-28", "geschlecht": "weiblich", "pflegegrad": "4", "besonderheiten": "Bettlägerig, PEG-Sonde", "kontakt_name": "Andrea Wagner", "kontakt_beziehung": "Tochter", "kontakt_telefon": "+49 30 77788899", "kontakt_email": "a.wagner@web.de", "status": "besichtigung_geplant", "anfrage_quelle": "vermittlung", "vermittler": "Vivantes Klinikum Neukölln", "dringlichkeit": "sofort", "bevorzugte_wgs": ["wg-drachenwiese"]},
+        {"id": generate_id(), "vorname": "Ingeborg", "nachname": "Becker", "geburtsdatum": "1944-08-05", "geschlecht": "weiblich", "pflegegrad": "3", "besonderheiten": "Diabetes, Herzinsuffizienz", "kontakt_name": "Frank Becker", "kontakt_beziehung": "Sohn", "kontakt_telefon": "+49 30 33344455", "kontakt_email": "fbecker@gmail.com", "status": "unterlagen_gesendet", "anfrage_quelle": "website", "dringlichkeit": "3_monate", "bevorzugte_wgs": ["wg-kupferkessel-klein", "wg-drachenblick"]},
+        {"id": generate_id(), "vorname": "Kurt", "nachname": "Richter", "geburtsdatum": "1936-12-18", "geschlecht": "männlich", "pflegegrad": "5", "besonderheiten": "Schwere Demenz, Weglauftendenz", "kontakt_name": "Monika Richter", "kontakt_beziehung": "Ehefrau", "kontakt_telefon": "+49 30 66677788", "kontakt_email": "monika.richter@t-online.de", "status": "entscheidung_ausstehend", "anfrage_quelle": "empfehlung", "dringlichkeit": "sofort", "bevorzugte_wgs": ["wg-drachenwiese"]},
+    ]
+    
+    for k in klienten_data:
+        k["anfrage_am"] = to_iso(now() - timedelta(days=hash(k["nachname"]) % 14))
+        k["created_at"] = to_iso(now())
+        k["updated_at"] = to_iso(now())
+        if "bevorzugte_wgs" not in k:
+            k["bevorzugte_wgs"] = []
+    
+    await db.klienten.insert_many(klienten_data)
+    
+    # Assign some clients to rooms
+    bewohner = [k for k in klienten_data if k["status"] == "bewohner"]
+    belegte_zimmer = [z for z in zimmer_data if z["status"] == "belegt"]
+    
+    for i, bew in enumerate(bewohner[:len(belegte_zimmer)]):
+        zimmer = belegte_zimmer[i]
+        await db.wg_zimmer.update_one(
+            {"id": zimmer["id"]},
+            {"$set": {"aktueller_bewohner_id": bew["id"]}}
+        )
+        await db.klienten.update_one(
+            {"id": bew["id"]},
+            {"$set": {"zimmer_id": zimmer["id"]}}
+        )
+    
+    return {
+        "message": "Klientendaten erfolgreich angelegt",
+        "zimmer_count": len(zimmer_data),
+        "klienten_count": len(klienten_data)
+    }
+
 # Include router
 app.include_router(api_router)
 
