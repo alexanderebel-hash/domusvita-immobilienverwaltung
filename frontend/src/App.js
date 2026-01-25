@@ -15,6 +15,7 @@ import HandwerkerTicketDetail from "./pages/handwerker/HandwerkerTicketDetail";
 import PflegeWGs from "./pages/PflegeWGs";
 import PflegeWGDetail from "./pages/PflegeWGDetail";
 import KlientenPipeline from "./pages/KlientenPipeline";
+import KlientDetail from "./pages/KlientDetail";
 import "./App.css";
 
 function App() {
