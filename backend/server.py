@@ -25,7 +25,12 @@ from schemas import (
     TicketPhotoCreate, TicketPhotoResponse,
     WorkReportCreate, WorkReportResponse,
     StatusUpdateCreate, StatusUpdateResponse,
-    HandwerkerTicketResponse
+    HandwerkerTicketResponse,
+    # Klientenmanagement
+    PflegeWGResponse, ZimmerCreate, ZimmerUpdate, ZimmerResponse,
+    KlientCreate, KlientUpdate, KlientResponse,
+    KommunikationCreate, KommunikationResponse,
+    AktivitaetResponse, PipelineStats, KlientenDashboard
 )
 
 # Load environment
