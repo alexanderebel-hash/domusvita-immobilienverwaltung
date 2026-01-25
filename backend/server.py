@@ -1418,14 +1418,13 @@ async def get_klient(klient_id: str):
     if not klient:
         raise HTTPException(status_code=404, detail="Klient nicht gefunden")
     
-    klient["id"] = str(klient.get("_id", klient.get("id", "")))
+    # Keep original id field, just remove MongoDB _id
     if "_id" in klient:
         del klient["_id"]
     
     # Get communications
     kommunikation = await db.klient_kommunikation.find({"klient_id": klient_id}).sort("erstellt_am", -1).to_list(100)
     for k in kommunikation:
-        k["id"] = str(k.get("_id", k.get("id", "")))
         if "_id" in k:
             del k["_id"]
     klient["kommunikation"] = kommunikation
@@ -1433,7 +1432,6 @@ async def get_klient(klient_id: str):
     # Get activities
     aktivitaeten = await db.klient_aktivitaeten.find({"klient_id": klient_id}).sort("timestamp", -1).to_list(50)
     for a in aktivitaeten:
-        a["id"] = str(a.get("_id", a.get("id", "")))
         if "_id" in a:
             del a["_id"]
     klient["aktivitaeten"] = aktivitaeten
@@ -1441,7 +1439,6 @@ async def get_klient(klient_id: str):
     # Get documents
     dokumente = await db.klient_dokumente.find({"klient_id": klient_id}).to_list(50)
     for d in dokumente:
-        d["id"] = str(d.get("_id", d.get("id", "")))
         if "_id" in d:
             del d["_id"]
     klient["dokumente"] = dokumente
