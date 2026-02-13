@@ -183,8 +183,8 @@ export default function KlientenPipeline() {
       </div>
 
       {/* Pipeline Board */}
-      <div className="flex-1 overflow-x-auto p-6">
-        <div className="flex gap-4 h-full min-w-max">
+      <div className="flex-1 overflow-x-auto p-3 md:p-6">
+        <div className="flex gap-3 md:gap-4 h-full min-w-max">
           {PIPELINE_COLUMNS.map(column => {
             const columnKlienten = getKlientenForColumn(column.key);
             const dringendCount = columnKlienten.filter(k => k.dringlichkeit === 'sofort').length;
@@ -192,7 +192,7 @@ export default function KlientenPipeline() {
             return (
               <div
                 key={column.key}
-                className="w-80 flex-shrink-0 flex flex-col bg-white/5 rounded-xl border border-white/10"
+                className="w-64 md:w-80 flex-shrink-0 flex flex-col bg-white/5 rounded-xl border border-white/10"
                 onDragOver={handleDragOver}
                 onDrop={(e) => handleDrop(e, column.key)}
                 data-testid={`column-${column.key}`}
