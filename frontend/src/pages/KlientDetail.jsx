@@ -299,18 +299,18 @@ export default function KlientDetail() {
           </Button>
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2 flex-wrap">
-              <h1 className="text-xl md:text-3xl font-bold text-white truncate">
+              <h1 className="text-xl md:text-3xl font-bold text-gray-900 truncate">
                 {klient.vorname} {klient.nachname}
               </h1>
               <Badge 
-                className={`${STATUS_COLORS[klient.status]} text-white cursor-pointer text-xs`}
+                className={`${STATUS_COLORS[klient.status]} text-gray-900 cursor-pointer text-xs`}
                 onClick={() => setShowStatusDialog(true)}
                 data-testid="status-badge"
               >
                 {STATUS_LABELS[klient.status]}
               </Badge>
               {klient.pflegegrad && klient.pflegegrad !== 'keiner' && (
-                <Badge className={`${PFLEGEGRAD_COLORS[klient.pflegegrad]} text-white text-xs`}>
+                <Badge className={`${PFLEGEGRAD_COLORS[klient.pflegegrad]} text-gray-900 text-xs`}>
                   PG {klient.pflegegrad}
                 </Badge>
               )}
@@ -396,7 +396,7 @@ export default function KlientDetail() {
             {/* Persönliche Daten */}
             <Card className="bg-white border-gray-200">
               <CardHeader>
-                <CardTitle className="text-white flex items-center gap-2">
+                <CardTitle className="text-gray-900 flex items-center gap-2">
                   <User className="w-5 h-5" />
                   Persönliche Daten
                 </CardTitle>
@@ -405,33 +405,33 @@ export default function KlientDetail() {
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <p className="text-gray-500 text-sm">Geburtsdatum</p>
-                    <p className="text-white">{formatDate(klient.geburtsdatum) || '-'}</p>
+                    <p className="text-gray-900">{formatDate(klient.geburtsdatum) || '-'}</p>
                   </div>
                   <div>
                     <p className="text-gray-500 text-sm">Geschlecht</p>
-                    <p className="text-white">{klient.geschlecht || '-'}</p>
+                    <p className="text-gray-900">{klient.geschlecht || '-'}</p>
                   </div>
                   <div>
                     <p className="text-gray-500 text-sm">Pflegegrad</p>
-                    <p className="text-white">{klient.pflegegrad !== 'keiner' ? klient.pflegegrad : 'Keiner'}</p>
+                    <p className="text-gray-900">{klient.pflegegrad !== 'keiner' ? klient.pflegegrad : 'Keiner'}</p>
                   </div>
                   <div>
                     <p className="text-gray-500 text-sm">Einzugsdatum</p>
-                    <p className="text-white">{formatDate(klient.einzugsdatum) || '-'}</p>
+                    <p className="text-gray-900">{formatDate(klient.einzugsdatum) || '-'}</p>
                   </div>
                 </div>
                 
                 {klient.besonderheiten && (
                   <div>
                     <p className="text-gray-500 text-sm">Besonderheiten</p>
-                    <p className="text-white bg-white p-3 rounded-lg mt-1">{klient.besonderheiten}</p>
+                    <p className="text-gray-900 bg-white p-3 rounded-lg mt-1">{klient.besonderheiten}</p>
                   </div>
                 )}
                 
                 {klient.diagnosen && (
                   <div>
                     <p className="text-gray-500 text-sm">Diagnosen</p>
-                    <p className="text-white bg-white p-3 rounded-lg mt-1">{klient.diagnosen}</p>
+                    <p className="text-gray-900 bg-white p-3 rounded-lg mt-1">{klient.diagnosen}</p>
                   </div>
                 )}
               </CardContent>
@@ -440,7 +440,7 @@ export default function KlientDetail() {
             {/* Kontaktperson */}
             <Card className="bg-white border-gray-200">
               <CardHeader>
-                <CardTitle className="text-white flex items-center gap-2">
+                <CardTitle className="text-gray-900 flex items-center gap-2">
                   <Phone className="w-5 h-5" />
                   Kontaktperson
                 </CardTitle>
@@ -448,7 +448,7 @@ export default function KlientDetail() {
               <CardContent className="space-y-4">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-white font-medium text-lg">{klient.kontakt_name || '-'}</p>
+                    <p className="text-gray-900 font-medium text-lg">{klient.kontakt_name || '-'}</p>
                     <p className="text-gray-500">{klient.kontakt_beziehung || '-'}</p>
                   </div>
                 </div>
@@ -460,7 +460,7 @@ export default function KlientDetail() {
                       className="flex items-center gap-3 p-3 bg-white rounded-lg hover:bg-gray-50 transition-colors"
                     >
                       <Phone className="w-5 h-5 text-emerald-500" />
-                      <span className="text-white">{klient.kontakt_telefon}</span>
+                      <span className="text-gray-900">{klient.kontakt_telefon}</span>
                     </a>
                   )}
                   {klient.kontakt_email && (
@@ -469,7 +469,7 @@ export default function KlientDetail() {
                       className="flex items-center gap-3 p-3 bg-white rounded-lg hover:bg-gray-50 transition-colors"
                     >
                       <Mail className="w-5 h-5 text-blue-500" />
-                      <span className="text-white">{klient.kontakt_email}</span>
+                      <span className="text-gray-900">{klient.kontakt_email}</span>
                     </a>
                   )}
                 </div>
@@ -479,7 +479,7 @@ export default function KlientDetail() {
             {/* Anfrage-Details */}
             <Card className="bg-white border-gray-200">
               <CardHeader>
-                <CardTitle className="text-white flex items-center gap-2">
+                <CardTitle className="text-gray-900 flex items-center gap-2">
                   <Calendar className="w-5 h-5" />
                   Anfrage-Details
                 </CardTitle>
@@ -488,11 +488,11 @@ export default function KlientDetail() {
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <p className="text-gray-500 text-sm">Anfrage am</p>
-                    <p className="text-white">{formatDate(klient.anfrage_am)}</p>
+                    <p className="text-gray-900">{formatDate(klient.anfrage_am)}</p>
                   </div>
                   <div>
                     <p className="text-gray-500 text-sm">Quelle</p>
-                    <p className="text-white capitalize">{klient.anfrage_quelle || '-'}</p>
+                    <p className="text-gray-900 capitalize">{klient.anfrage_quelle || '-'}</p>
                   </div>
                   <div>
                     <p className="text-gray-500 text-sm">Dringlichkeit</p>
@@ -510,7 +510,7 @@ export default function KlientDetail() {
                   {klient.vermittler && (
                     <div>
                       <p className="text-gray-500 text-sm">Vermittler</p>
-                      <p className="text-white">{klient.vermittler}</p>
+                      <p className="text-gray-900">{klient.vermittler}</p>
                     </div>
                   )}
                 </div>
@@ -520,7 +520,7 @@ export default function KlientDetail() {
             {/* Wohnsituation */}
             <Card className="bg-white border-gray-200">
               <CardHeader>
-                <CardTitle className="text-white flex items-center gap-2">
+                <CardTitle className="text-gray-900 flex items-center gap-2">
                   <Building2 className="w-5 h-5" />
                   Wohnsituation
                 </CardTitle>
@@ -529,7 +529,7 @@ export default function KlientDetail() {
                 {klient.status === 'bewohner' && klient.wg_name ? (
                   <div className="p-4 bg-emerald-50 border border-emerald-200 rounded-lg">
                     <p className="text-emerald-500 font-medium">{klient.wg_name}</p>
-                    <p className="text-white">Zimmer {klient.zimmer_nummer}</p>
+                    <p className="text-gray-900">Zimmer {klient.zimmer_nummer}</p>
                     <p className="text-gray-500 text-sm mt-2">
                       Seit {formatDate(klient.einzugsdatum)}
                     </p>
@@ -560,7 +560,7 @@ export default function KlientDetail() {
         <TabsContent value="kommunikation" className="mt-6">
           <Card className="bg-white border-gray-200">
             <CardHeader className="flex flex-row items-center justify-between">
-              <CardTitle className="text-white">Kommunikationsverlauf</CardTitle>
+              <CardTitle className="text-gray-900">Kommunikationsverlauf</CardTitle>
               <div className="flex gap-2">
                 <Button onClick={openEmailDialog} size="sm" variant="outline" className="border-blue-300 text-blue-500">
                   <Send className="w-4 h-4 mr-2" />
@@ -589,7 +589,7 @@ export default function KlientDetail() {
                           </div>
                           <div className="flex-1">
                             <div className="flex items-center justify-between">
-                              <p className="text-white font-medium">
+                              <p className="text-gray-900 font-medium">
                                 {KOMMUNIKATION_LABELS[item.typ] || item.typ}
                               </p>
                               <span className="text-gray-400 text-sm">
@@ -633,10 +633,10 @@ export default function KlientDetail() {
         <TabsContent value="dokumente" className="mt-6">
           <Card className="bg-white border-gray-200">
             <CardHeader className="flex flex-row items-center justify-between">
-              <CardTitle className="text-white">Dokumente</CardTitle>
+              <CardTitle className="text-gray-900">Dokumente</CardTitle>
               <div className="flex items-center gap-3">
                 <Select value={uploadKategorie} onValueChange={setUploadKategorie}>
-                  <SelectTrigger className="w-40 bg-white border-gray-200 text-white text-sm">
+                  <SelectTrigger className="w-40 bg-white border-gray-200 text-gray-900 text-sm">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent className="bg-white border-gray-200">
@@ -674,7 +674,7 @@ export default function KlientDetail() {
                           <FileText className="w-5 h-5 text-blue-500" />
                         </div>
                         <div className="flex-1">
-                          <p className="text-white font-medium">{doc.name}</p>
+                          <p className="text-gray-900 font-medium">{doc.name}</p>
                           <div className="flex items-center gap-3 text-gray-500 text-sm mt-1">
                             <span className="capitalize">{DOK_KATEGORIEN.find(k => k.value === doc.kategorie)?.label || doc.kategorie}</span>
                             <span>{formatFileSize(doc.file_size)}</span>
@@ -725,7 +725,7 @@ export default function KlientDetail() {
         <TabsContent value="verlauf" className="mt-6">
           <Card className="bg-white border-gray-200">
             <CardHeader>
-              <CardTitle className="text-white">Aktivitätsverlauf</CardTitle>
+              <CardTitle className="text-gray-900">Aktivitätsverlauf</CardTitle>
             </CardHeader>
             <CardContent>
               {klient.aktivitaeten?.length > 0 ? (
@@ -739,7 +739,7 @@ export default function KlientDetail() {
                         </div>
                         <div className="flex-1 p-3 bg-white rounded-lg border border-gray-200">
                           <div className="flex items-center justify-between">
-                            <p className="text-white font-medium">{item.aktion}</p>
+                            <p className="text-gray-900 font-medium">{item.aktion}</p>
                             <span className="text-gray-400 text-sm">
                               {formatDateTime(item.timestamp)}
                             </span>
@@ -771,7 +771,7 @@ export default function KlientDetail() {
 
       {/* Note Dialog */}
       <Dialog open={showNoteDialog} onOpenChange={setShowNoteDialog}>
-        <DialogContent className="bg-white border-gray-200 text-white">
+        <DialogContent className="bg-white border-gray-200 text-gray-900">
           <DialogHeader>
             <DialogTitle>Neuen Eintrag hinzufügen</DialogTitle>
           </DialogHeader>
@@ -779,7 +779,7 @@ export default function KlientDetail() {
             <div>
               <label className="text-gray-500 text-sm">Typ</label>
               <Select value={newNote.typ} onValueChange={(v) => setNewNote({...newNote, typ: v})}>
-                <SelectTrigger className="bg-white border-gray-200 text-white">
+                <SelectTrigger className="bg-white border-gray-200 text-gray-900">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent className="bg-white border-gray-200">
@@ -798,7 +798,7 @@ export default function KlientDetail() {
               <Input
                 value={newNote.betreff}
                 onChange={(e) => setNewNote({...newNote, betreff: e.target.value})}
-                className="bg-white border-gray-200 text-white"
+                className="bg-white border-gray-200 text-gray-900"
                 placeholder="Betreff eingeben..."
               />
             </div>
@@ -807,7 +807,7 @@ export default function KlientDetail() {
               <Textarea
                 value={newNote.inhalt}
                 onChange={(e) => setNewNote({...newNote, inhalt: e.target.value})}
-                className="bg-white border-gray-200 text-white min-h-[120px]"
+                className="bg-white border-gray-200 text-gray-900 min-h-[120px]"
                 placeholder="Details eingeben..."
               />
             </div>
@@ -825,13 +825,13 @@ export default function KlientDetail() {
 
       {/* Status Dialog */}
       <Dialog open={showStatusDialog} onOpenChange={setShowStatusDialog}>
-        <DialogContent className="bg-white border-gray-200 text-white">
+        <DialogContent className="bg-white border-gray-200 text-gray-900">
           <DialogHeader>
             <DialogTitle>Status ändern</DialogTitle>
           </DialogHeader>
           <div>
             <Select value={newStatus} onValueChange={setNewStatus}>
-              <SelectTrigger className="bg-white border-gray-200 text-white">
+              <SelectTrigger className="bg-white border-gray-200 text-gray-900">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent className="bg-white border-gray-200">
@@ -854,7 +854,7 @@ export default function KlientDetail() {
 
       {/* Email Dialog */}
       <Dialog open={showEmailDialog} onOpenChange={setShowEmailDialog}>
-        <DialogContent className="bg-white border-gray-200 text-white max-w-2xl">
+        <DialogContent className="bg-white border-gray-200 text-gray-900 max-w-2xl">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
               <Send className="w-5 h-5 text-blue-500" />
@@ -867,7 +867,7 @@ export default function KlientDetail() {
               <Input
                 value={emailData.empfaenger}
                 onChange={(e) => setEmailData({...emailData, empfaenger: e.target.value})}
-                className="bg-white border-gray-200 text-white"
+                className="bg-white border-gray-200 text-gray-900"
                 placeholder="E-Mail-Adresse"
               />
             </div>
@@ -876,7 +876,7 @@ export default function KlientDetail() {
               <Input
                 value={emailData.betreff}
                 onChange={(e) => setEmailData({...emailData, betreff: e.target.value})}
-                className="bg-white border-gray-200 text-white"
+                className="bg-white border-gray-200 text-gray-900"
               />
             </div>
             <div>
@@ -884,7 +884,7 @@ export default function KlientDetail() {
               <Textarea
                 value={emailData.inhalt}
                 onChange={(e) => setEmailData({...emailData, inhalt: e.target.value})}
-                className="bg-white border-gray-200 text-white min-h-[160px]"
+                className="bg-white border-gray-200 text-gray-900 min-h-[160px]"
               />
             </div>
             
@@ -906,10 +906,10 @@ export default function KlientDetail() {
                       <div className={`w-5 h-5 rounded border-2 flex items-center justify-center ${
                         emailData.dokument_ids.includes(doc.id) ? 'bg-blue-500 border-blue-500' : 'border-gray-200'
                       }`}>
-                        {emailData.dokument_ids.includes(doc.id) && <Check className="w-3 h-3 text-white" />}
+                        {emailData.dokument_ids.includes(doc.id) && <Check className="w-3 h-3 text-gray-900" />}
                       </div>
                       <Paperclip className="w-4 h-4 text-gray-500" />
-                      <span className="text-white text-sm flex-1">{doc.name}</span>
+                      <span className="text-gray-900 text-sm flex-1">{doc.name}</span>
                       <span className="text-gray-400 text-xs">{formatFileSize(doc.file_size)}</span>
                     </div>
                   ))}

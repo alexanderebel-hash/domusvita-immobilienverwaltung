@@ -158,7 +158,7 @@ export default function KlientenPipeline() {
               <ArrowLeft className="w-4 h-4" />
             </Button>
             <div className="flex-1 min-w-0">
-              <h1 className="text-xl md:text-2xl font-bold text-white">Anfragen-Pipeline</h1>
+              <h1 className="text-xl md:text-2xl font-bold text-gray-900">Anfragen-Pipeline</h1>
               <p className="text-gray-500 text-sm">{klienten.length} Interessenten</p>
             </div>
           </div>
@@ -168,7 +168,7 @@ export default function KlientenPipeline() {
               placeholder="Suchen..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="flex-1 bg-white border-gray-200 text-white text-sm"
+              className="flex-1 bg-white border-gray-200 text-gray-900 text-sm"
             />
             <Button 
               onClick={() => navigate('/pflege-wgs/klienten/neu')}
@@ -202,7 +202,7 @@ export default function KlientenPipeline() {
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
                       <span className={`w-3 h-3 rounded-full ${column.color}`}></span>
-                      <h3 className="text-white font-medium">{column.label}</h3>
+                      <h3 className="text-gray-900 font-medium">{column.label}</h3>
                     </div>
                     <div className="flex items-center gap-2">
                       {dringendCount > 0 && (
@@ -210,7 +210,7 @@ export default function KlientenPipeline() {
                           {dringendCount} dringend
                         </Badge>
                       )}
-                      <Badge className="bg-gray-50 text-white border-0">
+                      <Badge className="bg-gray-50 text-gray-900 border-0">
                         {columnKlienten.length}
                       </Badge>
                     </div>
@@ -231,13 +231,13 @@ export default function KlientenPipeline() {
                       {/* Name */}
                       <div className="flex items-start justify-between mb-2">
                         <div>
-                          <h4 className="text-white font-medium">
+                          <h4 className="text-gray-900 font-medium">
                             {klient.vorname} {klient.nachname}
                           </h4>
                           <p className="text-gray-500 text-sm">{klient.kontakt_name}</p>
                         </div>
                         {klient.pflegegrad && klient.pflegegrad !== 'keiner' && (
-                          <Badge className={`${PFLEGEGRAD_BADGE[klient.pflegegrad]} text-white text-xs`}>
+                          <Badge className={`${PFLEGEGRAD_BADGE[klient.pflegegrad]} text-gray-900 text-xs`}>
                             PG {klient.pflegegrad}
                           </Badge>
                         )}
