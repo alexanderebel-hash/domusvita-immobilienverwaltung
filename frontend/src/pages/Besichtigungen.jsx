@@ -163,7 +163,7 @@ export default function Besichtigungen() {
             Zurück
           </Button>
           <div>
-            <h1 className="text-2xl font-bold text-white">Besichtigungen</h1>
+            <h1 className="text-2xl font-bold text-gray-900">Besichtigungen</h1>
             <p className="text-gray-500">Termine für Interessenten</p>
           </div>
         </div>
@@ -181,7 +181,7 @@ export default function Besichtigungen() {
         <Card className="lg:col-span-2 bg-white border-gray-200">
           <CardHeader>
             <div className="flex items-center justify-between">
-              <CardTitle className="text-white flex items-center gap-2">
+              <CardTitle className="text-gray-900 flex items-center gap-2">
                 <Calendar className="w-5 h-5" />
                 {MONTHS[currentDate.getMonth()]} {currentDate.getFullYear()}
               </CardTitle>
@@ -248,7 +248,7 @@ export default function Besichtigungen() {
         {/* Selected Day Details */}
         <Card className="bg-white border-gray-200">
           <CardHeader>
-            <CardTitle className="text-white flex items-center gap-2">
+            <CardTitle className="text-gray-900 flex items-center gap-2">
               <Clock className="w-5 h-5" />
               {selectedDate ? (
                 `${selectedDate.getDate()}. ${MONTHS[selectedDate.getMonth()]}`
@@ -280,7 +280,7 @@ export default function Besichtigungen() {
                             </Badge>
                           </div>
                           {klient && (
-                            <p className="text-white flex items-center gap-2">
+                            <p className="text-gray-900 flex items-center gap-2">
                               <User className="w-4 h-4 text-gray-500" />
                               {klient.vorname} {klient.nachname}
                             </p>
@@ -341,7 +341,7 @@ export default function Besichtigungen() {
                   return (
                     <div key={bes.id} className="flex items-center gap-4 p-3 bg-white rounded-lg">
                       <div className="text-center min-w-[60px]">
-                        <p className="text-2xl font-bold text-white">{date.getDate()}</p>
+                        <p className="text-2xl font-bold text-gray-900">{date.getDate()}</p>
                         <p className="text-gray-500 text-xs">{MONTHS[date.getMonth()].slice(0, 3)}</p>
                       </div>
                       <div className="flex-1">
@@ -367,7 +367,7 @@ export default function Besichtigungen() {
 
       {/* New Besichtigung Dialog */}
       <Dialog open={showNewDialog} onOpenChange={setShowNewDialog}>
-        <DialogContent className="bg-white border-gray-200 text-white">
+        <DialogContent className="bg-white border-gray-200 text-gray-900">
           <DialogHeader>
             <DialogTitle>Neue Besichtigung planen</DialogTitle>
           </DialogHeader>
@@ -378,7 +378,7 @@ export default function Besichtigungen() {
                 value={newBesichtigung.klient_id} 
                 onValueChange={(v) => setNewBesichtigung({...newBesichtigung, klient_id: v})}
               >
-                <SelectTrigger className="bg-white border-gray-200 text-white">
+                <SelectTrigger className="bg-white border-gray-200 text-gray-900">
                   <SelectValue placeholder="Auswählen..." />
                 </SelectTrigger>
                 <SelectContent className="bg-white border-gray-200">
@@ -396,7 +396,7 @@ export default function Besichtigungen() {
                 value={newBesichtigung.pflege_wg_id} 
                 onValueChange={(v) => setNewBesichtigung({...newBesichtigung, pflege_wg_id: v})}
               >
-                <SelectTrigger className="bg-white border-gray-200 text-white">
+                <SelectTrigger className="bg-white border-gray-200 text-gray-900">
                   <SelectValue placeholder="Auswählen..." />
                 </SelectTrigger>
                 <SelectContent className="bg-white border-gray-200">
@@ -414,7 +414,7 @@ export default function Besichtigungen() {
                 type="datetime-local"
                 value={newBesichtigung.termin}
                 onChange={(e) => setNewBesichtigung({...newBesichtigung, termin: e.target.value})}
-                className="bg-white border-gray-200 text-white"
+                className="bg-white border-gray-200 text-gray-900"
               />
             </div>
             <div>
@@ -422,7 +422,7 @@ export default function Besichtigungen() {
               <Textarea
                 value={newBesichtigung.notizen}
                 onChange={(e) => setNewBesichtigung({...newBesichtigung, notizen: e.target.value})}
-                className="bg-white border-gray-200 text-white"
+                className="bg-white border-gray-200 text-gray-900"
                 placeholder="z.B. Kontaktperson kommt mit..."
               />
             </div>

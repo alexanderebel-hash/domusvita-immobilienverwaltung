@@ -213,7 +213,7 @@ export default function Vertraege() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold text-white font-['Manrope']">Verträge</h1>
+          <h1 className="text-3xl font-bold text-gray-900 font-['Manrope']">Verträge</h1>
           <p className="text-gray-400 mt-1">{contracts.length} Verträge verwalten</p>
         </div>
         
@@ -224,7 +224,7 @@ export default function Vertraege() {
               Neuer Vertrag
             </Button>
           </DialogTrigger>
-          <DialogContent className="bg-[#0A0A0A] border-gray-200 text-white max-w-lg max-h-[90vh] overflow-y-auto">
+          <DialogContent className="bg-[#0A0A0A] border-gray-200 text-gray-900 max-w-lg max-h-[90vh] overflow-y-auto">
             <DialogHeader>
               <DialogTitle className="text-xl font-['Manrope']">
                 {editingContract ? "Vertrag bearbeiten" : "Neuer Vertrag"}
@@ -237,12 +237,12 @@ export default function Vertraege() {
               <div>
                 <Label className="text-white/70">Immobilie *</Label>
                 <Select value={formData.property_id} onValueChange={(v) => setFormData({ ...formData, property_id: v })}>
-                  <SelectTrigger className="mt-1 bg-white border-gray-200 text-white" data-testid="contract-property-select">
+                  <SelectTrigger className="mt-1 bg-white border-gray-200 text-gray-900" data-testid="contract-property-select">
                     <SelectValue placeholder="Immobilie wählen" />
                   </SelectTrigger>
                   <SelectContent className="bg-[#1A1A1A] border-gray-200">
                     {properties.map((p) => (
-                      <SelectItem key={p.id} value={p.id} className="text-white hover:bg-gray-50">{p.name}</SelectItem>
+                      <SelectItem key={p.id} value={p.id} className="text-gray-900 hover:bg-gray-50">{p.name}</SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
@@ -251,12 +251,12 @@ export default function Vertraege() {
                 <div>
                   <Label className="text-white/70">Vertragsart *</Label>
                   <Select value={formData.contract_type} onValueChange={(v) => setFormData({ ...formData, contract_type: v })}>
-                    <SelectTrigger className="mt-1 bg-white border-gray-200 text-white" data-testid="contract-type-select">
+                    <SelectTrigger className="mt-1 bg-white border-gray-200 text-gray-900" data-testid="contract-type-select">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent className="bg-[#1A1A1A] border-gray-200">
                       {contractTypes.map((t) => (
-                        <SelectItem key={t} value={t} className="text-white hover:bg-gray-50">{t}</SelectItem>
+                        <SelectItem key={t} value={t} className="text-gray-900 hover:bg-gray-50">{t}</SelectItem>
                       ))}
                     </SelectContent>
                   </Select>
@@ -264,13 +264,13 @@ export default function Vertraege() {
                 <div>
                   <Label className="text-white/70">Vertragspartner</Label>
                   <Select value={formData.contact_id} onValueChange={(v) => setFormData({ ...formData, contact_id: v })}>
-                    <SelectTrigger className="mt-1 bg-white border-gray-200 text-white">
+                    <SelectTrigger className="mt-1 bg-white border-gray-200 text-gray-900">
                       <SelectValue placeholder="Optional" />
                     </SelectTrigger>
                     <SelectContent className="bg-[#1A1A1A] border-gray-200">
-                      <SelectItem value="none" className="text-white hover:bg-gray-50">Keiner</SelectItem>
+                      <SelectItem value="none" className="text-gray-900 hover:bg-gray-50">Keiner</SelectItem>
                       {contacts.map((c) => (
-                        <SelectItem key={c.id} value={c.id} className="text-white hover:bg-gray-50">{c.name}</SelectItem>
+                        <SelectItem key={c.id} value={c.id} className="text-gray-900 hover:bg-gray-50">{c.name}</SelectItem>
                       ))}
                     </SelectContent>
                   </Select>
@@ -282,7 +282,7 @@ export default function Vertraege() {
                   value={formData.title}
                   onChange={(e) => setFormData({ ...formData, title: e.target.value })}
                   placeholder="Vertragstitel"
-                  className="mt-1 bg-white border-gray-200 text-white"
+                  className="mt-1 bg-white border-gray-200 text-gray-900"
                   data-testid="contract-title-input"
                 />
               </div>
@@ -293,7 +293,7 @@ export default function Vertraege() {
                     type="date"
                     value={formData.start_date}
                     onChange={(e) => setFormData({ ...formData, start_date: e.target.value })}
-                    className="mt-1 bg-white border-gray-200 text-white"
+                    className="mt-1 bg-white border-gray-200 text-gray-900"
                     data-testid="contract-start-date"
                   />
                 </div>
@@ -303,7 +303,7 @@ export default function Vertraege() {
                     type="date"
                     value={formData.end_date}
                     onChange={(e) => setFormData({ ...formData, end_date: e.target.value })}
-                    className="mt-1 bg-white border-gray-200 text-white"
+                    className="mt-1 bg-white border-gray-200 text-gray-900"
                     data-testid="contract-end-date"
                   />
                 </div>
@@ -315,7 +315,7 @@ export default function Vertraege() {
                     type="number"
                     value={formData.monthly_amount}
                     onChange={(e) => setFormData({ ...formData, monthly_amount: parseFloat(e.target.value) || 0 })}
-                    className="mt-1 bg-white border-gray-200 text-white"
+                    className="mt-1 bg-white border-gray-200 text-gray-900"
                   />
                 </div>
                 <div>
@@ -324,7 +324,7 @@ export default function Vertraege() {
                     type="number"
                     value={formData.notice_period_days}
                     onChange={(e) => setFormData({ ...formData, notice_period_days: parseInt(e.target.value) || 30 })}
-                    className="mt-1 bg-white border-gray-200 text-white"
+                    className="mt-1 bg-white border-gray-200 text-gray-900"
                   />
                 </div>
               </div>
@@ -334,7 +334,7 @@ export default function Vertraege() {
                   value={formData.description}
                   onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                   placeholder="Vertragsbeschreibung..."
-                  className="mt-1 bg-white border-gray-200 text-white resize-none"
+                  className="mt-1 bg-white border-gray-200 text-gray-900 resize-none"
                   rows={2}
                 />
               </div>
@@ -349,7 +349,7 @@ export default function Vertraege() {
                 </div>
               </div>
               <div className="flex justify-end gap-3 pt-4">
-                <Button type="button" variant="outline" onClick={() => { setIsDialogOpen(false); resetForm(); }} className="bg-white border-gray-200 text-white hover:bg-gray-50">
+                <Button type="button" variant="outline" onClick={() => { setIsDialogOpen(false); resetForm(); }} className="bg-white border-gray-200 text-gray-900 hover:bg-gray-50">
                   Abbrechen
                 </Button>
                 <Button type="submit" disabled={submitting} className="btn-primary" data-testid="submit-contract-btn">
@@ -363,7 +363,7 @@ export default function Vertraege() {
 
       {/* Alert Banner */}
       {expiringCount > 0 && (
-        <div className="glass-card p-4 border-l-4 border-amber-500 flex items-center gap-4" data-testid="expiring-alert">
+        <div className="bg-white rounded-2xl shadow-sm p-4 border-l-4 border-amber-500 flex items-center gap-4" data-testid="expiring-alert">
           <AlertTriangle className="w-6 h-6 text-amber-500" />
           <div className="flex-1">
             <p className="text-gray-900 font-medium">{expiringCount} Verträge laufen in den nächsten 30 Tagen ab</p>
@@ -376,24 +376,24 @@ export default function Vertraege() {
       )}
 
       {/* Filters */}
-      <div className="glass-card p-4" data-testid="vertraege-filters">
+      <div className="bg-white rounded-2xl shadow-sm p-4" data-testid="vertraege-filters">
         <div className="flex flex-col md:flex-row gap-4">
           <Select value={typeFilter} onValueChange={setTypeFilter}>
-            <SelectTrigger className="w-[200px] bg-white border-gray-200 text-white" data-testid="filter-type">
+            <SelectTrigger className="w-[200px] bg-white border-gray-200 text-gray-900" data-testid="filter-type">
               <FileText className="w-4 h-4 mr-2 text-gray-400" />
               <SelectValue placeholder="Alle Vertragsarten" />
             </SelectTrigger>
             <SelectContent className="bg-[#1A1A1A] border-gray-200">
-              <SelectItem value="all" className="text-white hover:bg-gray-50">Alle Vertragsarten</SelectItem>
+              <SelectItem value="all" className="text-gray-900 hover:bg-gray-50">Alle Vertragsarten</SelectItem>
               {contractTypes.map((t) => (
-                <SelectItem key={t} value={t} className="text-white hover:bg-gray-50">{t}</SelectItem>
+                <SelectItem key={t} value={t} className="text-gray-900 hover:bg-gray-50">{t}</SelectItem>
               ))}
             </SelectContent>
           </Select>
           <Button
             variant={expiringFilter ? "default" : "outline"}
             onClick={() => setExpiringFilter(!expiringFilter)}
-            className={expiringFilter ? "bg-amber-500 hover:bg-amber-600" : "bg-white border-gray-200 text-white hover:bg-gray-50"}
+            className={expiringFilter ? "bg-amber-500 hover:bg-amber-600" : "bg-white border-gray-200 text-gray-900 hover:bg-gray-50"}
           >
             <AlertTriangle className="w-4 h-4 mr-2" /> Ablaufend
           </Button>
@@ -407,9 +407,9 @@ export default function Vertraege() {
 
       {/* Contracts List */}
       {contracts.length === 0 ? (
-        <div className="glass-card p-12 text-center" data-testid="no-contracts">
+        <div className="bg-white rounded-2xl shadow-sm p-12 text-center" data-testid="no-contracts">
           <FileText className="w-12 h-12 text-white/20 mx-auto mb-4" />
-          <h3 className="text-lg font-medium text-white mb-2">Keine Verträge gefunden</h3>
+          <h3 className="text-lg font-medium text-gray-900 mb-2">Keine Verträge gefunden</h3>
           <p className="text-gray-400 mb-4">Erfassen Sie Ihren ersten Vertrag</p>
           <Button onClick={() => setIsDialogOpen(true)} className="btn-primary">
             <Plus className="w-4 h-4 mr-2" /> Vertrag erstellen
@@ -424,7 +424,7 @@ export default function Vertraege() {
             return (
               <div
                 key={contract.id}
-                className="glass-card p-5 hover:bg-gray-50 transition-all opacity-0 animate-fade-in"
+                className="bg-white rounded-2xl shadow-sm p-5 hover:bg-gray-50 transition-all opacity-0 animate-fade-in"
                 style={{ animationDelay: `${idx * 0.05}s` }}
                 data-testid={`contract-card-${contract.id}`}
               >
@@ -444,7 +444,7 @@ export default function Vertraege() {
                         <span className="px-2 py-0.5 rounded text-xs bg-red-50 text-red-500">Inaktiv</span>
                       )}
                     </div>
-                    <h3 className="text-lg font-semibold text-white font-['Manrope']">{contract.title}</h3>
+                    <h3 className="text-lg font-semibold text-gray-900 font-['Manrope']">{contract.title}</h3>
                     <div className="flex items-center gap-4 mt-2 text-sm text-gray-500">
                       <div className="flex items-center gap-1">
                         <Building2 className="w-4 h-4" />
@@ -508,8 +508,8 @@ export default function Vertraege() {
                           </AlertDialogDescription>
                         </AlertDialogHeader>
                         <AlertDialogFooter>
-                          <AlertDialogCancel className="bg-white border-gray-200 text-white hover:bg-gray-50">Abbrechen</AlertDialogCancel>
-                          <AlertDialogAction onClick={() => handleDelete(contract.id)} className="bg-red-500 hover:bg-red-600 text-white">Löschen</AlertDialogAction>
+                          <AlertDialogCancel className="bg-white border-gray-200 text-gray-900 hover:bg-gray-50">Abbrechen</AlertDialogCancel>
+                          <AlertDialogAction onClick={() => handleDelete(contract.id)} className="bg-red-500 hover:bg-red-600 text-gray-900">Löschen</AlertDialogAction>
                         </AlertDialogFooter>
                       </AlertDialogContent>
                     </AlertDialog>

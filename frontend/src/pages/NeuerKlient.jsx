@@ -115,7 +115,7 @@ export default function NeuerKlient() {
           Zurück
         </Button>
         <div>
-          <h1 className="text-2xl font-bold text-white">Neue Anfrage erfassen</h1>
+          <h1 className="text-2xl font-bold text-gray-900">Neue Anfrage erfassen</h1>
           <p className="text-gray-500">Interessent für Pflege-Wohngemeinschaft</p>
         </div>
       </div>
@@ -124,7 +124,7 @@ export default function NeuerKlient() {
         {/* Bewohner-Daten */}
         <Card className="bg-white border-gray-200">
           <CardHeader>
-            <CardTitle className="text-white flex items-center gap-2">
+            <CardTitle className="text-gray-900 flex items-center gap-2">
               <User className="w-5 h-5" />
               Daten der/des Bewohnerin/Bewohners
             </CardTitle>
@@ -135,7 +135,7 @@ export default function NeuerKlient() {
               <Input
                 value={formData.vorname}
                 onChange={(e) => handleChange('vorname', e.target.value)}
-                className="bg-white border-gray-200 text-white"
+                className="bg-white border-gray-200 text-gray-900"
                 placeholder="Vorname"
                 required
               />
@@ -145,7 +145,7 @@ export default function NeuerKlient() {
               <Input
                 value={formData.nachname}
                 onChange={(e) => handleChange('nachname', e.target.value)}
-                className="bg-white border-gray-200 text-white"
+                className="bg-white border-gray-200 text-gray-900"
                 placeholder="Nachname"
                 required
               />
@@ -156,13 +156,13 @@ export default function NeuerKlient() {
                 type="date"
                 value={formData.geburtsdatum}
                 onChange={(e) => handleChange('geburtsdatum', e.target.value)}
-                className="bg-white border-gray-200 text-white"
+                className="bg-white border-gray-200 text-gray-900"
               />
             </div>
             <div>
               <Label className="text-gray-700">Geschlecht</Label>
               <Select value={formData.geschlecht} onValueChange={(v) => handleChange('geschlecht', v)}>
-                <SelectTrigger className="bg-white border-gray-200 text-white">
+                <SelectTrigger className="bg-white border-gray-200 text-gray-900">
                   <SelectValue placeholder="Auswählen..." />
                 </SelectTrigger>
                 <SelectContent className="bg-white border-gray-200">
@@ -175,7 +175,7 @@ export default function NeuerKlient() {
             <div>
               <Label className="text-gray-700">Pflegegrad</Label>
               <Select value={formData.pflegegrad} onValueChange={(v) => handleChange('pflegegrad', v)}>
-                <SelectTrigger className="bg-white border-gray-200 text-white">
+                <SelectTrigger className="bg-white border-gray-200 text-gray-900">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent className="bg-white border-gray-200">
@@ -194,7 +194,7 @@ export default function NeuerKlient() {
               <Textarea
                 value={formData.besonderheiten}
                 onChange={(e) => handleChange('besonderheiten', e.target.value)}
-                className="bg-white border-gray-200 text-white"
+                className="bg-white border-gray-200 text-gray-900"
                 placeholder="z.B. Demenz, Rollator, Sturzgefahr, Diabetes..."
                 rows={3}
               />
@@ -205,7 +205,7 @@ export default function NeuerKlient() {
         {/* Kontaktperson */}
         <Card className="bg-white border-gray-200">
           <CardHeader>
-            <CardTitle className="text-white flex items-center gap-2">
+            <CardTitle className="text-gray-900 flex items-center gap-2">
               <Phone className="w-5 h-5" />
               Kontaktperson (Angehörige)
             </CardTitle>
@@ -216,14 +216,14 @@ export default function NeuerKlient() {
               <Input
                 value={formData.kontakt_name}
                 onChange={(e) => handleChange('kontakt_name', e.target.value)}
-                className="bg-white border-gray-200 text-white"
+                className="bg-white border-gray-200 text-gray-900"
                 placeholder="Name der Kontaktperson"
               />
             </div>
             <div>
               <Label className="text-gray-700">Beziehung</Label>
               <Select value={formData.kontakt_beziehung} onValueChange={(v) => handleChange('kontakt_beziehung', v)}>
-                <SelectTrigger className="bg-white border-gray-200 text-white">
+                <SelectTrigger className="bg-white border-gray-200 text-gray-900">
                   <SelectValue placeholder="Auswählen..." />
                 </SelectTrigger>
                 <SelectContent className="bg-white border-gray-200">
@@ -243,7 +243,7 @@ export default function NeuerKlient() {
                 type="tel"
                 value={formData.kontakt_telefon}
                 onChange={(e) => handleChange('kontakt_telefon', e.target.value)}
-                className="bg-white border-gray-200 text-white"
+                className="bg-white border-gray-200 text-gray-900"
                 placeholder="+49 30 123456"
               />
             </div>
@@ -253,7 +253,7 @@ export default function NeuerKlient() {
                 type="email"
                 value={formData.kontakt_email}
                 onChange={(e) => handleChange('kontakt_email', e.target.value)}
-                className="bg-white border-gray-200 text-white"
+                className="bg-white border-gray-200 text-gray-900"
                 placeholder="email@beispiel.de"
               />
             </div>
@@ -263,7 +263,7 @@ export default function NeuerKlient() {
         {/* Anfrage-Details */}
         <Card className="bg-white border-gray-200">
           <CardHeader>
-            <CardTitle className="text-white flex items-center gap-2">
+            <CardTitle className="text-gray-900 flex items-center gap-2">
               <Calendar className="w-5 h-5" />
               Anfrage-Details
             </CardTitle>
@@ -272,7 +272,7 @@ export default function NeuerKlient() {
             <div>
               <Label className="text-gray-700">Anfrage-Quelle</Label>
               <Select value={formData.anfrage_quelle} onValueChange={(v) => handleChange('anfrage_quelle', v)}>
-                <SelectTrigger className="bg-white border-gray-200 text-white">
+                <SelectTrigger className="bg-white border-gray-200 text-gray-900">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent className="bg-white border-gray-200">
@@ -288,7 +288,7 @@ export default function NeuerKlient() {
             <div>
               <Label className="text-gray-700">Dringlichkeit</Label>
               <Select value={formData.dringlichkeit} onValueChange={(v) => handleChange('dringlichkeit', v)}>
-                <SelectTrigger className="bg-white border-gray-200 text-white">
+                <SelectTrigger className="bg-white border-gray-200 text-gray-900">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent className="bg-white border-gray-200">
@@ -305,7 +305,7 @@ export default function NeuerKlient() {
                 <Input
                   value={formData.vermittler}
                   onChange={(e) => handleChange('vermittler', e.target.value)}
-                  className="bg-white border-gray-200 text-white"
+                  className="bg-white border-gray-200 text-gray-900"
                   placeholder="z.B. Vivantes Klinikum Neukölln"
                 />
               </div>
@@ -316,7 +316,7 @@ export default function NeuerKlient() {
         {/* Bevorzugte WGs */}
         <Card className="bg-white border-gray-200">
           <CardHeader>
-            <CardTitle className="text-white flex items-center gap-2">
+            <CardTitle className="text-gray-900 flex items-center gap-2">
               <Building2 className="w-5 h-5" />
               Bevorzugte Wohngemeinschaften
             </CardTitle>

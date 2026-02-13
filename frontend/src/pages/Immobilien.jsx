@@ -181,7 +181,7 @@ export default function Immobilien() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold text-white font-['Manrope']">Immobilien</h1>
+          <h1 className="text-3xl font-bold text-gray-900 font-['Manrope']">Immobilien</h1>
           <p className="text-gray-400 mt-1">{properties.length} Objekte in Ihrem Portfolio</p>
         </div>
         
@@ -192,7 +192,7 @@ export default function Immobilien() {
               Neue Immobilie
             </Button>
           </DialogTrigger>
-          <DialogContent className="bg-[#0A0A0A] border-gray-200 text-white max-w-lg">
+          <DialogContent className="bg-[#0A0A0A] border-gray-200 text-gray-900 max-w-lg">
             <DialogHeader>
               <DialogTitle className="text-xl font-['Manrope']">Neue Immobilie erstellen</DialogTitle>
               <DialogDescription className="text-gray-400">
@@ -207,7 +207,7 @@ export default function Immobilien() {
                     value={newProperty.name}
                     onChange={(e) => setNewProperty({ ...newProperty, name: e.target.value })}
                     placeholder="z.B. Mehrfamilienhaus Berlin"
-                    className="mt-1 bg-white border-gray-200 text-white"
+                    className="mt-1 bg-white border-gray-200 text-gray-900"
                     data-testid="property-name-input"
                   />
                 </div>
@@ -217,7 +217,7 @@ export default function Immobilien() {
                     value={newProperty.address}
                     onChange={(e) => setNewProperty({ ...newProperty, address: e.target.value })}
                     placeholder="Straße und Hausnummer"
-                    className="mt-1 bg-white border-gray-200 text-white"
+                    className="mt-1 bg-white border-gray-200 text-gray-900"
                     data-testid="property-address-input"
                   />
                 </div>
@@ -227,7 +227,7 @@ export default function Immobilien() {
                     value={newProperty.city}
                     onChange={(e) => setNewProperty({ ...newProperty, city: e.target.value })}
                     placeholder="Berlin"
-                    className="mt-1 bg-white border-gray-200 text-white"
+                    className="mt-1 bg-white border-gray-200 text-gray-900"
                     data-testid="property-city-input"
                   />
                 </div>
@@ -237,7 +237,7 @@ export default function Immobilien() {
                     value={newProperty.postal_code}
                     onChange={(e) => setNewProperty({ ...newProperty, postal_code: e.target.value })}
                     placeholder="10115"
-                    className="mt-1 bg-white border-gray-200 text-white"
+                    className="mt-1 bg-white border-gray-200 text-gray-900"
                     data-testid="property-postal-input"
                   />
                 </div>
@@ -247,12 +247,12 @@ export default function Immobilien() {
                     value={newProperty.property_type}
                     onValueChange={(value) => setNewProperty({ ...newProperty, property_type: value })}
                   >
-                    <SelectTrigger className="mt-1 bg-white border-gray-200 text-white" data-testid="property-type-select">
+                    <SelectTrigger className="mt-1 bg-white border-gray-200 text-gray-900" data-testid="property-type-select">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent className="bg-[#1A1A1A] border-gray-200">
                       {propertyTypes.map((type) => (
-                        <SelectItem key={type} value={type} className="text-white hover:bg-gray-50">
+                        <SelectItem key={type} value={type} className="text-gray-900 hover:bg-gray-50">
                           {type}
                         </SelectItem>
                       ))}
@@ -265,12 +265,12 @@ export default function Immobilien() {
                     value={newProperty.status}
                     onValueChange={(value) => setNewProperty({ ...newProperty, status: value })}
                   >
-                    <SelectTrigger className="mt-1 bg-white border-gray-200 text-white" data-testid="property-status-select">
+                    <SelectTrigger className="mt-1 bg-white border-gray-200 text-gray-900" data-testid="property-status-select">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent className="bg-[#1A1A1A] border-gray-200">
                       {statusOptions.map((status) => (
-                        <SelectItem key={status} value={status} className="text-white hover:bg-gray-50">
+                        <SelectItem key={status} value={status} className="text-gray-900 hover:bg-gray-50">
                           {status}
                         </SelectItem>
                       ))}
@@ -284,7 +284,7 @@ export default function Immobilien() {
                     min="1"
                     value={newProperty.units_count}
                     onChange={(e) => setNewProperty({ ...newProperty, units_count: parseInt(e.target.value) || 1 })}
-                    className="mt-1 bg-white border-gray-200 text-white"
+                    className="mt-1 bg-white border-gray-200 text-gray-900"
                     data-testid="property-units-input"
                   />
                 </div>
@@ -294,7 +294,7 @@ export default function Immobilien() {
                   type="button"
                   variant="outline"
                   onClick={() => setIsDialogOpen(false)}
-                  className="bg-white border-gray-200 text-white hover:bg-gray-50"
+                  className="bg-white border-gray-200 text-gray-900 hover:bg-gray-50"
                   data-testid="cancel-create-btn"
                 >
                   Abbrechen
@@ -314,7 +314,7 @@ export default function Immobilien() {
       </div>
 
       {/* Filters */}
-      <div className="glass-card p-4" data-testid="filters-section">
+      <div className="bg-white rounded-2xl shadow-sm p-4" data-testid="filters-section">
         <div className="flex flex-col lg:flex-row gap-4">
           {/* Search */}
           <div className="relative flex-1">
@@ -323,7 +323,7 @@ export default function Immobilien() {
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               placeholder="Suchen nach Name, Adresse oder Stadt..."
-              className="pl-10 bg-white border-gray-200 text-white placeholder:text-gray-300"
+              className="pl-10 bg-white border-gray-200 text-gray-900 placeholder:text-gray-300"
               data-testid="search-input"
             />
           </div>
@@ -331,14 +331,14 @@ export default function Immobilien() {
           {/* Filter Selects */}
           <div className="flex flex-wrap gap-3">
             <Select value={filters.type} onValueChange={(value) => setFilters({ ...filters, type: value })}>
-              <SelectTrigger className="w-[160px] bg-white border-gray-200 text-white" data-testid="filter-type">
+              <SelectTrigger className="w-[160px] bg-white border-gray-200 text-gray-900" data-testid="filter-type">
                 <Filter className="w-4 h-4 mr-2 text-gray-400" />
                 <SelectValue placeholder="Typ" />
               </SelectTrigger>
               <SelectContent className="bg-[#1A1A1A] border-gray-200">
-                <SelectItem value="all" className="text-white hover:bg-gray-50">Alle Typen</SelectItem>
+                <SelectItem value="all" className="text-gray-900 hover:bg-gray-50">Alle Typen</SelectItem>
                 {propertyTypes.map((type) => (
-                  <SelectItem key={type} value={type} className="text-white hover:bg-gray-50">
+                  <SelectItem key={type} value={type} className="text-gray-900 hover:bg-gray-50">
                     {type}
                   </SelectItem>
                 ))}
@@ -346,14 +346,14 @@ export default function Immobilien() {
             </Select>
 
             <Select value={filters.city} onValueChange={(value) => setFilters({ ...filters, city: value })}>
-              <SelectTrigger className="w-[160px] bg-white border-gray-200 text-white" data-testid="filter-city">
+              <SelectTrigger className="w-[160px] bg-white border-gray-200 text-gray-900" data-testid="filter-city">
                 <MapPin className="w-4 h-4 mr-2 text-gray-400" />
                 <SelectValue placeholder="Stadt" />
               </SelectTrigger>
               <SelectContent className="bg-[#1A1A1A] border-gray-200">
-                <SelectItem value="all" className="text-white hover:bg-gray-50">Alle Städte</SelectItem>
+                <SelectItem value="all" className="text-gray-900 hover:bg-gray-50">Alle Städte</SelectItem>
                 {cities.map((city) => (
-                  <SelectItem key={city} value={city} className="text-white hover:bg-gray-50">
+                  <SelectItem key={city} value={city} className="text-gray-900 hover:bg-gray-50">
                     {city}
                   </SelectItem>
                 ))}
@@ -361,14 +361,14 @@ export default function Immobilien() {
             </Select>
 
             <Select value={filters.status} onValueChange={(value) => setFilters({ ...filters, status: value })}>
-              <SelectTrigger className="w-[160px] bg-white border-gray-200 text-white" data-testid="filter-status">
+              <SelectTrigger className="w-[160px] bg-white border-gray-200 text-gray-900" data-testid="filter-status">
                 <Home className="w-4 h-4 mr-2 text-gray-400" />
                 <SelectValue placeholder="Status" />
               </SelectTrigger>
               <SelectContent className="bg-[#1A1A1A] border-gray-200">
-                <SelectItem value="all" className="text-white hover:bg-gray-50">Alle Status</SelectItem>
+                <SelectItem value="all" className="text-gray-900 hover:bg-gray-50">Alle Status</SelectItem>
                 {statusOptions.map((status) => (
-                  <SelectItem key={status} value={status} className="text-white hover:bg-gray-50">
+                  <SelectItem key={status} value={status} className="text-gray-900 hover:bg-gray-50">
                     {status}
                   </SelectItem>
                 ))}
@@ -392,14 +392,14 @@ export default function Immobilien() {
           <div className="flex gap-1 bg-white rounded-lg p-1">
             <button
               onClick={() => setViewMode("grid")}
-              className={`p-2 rounded-md transition-all ${viewMode === "grid" ? "bg-gray-50 text-white" : "text-gray-400 hover:text-gray-900"}`}
+              className={`p-2 rounded-md transition-all ${viewMode === "grid" ? "bg-gray-50 text-gray-900" : "text-gray-400 hover:text-gray-900"}`}
               data-testid="view-grid-btn"
             >
               <Grid3X3 className="w-4 h-4" />
             </button>
             <button
               onClick={() => setViewMode("list")}
-              className={`p-2 rounded-md transition-all ${viewMode === "list" ? "bg-gray-50 text-white" : "text-gray-400 hover:text-gray-900"}`}
+              className={`p-2 rounded-md transition-all ${viewMode === "list" ? "bg-gray-50 text-gray-900" : "text-gray-400 hover:text-gray-900"}`}
               data-testid="view-list-btn"
             >
               <List className="w-4 h-4" />
@@ -410,9 +410,9 @@ export default function Immobilien() {
 
       {/* Properties Grid */}
       {filteredProperties.length === 0 ? (
-        <div className="glass-card p-12 text-center" data-testid="no-properties">
+        <div className="bg-white rounded-2xl shadow-sm p-12 text-center" data-testid="no-properties">
           <Building2 className="w-12 h-12 text-white/20 mx-auto mb-4" />
-          <h3 className="text-lg font-medium text-white mb-2">Keine Immobilien gefunden</h3>
+          <h3 className="text-lg font-medium text-gray-900 mb-2">Keine Immobilien gefunden</h3>
           <p className="text-gray-400 mb-4">
             {hasActiveFilters
               ? "Versuchen Sie andere Filtereinstellungen"
@@ -431,7 +431,7 @@ export default function Immobilien() {
             <div
               key={property.id}
               onClick={() => navigate(`/immobilien/${property.id}`)}
-              className="property-card glass-card overflow-hidden cursor-pointer opacity-0 animate-fade-in"
+              className="property-card bg-white rounded-2xl shadow-sm overflow-hidden cursor-pointer opacity-0 animate-fade-in"
               style={{ animationDelay: `${index * 0.1}s` }}
               data-testid={`property-card-${property.id}`}
             >
@@ -455,7 +455,7 @@ export default function Immobilien() {
 
               {/* Content */}
               <div className="p-5">
-                <h3 className="text-lg font-semibold text-white font-['Manrope'] mb-2 line-clamp-1">
+                <h3 className="text-lg font-semibold text-gray-900 font-['Manrope'] mb-2 line-clamp-1">
                   {property.name}
                 </h3>
                 <div className="flex items-center gap-2 text-gray-400 text-sm mb-3">
@@ -481,7 +481,7 @@ export default function Immobilien() {
             <div
               key={property.id}
               onClick={() => navigate(`/immobilien/${property.id}`)}
-              className="glass-card p-4 flex items-center gap-4 cursor-pointer hover:bg-gray-50 transition-all opacity-0 animate-fade-in"
+              className="bg-white rounded-2xl shadow-sm p-4 flex items-center gap-4 cursor-pointer hover:bg-gray-50 transition-all opacity-0 animate-fade-in"
               style={{ animationDelay: `${index * 0.05}s` }}
               data-testid={`property-list-${property.id}`}
             >

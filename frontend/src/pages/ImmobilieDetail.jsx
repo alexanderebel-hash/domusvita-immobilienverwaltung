@@ -124,7 +124,7 @@ export default function ImmobilieDetail() {
           <Button
             variant="outline"
             size="sm"
-            className="bg-gray-50 border-gray-200 text-white hover:bg-gray-100 backdrop-blur-md"
+            className="bg-gray-50 border-gray-200 text-gray-900 hover:bg-gray-100 backdrop-blur-md"
             data-testid="edit-btn"
           >
             <Edit2 className="w-4 h-4 mr-2" />
@@ -149,13 +149,13 @@ export default function ImmobilieDetail() {
                 </AlertDialogDescription>
               </AlertDialogHeader>
               <AlertDialogFooter>
-                <AlertDialogCancel className="bg-white border-gray-200 text-white hover:bg-gray-50">
+                <AlertDialogCancel className="bg-white border-gray-200 text-gray-900 hover:bg-gray-50">
                   Abbrechen
                 </AlertDialogCancel>
                 <AlertDialogAction
                   onClick={handleDelete}
                   disabled={deleting}
-                  className="bg-red-500 hover:bg-red-600 text-white"
+                  className="bg-red-500 hover:bg-red-600 text-gray-900"
                   data-testid="confirm-delete-btn"
                 >
                   {deleting ? <Loader2 className="w-4 h-4 animate-spin" /> : "Löschen"}
@@ -173,7 +173,7 @@ export default function ImmobilieDetail() {
               {property.status}
             </span>
           </div>
-          <h1 className="text-3xl font-bold text-white font-['Manrope'] mb-2">
+          <h1 className="text-3xl font-bold text-gray-900 font-['Manrope'] mb-2">
             {property.name}
           </h1>
           <div className="flex items-center gap-2 text-white/70">
@@ -185,48 +185,48 @@ export default function ImmobilieDetail() {
 
       {/* Stats Row */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <div className="glass-stat-card p-5" data-testid="stat-units">
+        <div className="bg-white rounded-2xl shadow-sm p-5" data-testid="stat-units">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-xl bg-blue-50 flex items-center justify-center">
               <Home className="w-5 h-5 text-blue-500" />
             </div>
             <div>
-              <p className="text-2xl font-bold text-white font-['Manrope']">{property.units_count}</p>
+              <p className="text-2xl font-bold text-gray-900 font-['Manrope']">{property.units_count}</p>
               <p className="text-xs text-gray-400">Einheiten</p>
             </div>
           </div>
         </div>
-        <div className="glass-stat-card p-5" data-testid="stat-tenants">
+        <div className="bg-white rounded-2xl shadow-sm p-5" data-testid="stat-tenants">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-xl bg-emerald-50 flex items-center justify-center">
               <Users className="w-5 h-5 text-emerald-500" />
             </div>
             <div>
-              <p className="text-2xl font-bold text-white font-['Manrope']">
+              <p className="text-2xl font-bold text-gray-900 font-['Manrope']">
                 {units.filter((u) => !u.is_vacant).length}
               </p>
               <p className="text-xs text-gray-400">Mieter</p>
             </div>
           </div>
         </div>
-        <div className="glass-stat-card p-5" data-testid="stat-contracts">
+        <div className="bg-white rounded-2xl shadow-sm p-5" data-testid="stat-contracts">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-xl bg-amber-50 flex items-center justify-center">
               <FileText className="w-5 h-5 text-amber-500" />
             </div>
             <div>
-              <p className="text-2xl font-bold text-white font-['Manrope']">0</p>
+              <p className="text-2xl font-bold text-gray-900 font-['Manrope']">0</p>
               <p className="text-xs text-gray-400">Verträge</p>
             </div>
           </div>
         </div>
-        <div className="glass-stat-card p-5" data-testid="stat-maintenance">
+        <div className="bg-white rounded-2xl shadow-sm p-5" data-testid="stat-maintenance">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-xl bg-rose-500/20 flex items-center justify-center">
               <Wrench className="w-5 h-5 text-rose-400" />
             </div>
             <div>
-              <p className="text-2xl font-bold text-white font-['Manrope']">0</p>
+              <p className="text-2xl font-bold text-gray-900 font-['Manrope']">0</p>
               <p className="text-xs text-gray-400">Wartungen</p>
             </div>
           </div>
@@ -236,9 +236,9 @@ export default function ImmobilieDetail() {
       {/* Content Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Units Section */}
-        <div className="lg:col-span-2 glass-card p-6" data-testid="units-section">
+        <div className="lg:col-span-2 bg-white rounded-2xl shadow-sm p-6" data-testid="units-section">
           <div className="flex items-center justify-between mb-6">
-            <h2 className="text-lg font-semibold text-white font-['Manrope']">Einheiten</h2>
+            <h2 className="text-lg font-semibold text-gray-900 font-['Manrope']">Einheiten</h2>
             <Button size="sm" className="btn-secondary text-sm" data-testid="add-unit-btn">
               + Einheit hinzufügen
             </Button>
@@ -282,15 +282,15 @@ export default function ImmobilieDetail() {
 
         {/* Description & Details */}
         <div className="space-y-6">
-          <div className="glass-card p-6" data-testid="description-section">
-            <h2 className="text-lg font-semibold text-white font-['Manrope'] mb-4">Beschreibung</h2>
+          <div className="bg-white rounded-2xl shadow-sm p-6" data-testid="description-section">
+            <h2 className="text-lg font-semibold text-gray-900 font-['Manrope'] mb-4">Beschreibung</h2>
             <p className="text-white/70 text-sm leading-relaxed">
               {property.description || "Keine Beschreibung vorhanden."}
             </p>
           </div>
 
-          <div className="glass-card p-6" data-testid="details-section">
-            <h2 className="text-lg font-semibold text-white font-['Manrope'] mb-4">Details</h2>
+          <div className="bg-white rounded-2xl shadow-sm p-6" data-testid="details-section">
+            <h2 className="text-lg font-semibold text-gray-900 font-['Manrope'] mb-4">Details</h2>
             <div className="space-y-3">
               <div className="flex justify-between text-sm">
                 <span className="text-gray-400">Typ</span>
