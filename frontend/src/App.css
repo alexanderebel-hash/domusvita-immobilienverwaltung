@@ -1,113 +1,170 @@
-/* App-specific styles */
-.App {
-    min-height: 100vh;
+/* DomusVita Apple-Style Light Theme */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+:root {
+  --bg-primary: #F2F2F7;
+  --bg-secondary: #FFFFFF;
+  --bg-tertiary: #E5E5EA;
+  --text-primary: #1C1C1E;
+  --text-secondary: #6C6C70;
+  --text-tertiary: #AEAEB2;
+  --accent: #007AFF;
+  --accent-light: #EBF5FF;
+  --green: #34C759;
+  --orange: #FF9500;
+  --red: #FF3B30;
+  --purple: #AF52DE;
+  --pink: #FF2D55;
+  --teal: #5AC8FA;
+  --separator: rgba(60, 60, 67, 0.12);
+  --card-shadow: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+  --card-shadow-hover: 0 4px 12px rgba(0,0,0,0.08);
 }
 
-/* Card hover effects */
+* {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', sans-serif;
+}
+
+.App {
+  min-height: 100vh;
+  background: var(--bg-primary);
+}
+
+/* Apple-style card */
+.apple-card {
+  background: var(--bg-secondary);
+  border-radius: 16px;
+  box-shadow: var(--card-shadow);
+  transition: box-shadow 0.2s ease, transform 0.2s ease;
+}
+
+.apple-card:hover {
+  box-shadow: var(--card-shadow-hover);
+}
+
+/* Property card hover */
 .property-card {
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .property-card:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
 }
 
-/* Status badges */
+/* Status badges - light theme */
 .status-badge {
-    @apply px-3 py-1 rounded-full text-xs font-medium;
+  @apply px-3 py-1 rounded-full text-xs font-medium;
 }
-
 .status-eigentum {
-    @apply bg-emerald-500/20 text-emerald-400 border border-emerald-500/30;
+  @apply bg-emerald-50 text-emerald-700 border border-emerald-200;
 }
-
 .status-gemietet {
-    @apply bg-blue-500/20 text-blue-400 border border-blue-500/30;
+  @apply bg-blue-50 text-blue-700 border border-blue-200;
 }
-
 .status-untervermietet {
-    @apply bg-amber-500/20 text-amber-400 border border-amber-500/30;
+  @apply bg-amber-50 text-amber-700 border border-amber-200;
 }
 
 /* Type badges */
 .type-badge {
-    @apply px-3 py-1 rounded-full text-xs font-medium bg-white/10 text-white/80;
-}
-
-/* Sidebar active state */
-.sidebar-item-active {
-    @apply bg-white/10 text-white border-r-2 border-blue-500;
+  @apply px-3 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-600;
 }
 
 /* Input focus styles */
 input:focus, textarea:focus, select:focus {
-    outline: none;
-    box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.5);
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.2);
 }
 
-/* Glassmorphism card styles */
+/* Stat cards - light */
 .glass-stat-card {
-    background: rgba(255, 255, 255, 0.03);
-    backdrop-filter: blur(20px);
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    border-radius: 1rem;
-    transition: all 0.3s ease;
+  background: var(--bg-secondary);
+  border-radius: 16px;
+  box-shadow: var(--card-shadow);
+  transition: all 0.2s ease;
+}
+.glass-stat-card:hover {
+  box-shadow: var(--card-shadow-hover);
+  transform: translateY(-1px);
 }
 
-.glass-stat-card:hover {
-    background: rgba(255, 255, 255, 0.06);
-    border-color: rgba(255, 255, 255, 0.15);
+/* Glass card - now clean white */
+.glass-card {
+  background: var(--bg-secondary);
+  border-radius: 16px;
+  box-shadow: var(--card-shadow);
+}
+
+/* Sidebar - light frosted */
+.glass-sidebar {
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-right: 1px solid var(--separator);
 }
 
 /* AI Chat styles */
 .ai-chat-container {
-    background: linear-gradient(145deg, rgba(59, 130, 246, 0.1), rgba(16, 185, 129, 0.05));
+  background: linear-gradient(145deg, rgba(0, 122, 255, 0.05), rgba(52, 199, 89, 0.03));
 }
 
 /* Quick action buttons */
 .quick-action-btn {
-    @apply flex items-center gap-3 p-4 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 hover:border-white/20 transition-all duration-300 cursor-pointer;
+  @apply flex items-center gap-3 p-4 rounded-2xl bg-white border border-gray-100 hover:bg-gray-50 hover:border-gray-200 transition-all duration-200 cursor-pointer;
+  box-shadow: var(--card-shadow);
 }
-
 .quick-action-btn:hover {
-    transform: translateY(-2px);
+  transform: translateY(-1px);
+  box-shadow: var(--card-shadow-hover);
 }
 
 /* Insight cards */
 .insight-card {
-    @apply flex items-start gap-3 p-4 rounded-xl transition-all duration-300;
+  @apply flex items-start gap-3 p-4 rounded-2xl transition-all duration-200;
 }
-
 .insight-warning {
-    @apply bg-amber-500/10 border border-amber-500/20;
+  @apply bg-amber-50 border border-amber-100;
 }
-
 .insight-info {
-    @apply bg-blue-500/10 border border-blue-500/20;
+  @apply bg-blue-50 border border-blue-100;
 }
-
 .insight-success {
-    @apply bg-emerald-500/10 border border-emerald-500/20;
+  @apply bg-emerald-50 border border-emerald-100;
 }
 
 /* Loading skeleton */
 @keyframes shimmer {
-    0% {
-        background-position: -200% 0;
-    }
-    100% {
-        background-position: 200% 0;
-    }
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+.skeleton {
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
 }
 
-.skeleton {
-    background: linear-gradient(
-        90deg,
-        rgba(255, 255, 255, 0.05) 25%,
-        rgba(255, 255, 255, 0.1) 50%,
-        rgba(255, 255, 255, 0.05) 75%
-    );
-    background-size: 200% 100%;
-    animation: shimmer 1.5s infinite;
+/* Fade in animation */
+@keyframes fade-in {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.animate-fade-in {
+  animation: fade-in 0.4s ease-out forwards;
+}
+.stagger-1 { animation-delay: 0.05s; }
+.stagger-2 { animation-delay: 0.1s; }
+.stagger-3 { animation-delay: 0.15s; }
+.stagger-4 { animation-delay: 0.2s; }
+.stagger-5 { animation-delay: 0.25s; }
+
+/* Scrollbar styling */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #C7C7CC; border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: #AEAEB2; }
+
+/* Button primary */
+.btn-primary {
+  @apply bg-blue-500 hover:bg-blue-600 text-white rounded-xl px-4 py-2 font-medium transition-all;
 }
