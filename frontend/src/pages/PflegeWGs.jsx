@@ -118,12 +118,12 @@ export default function PflegeWGs() {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-4">
         {filteredWgs.map(wg => (
           <div key={wg.id} onClick={() => navigate(`/pflege-wgs/${wg.id}`)}
-            className="bg-white rounded-2xl shadow-sm hover:shadow-md transition-all cursor-pointer group p-5"
+            className="bg-white rounded-2xl shadow-sm hover:shadow-md transition-all cursor-pointer group p-4 md:p-5"
             data-testid={`wg-card-${wg.id}`}>
-            <div className="flex items-start justify-between mb-3">
-              <div>
-                <h3 className="text-lg font-semibold text-gray-900 group-hover:text-blue-600 transition-colors">{wg.kurzname}</h3>
-                <p className="text-gray-500 text-sm">{wg.property_address}</p>
+            <div className="flex items-start justify-between mb-2">
+              <div className="min-w-0 flex-1">
+                <h3 className="text-base md:text-lg font-semibold text-gray-900 group-hover:text-blue-600 transition-colors truncate">{wg.kurzname}</h3>
+                <p className="text-gray-500 text-xs md:text-sm truncate">{wg.property_address}</p>
               </div>
               {wg.grundriss_url && <Badge className="bg-blue-50 text-blue-600 border-0 text-xs">Grundriss</Badge>}
             </div>
