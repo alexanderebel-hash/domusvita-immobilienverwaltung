@@ -49,7 +49,7 @@ function App() {
           <Route path="/handwerker/ticket/:ticketId" element={<HandwerkerTicketDetail />} />
         </Routes>
       </BrowserRouter>
-      <Toaster position="top-right" theme="dark" />
+      <Toaster position="top-right" theme="light" />
     </div>
   );
 }
