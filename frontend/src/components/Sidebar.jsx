@@ -9,6 +9,7 @@ import {
   Settings,
   Sparkles,
   Heart,
+  X,
 } from "lucide-react";
 
 const navItems = [
@@ -24,37 +25,43 @@ const pflegeItems = [
   { name: "Pflege-WGs", path: "/pflege-wgs", icon: Heart },
 ];
 
-export default function Sidebar() {
+export default function Sidebar({ isOpen, onClose }) {
   const location = useLocation();
 
   return (
     <aside 
-      className="fixed left-0 top-0 h-full w-64 glass-sidebar z-50 flex flex-col"
+      className={`fixed left-0 top-0 h-full w-64 glass-sidebar z-50 flex flex-col transition-transform duration-300 ease-in-out ${
+        isOpen ? 'translate-x-0' : '-translate-x-full'
+      } lg:translate-x-0`}
       data-testid="sidebar"
     >
-      {/* Logo */}
+      {/* Logo + Close */}
       <div className="p-6 border-b border-white/10">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 to-emerald-500 flex items-center justify-center">
-            <Building2 className="w-5 h-5 text-white" />
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 to-emerald-500 flex items-center justify-center">
+              <Building2 className="w-5 h-5 text-white" />
+            </div>
+            <div>
+              <h1 className="text-xl font-bold text-white font-['Manrope']">DomusVita</h1>
+              <p className="text-xs text-white/50">Immobilienverwaltung</p>
+            </div>
           </div>
-          <div>
-            <h1 className="text-xl font-bold text-white font-['Manrope']">DomusVita</h1>
-            <p className="text-xs text-white/50">Immobilienverwaltung</p>
-          </div>
+          <button
+            onClick={onClose}
+            className="lg:hidden p-1.5 text-white/50 hover:text-white rounded-lg hover:bg-white/10 transition-colors"
+            data-testid="close-sidebar-btn"
+          >
+            <X className="w-5 h-5" />
+          </button>
         </div>
       </div>
 
       {/* Navigation */}
       <nav className="flex-1 p-4 space-y-1 overflow-y-auto">
-        {/* Hauptnavigation */}
         {navItems.map((item) => {
           const Icon = item.icon;
           const isActive = location.pathname === item.path;
-          
-          if (item.disabled) {
-            return null; // No disabled items anymore
-          }
 
           return (
             <NavLink
