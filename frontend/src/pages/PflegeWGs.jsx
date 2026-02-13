@@ -42,42 +42,42 @@ export default function PflegeWGs() {
   }
 
   return (
-    <div className="space-y-5 p-4 md:p-8" data-testid="pflege-wgs-page">
+    <div className="space-y-4 p-4 md:p-8 overflow-x-hidden" data-testid="pflege-wgs-page">
       {/* Header */}
-      <div className="flex flex-col gap-4">
+      <div className="flex flex-col gap-3">
         <div>
-          <h1 className="text-2xl md:text-3xl font-bold text-gray-900">Pflege-Wohngemeinschaften</h1>
-          <p className="text-gray-500 mt-1 text-sm">Klientenmanagement für ambulant betreute WGs</p>
+          <h1 className="text-xl md:text-3xl font-bold text-gray-900">Pflege-WGs</h1>
+          <p className="text-gray-500 mt-0.5 text-xs md:text-sm">Klientenmanagement für ambulant betreute WGs</p>
         </div>
-        <div className="flex gap-2 flex-wrap">
-          <Button onClick={() => navigate('/pflege-wgs/pipeline')} className="bg-blue-500 hover:bg-blue-600 text-white rounded-xl text-sm" data-testid="pipeline-btn">
-            <Users className="w-4 h-4 mr-1.5" /> Pipeline
+        <div className="flex gap-2 overflow-x-auto pb-1 -mx-1 px-1">
+          <Button onClick={() => navigate('/pflege-wgs/pipeline')} size="sm" className="bg-blue-500 hover:bg-blue-600 text-white rounded-xl text-xs flex-shrink-0" data-testid="pipeline-btn">
+            <Users className="w-3.5 h-3.5 mr-1" /> Pipeline
           </Button>
-          <Button onClick={() => navigate('/pflege-wgs/besichtigungen')} variant="outline" className="border-gray-200 text-gray-700 hover:bg-gray-50 rounded-xl text-sm" data-testid="besichtigungen-btn">
-            <Calendar className="w-4 h-4 mr-1.5" /> Besichtigungen
+          <Button onClick={() => navigate('/pflege-wgs/besichtigungen')} size="sm" variant="outline" className="border-gray-200 text-gray-700 hover:bg-gray-50 rounded-xl text-xs flex-shrink-0" data-testid="besichtigungen-btn">
+            <Calendar className="w-3.5 h-3.5 mr-1" /> Besichtigungen
           </Button>
-          <Button onClick={() => navigate('/pflege-wgs/klienten/neu')} className="bg-emerald-500 hover:bg-emerald-600 text-white rounded-xl text-sm" data-testid="new-klient-btn">
-            <Plus className="w-4 h-4 mr-1.5" /> Neue Anfrage
+          <Button onClick={() => navigate('/pflege-wgs/klienten/neu')} size="sm" className="bg-emerald-500 hover:bg-emerald-600 text-white rounded-xl text-xs flex-shrink-0" data-testid="new-klient-btn">
+            <Plus className="w-3.5 h-3.5 mr-1" /> Neu
           </Button>
         </div>
       </div>
 
       {/* Stats */}
       {dashboard && (
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-2 md:gap-3">
           {[
             { label: 'Bewohner', value: dashboard.bewohner, icon: Users, color: 'blue' },
             { label: 'Freie Zimmer', value: dashboard.freie_zimmer, icon: Bed, color: 'emerald' },
             { label: 'Interessenten', value: dashboard.interessenten, icon: Clock, color: 'orange' },
             { label: 'Pflege-WGs', value: wgs.length, icon: Building2, color: 'purple' },
           ].map((s, i) => (
-            <div key={i} className="bg-white rounded-2xl p-4 shadow-sm">
-              <div className="flex items-center gap-3">
-                <div className={`w-10 h-10 rounded-xl bg-${s.color}-50 flex items-center justify-center`}>
-                  <s.icon className={`w-5 h-5 text-${s.color}-500`} />
+            <div key={i} className="bg-white rounded-2xl p-3 md:p-4 shadow-sm">
+              <div className="flex items-center gap-2.5">
+                <div className={`w-9 h-9 md:w-10 md:h-10 rounded-xl bg-${s.color}-50 flex items-center justify-center flex-shrink-0`}>
+                  <s.icon className={`w-4 h-4 md:w-5 md:h-5 text-${s.color}-500`} />
                 </div>
-                <div>
-                  <p className="text-2xl font-bold text-gray-900">{s.value}</p>
+                <div className="min-w-0">
+                  <p className="text-xl md:text-2xl font-bold text-gray-900">{s.value}</p>
                   <p className="text-xs text-gray-500">{s.label}</p>
                 </div>
               </div>
