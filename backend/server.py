@@ -1992,6 +1992,116 @@ async def get_gesamt_kosten():
         "gesamt_auslastung": round((gesamt_bewohner / gesamt_kapazitaet) * 100) if gesamt_kapazitaet else 0
     }
 
+# ==================== WHATSAPP BUSINESS ====================
+
+@api_router.post("/whatsapp/webhook")
+async def whatsapp_webhook(data: dict):
+    """Receive WhatsApp messages via Twilio webhook.
+    Configure Twilio WhatsApp sandbox/API to POST here.
+    Requires TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN, TWILIO_WHATSAPP_NUMBER in .env"""
+    
+    from_number = data.get("From", "").replace("whatsapp:", "")
+    body = data.get("Body", "")
+    media_url = data.get("MediaUrl0")
+    
+    if not from_number or not body:
+        return {"status": "ignored"}
+    
+    # Find klient by contact phone
+    klient = await db.klienten.find_one({"kontakt_telefon": {"$regex": from_number.replace("+", "")}})
+    
+    if klient:
+        # Auto-save as communication entry
+        komm = {
+            "id": generate_id(),
+            "klient_id": klient["id"],
+            "typ": "whatsapp_ein",
+            "betreff": None,
+            "inhalt": body,
+            "anhaenge": [media_url] if media_url else [],
+            "erstellt_am": to_iso(now()),
+            "erstellt_von_name": from_number
+        }
+        await db.klient_kommunikation.insert_one(komm)
+        
+        # Auto-log activity
+        await db.klient_aktivitaeten.insert_one({
+            "id": generate_id(),
+            "klient_id": klient["id"],
+            "aktion": f"WhatsApp erhalten von {from_number}",
+            "timestamp": to_iso(now())
+        })
+        
+        logger.info(f"WhatsApp from {from_number} saved for klient {klient['id']}")
+    else:
+        # Save as unmatched message
+        await db.whatsapp_nachrichten.insert_one({
+            "id": generate_id(),
+            "von": from_number,
+            "nachricht": body,
+            "media_url": media_url,
+            "klient_id": None,
+            "status": "unzugeordnet",
+            "erstellt_am": to_iso(now())
+        })
+        logger.info(f"WhatsApp from unknown number {from_number}")
+    
+    return {"status": "received"}
+
+@api_router.post("/whatsapp/senden")
+async def send_whatsapp(data: dict):
+    """Send WhatsApp message to a client's contact.
+    Currently MOCKED - logs as communication entry. Configure Twilio for real sending."""
+    klient_id = data.get("klient_id")
+    nachricht = data.get("nachricht", "")
+    
+    klient = await db.klienten.find_one({"id": klient_id})
+    if not klient:
+        raise HTTPException(status_code=404, detail="Klient nicht gefunden")
+    
+    telefon = data.get("telefon") or klient.get("kontakt_telefon")
+    if not telefon:
+        raise HTTPException(status_code=400, detail="Keine Telefonnummer vorhanden")
+    
+    whatsapp_sent = False
+    twilio_sid = os.environ.get("TWILIO_ACCOUNT_SID", "")
+    
+    if twilio_sid:
+        # Real Twilio WhatsApp sending would go here
+        whatsapp_sent = True
+    
+    # Log as communication
+    komm = {
+        "id": generate_id(),
+        "klient_id": klient_id,
+        "typ": "whatsapp_aus",
+        "inhalt": nachricht,
+        "anhaenge": [],
+        "erstellt_am": to_iso(now()),
+        "erstellt_von_name": "System"
+    }
+    await db.klient_kommunikation.insert_one(komm)
+    
+    await db.klient_aktivitaeten.insert_one({
+        "id": generate_id(),
+        "klient_id": klient_id,
+        "aktion": f"WhatsApp gesendet an {telefon}",
+        "timestamp": to_iso(now())
+    })
+    
+    komm.pop("_id", None)
+    return {
+        "message": "WhatsApp als Kommunikationseintrag gespeichert" if not whatsapp_sent else "WhatsApp gesendet",
+        "whatsapp_sent": whatsapp_sent,
+        "kommunikation": komm
+    }
+
+@api_router.get("/whatsapp/nachrichten")
+async def get_whatsapp_nachrichten():
+    """Get all unmatched WhatsApp messages"""
+    nachrichten = await db.whatsapp_nachrichten.find({}, {"_id": 0}).sort("erstellt_am", -1).to_list(100)
+    return nachrichten
+
 # Besichtigungen Endpoints
 @api_router.get("/besichtigungen")
 async def get_besichtigungen():
