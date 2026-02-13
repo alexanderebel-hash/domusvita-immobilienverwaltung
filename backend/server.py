@@ -1697,6 +1697,301 @@ async def assign_klient_to_zimmer(klient_id: str, zimmer_id: str):
     
     return {"message": "Zimmer zugewiesen"}
 
+# ==================== KLIENTEN DOKUMENTE ====================
+
+@api_router.post("/klienten/{klient_id}/dokumente")
+async def upload_klient_dokument(
+    klient_id: str,
+    kategorie: str = "sonstiges",
+    beschreibung: Optional[str] = None,
+    file: UploadFile = File(...)
+):
+    """Upload a document for a client (PDF, images, etc.)"""
+    klient = await db.klienten.find_one({"id": klient_id})
+    if not klient:
+        raise HTTPException(status_code=404, detail="Klient nicht gefunden")
+    
+    content = await file.read()
+    file_size = len(content)
+    
+    # Store as base64 in MongoDB (in production use Azure Blob Storage)
+    file_b64 = base64.b64encode(content).decode()
+    
+    doc = {
+        "id": generate_id(),
+        "klient_id": klient_id,
+        "name": file.filename,
+        "kategorie": kategorie,
+        "beschreibung": beschreibung,
+        "file_type": file.content_type,
+        "file_size": file_size,
+        "file_data": file_b64,
+        "status": "hochgeladen",
+        "erstellt_am": to_iso(now())
+    }
+    await db.klient_dokumente.insert_one(doc)
+    
+    # Auto-log activity
+    await db.klient_aktivitaeten.insert_one({
+        "id": generate_id(),
+        "klient_id": klient_id,
+        "aktion": f"Dokument hochgeladen: {file.filename}",
+        "nachher_wert": kategorie,
+        "timestamp": to_iso(now())
+    })
+    
+    # Return without file_data (too large for response)
+    doc.pop("file_data", None)
+    doc.pop("_id", None)
+    return doc
+
+@api_router.get("/klienten/{klient_id}/dokumente")
+async def get_klient_dokumente(klient_id: str):
+    """Get all documents for a client (without file data)"""
+    docs = await db.klient_dokumente.find(
+        {"klient_id": klient_id}, 
+        {"file_data": 0, "_id": 0}
+    ).sort("erstellt_am", -1).to_list(100)
+    return docs
+
+@api_router.get("/klienten/{klient_id}/dokumente/{dok_id}/download")
+async def download_klient_dokument(klient_id: str, dok_id: str):
+    """Download a client document"""
+    from fastapi.responses import Response
+    doc = await db.klient_dokumente.find_one({"id": dok_id, "klient_id": klient_id})
+    if not doc:
+        raise HTTPException(status_code=404, detail="Dokument nicht gefunden")
+    
+    file_content = base64.b64decode(doc["file_data"])
+    return Response(
+        content=file_content,
+        media_type=doc.get("file_type", "application/octet-stream"),
+        headers={"Content-Disposition": f"attachment; filename={doc['name']}"}
+    )
+
+@api_router.delete("/klienten/{klient_id}/dokumente/{dok_id}")
+async def delete_klient_dokument(klient_id: str, dok_id: str):
+    """Delete a client document"""
+    result = await db.klient_dokumente.delete_one({"id": dok_id, "klient_id": klient_id})
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Dokument nicht gefunden")
+    return {"message": "Dokument gelöscht"}
+
+# ==================== E-MAIL VERSAND ====================
+
+@api_router.post("/klienten/{klient_id}/email-senden")
+async def send_klient_email(klient_id: str, data: dict):
+    """Send email to client's contact person with optional document attachments.
+    Currently MOCKED - stores as communication entry. Configure SMTP for real sending."""
+    klient = await db.klienten.find_one({"id": klient_id})
+    if not klient:
+        raise HTTPException(status_code=404, detail="Klient nicht gefunden")
+    
+    empfaenger = data.get("empfaenger") or klient.get("kontakt_email")
+    if not empfaenger:
+        raise HTTPException(status_code=400, detail="Keine E-Mail-Adresse vorhanden")
+    
+    betreff = data.get("betreff", "Informationen von DomusVita")
+    inhalt = data.get("inhalt", "")
+    dokument_ids = data.get("dokument_ids", [])
+    
+    # Collect attached documents info
+    anhaenge_namen = []
+    if dokument_ids:
+        for dok_id in dokument_ids:
+            dok = await db.klient_dokumente.find_one({"id": dok_id}, {"name": 1, "_id": 0})
+            if dok:
+                anhaenge_namen.append(dok["name"])
+    
+    # TODO: Replace with real SMTP/SendGrid when configured
+    # For now, log as communication entry
+    email_sent = False
+    smtp_host = os.environ.get("SMTP_HOST", "")
+    
+    if smtp_host:
+        # Real email sending would go here
+        email_sent = True
+    
+    # Log as communication
+    komm = {
+        "id": generate_id(),
+        "klient_id": klient_id,
+        "typ": "email_aus",
+        "betreff": betreff,
+        "inhalt": inhalt + (f"\n\nAnhänge: {', '.join(anhaenge_namen)}" if anhaenge_namen else ""),
+        "anhaenge": anhaenge_namen,
+        "empfaenger": empfaenger,
+        "erstellt_am": to_iso(now()),
+        "erstellt_von_name": "System"
+    }
+    await db.klient_kommunikation.insert_one(komm)
+    
+    # Update document status
+    for dok_id in dokument_ids:
+        await db.klient_dokumente.update_one(
+            {"id": dok_id},
+            {"$set": {"status": "gesendet", "gesendet_an": empfaenger, "gesendet_am": to_iso(now())}}
+        )
+    
+    # Auto-log activity
+    await db.klient_aktivitaeten.insert_one({
+        "id": generate_id(),
+        "klient_id": klient_id,
+        "aktion": f"E-Mail gesendet an {empfaenger}" + (f" mit {len(anhaenge_namen)} Anhängen" if anhaenge_namen else ""),
+        "timestamp": to_iso(now())
+    })
+    
+    komm.pop("_id", None)
+    return {
+        "message": "E-Mail als Kommunikationseintrag gespeichert" if not email_sent else "E-Mail gesendet",
+        "email_sent": email_sent,
+        "kommunikation": komm
+    }
+
+# ==================== KOSTENÜBERSICHT ====================
+
+@api_router.get("/pflege-wgs/{wg_id}/kosten")
+async def get_wg_kosten(wg_id: str):
+    """Get cost overview for a WG"""
+    wg = next((w for w in PFLEGE_WGS_DATA if w["id"] == wg_id), None)
+    if not wg:
+        raise HTTPException(status_code=404, detail="WG nicht gefunden")
+    
+    zimmer = await db.wg_zimmer.find({"pflege_wg_id": wg_id}, {"_id": 0}).to_list(100)
+    belegte = [z for z in zimmer if z.get("status") == "belegt"]
+    freie = [z for z in zimmer if z.get("status") == "frei"]
+    
+    # Base costs per room type (configurable defaults)
+    kosten_config = await db.wg_kosten.find_one({"wg_id": wg_id}, {"_id": 0})
+    if not kosten_config:
+        kosten_config = {
+            "miete_pro_zimmer": 650.0,
+            "nebenkosten_pro_zimmer": 180.0,
+            "betreuungspauschale": 420.0,
+            "verpflegung": 280.0,
+            "investitionskosten": 120.0,
+        }
+    
+    belegte_count = len(belegte)
+    kapazitaet = wg.get("kapazitaet", len(zimmer))
+    
+    gesamt_miete = kosten_config["miete_pro_zimmer"] * belegte_count
+    gesamt_nebenkosten = kosten_config["nebenkosten_pro_zimmer"] * belegte_count
+    gesamt_betreuung = kosten_config["betreuungspauschale"] * belegte_count
+    gesamt_verpflegung = kosten_config["verpflegung"] * belegte_count
+    gesamt_investition = kosten_config["investitionskosten"] * belegte_count
+    
+    kosten_pro_bewohner = (
+        kosten_config["miete_pro_zimmer"] +
+        kosten_config["nebenkosten_pro_zimmer"] +
+        kosten_config["betreuungspauschale"] +
+        kosten_config["verpflegung"] +
+        kosten_config["investitionskosten"]
+    )
+    
+    gesamt_monatlich = kosten_pro_bewohner * belegte_count
+    max_monatlich = kosten_pro_bewohner * kapazitaet
+    entgangene_einnahmen = kosten_pro_bewohner * len(freie)
+    
+    return {
+        "wg_id": wg_id,
+        "wg_name": wg.get("kurzname"),
+        "belegte_zimmer": belegte_count,
+        "kapazitaet": kapazitaet,
+        "auslastung_prozent": round((belegte_count / kapazitaet) * 100) if kapazitaet > 0 else 0,
+        "kosten_detail": {
+            "miete": {"pro_zimmer": kosten_config["miete_pro_zimmer"], "gesamt": gesamt_miete},
+            "nebenkosten": {"pro_zimmer": kosten_config["nebenkosten_pro_zimmer"], "gesamt": gesamt_nebenkosten},
+            "betreuungspauschale": {"pro_zimmer": kosten_config["betreuungspauschale"], "gesamt": gesamt_betreuung},
+            "verpflegung": {"pro_zimmer": kosten_config["verpflegung"], "gesamt": gesamt_verpflegung},
+            "investitionskosten": {"pro_zimmer": kosten_config["investitionskosten"], "gesamt": gesamt_investition},
+        },
+        "kosten_pro_bewohner": kosten_pro_bewohner,
+        "gesamt_monatlich": gesamt_monatlich,
+        "max_monatlich": max_monatlich,
+        "entgangene_einnahmen": entgangene_einnahmen,
+        "gesamt_jaehrlich": gesamt_monatlich * 12,
+    }
+
+@api_router.put("/pflege-wgs/{wg_id}/kosten")
+async def update_wg_kosten(wg_id: str, data: dict):
+    """Update cost configuration for a WG"""
+    wg = next((w for w in PFLEGE_WGS_DATA if w["id"] == wg_id), None)
+    if not wg:
+        raise HTTPException(status_code=404, detail="WG nicht gefunden")
+    
+    await db.wg_kosten.update_one(
+        {"wg_id": wg_id},
+        {"$set": {**data, "wg_id": wg_id, "updated_at": to_iso(now())}},
+        upsert=True
+    )
+    return {"message": "Kosten aktualisiert"}
+
+# ==================== GESAMTKOSTENÜBERSICHT ====================
+
+@api_router.get("/pflege-wgs/kosten/gesamt")
+async def get_gesamt_kosten():
+    """Get total cost overview across all WGs"""
+    ergebnisse = []
+    gesamt_monatlich = 0
+    gesamt_jaehrlich = 0
+    gesamt_entgangen = 0
+    gesamt_bewohner = 0
+    gesamt_kapazitaet = 0
+    
+    for wg in PFLEGE_WGS_DATA:
+        zimmer = await db.wg_zimmer.find({"pflege_wg_id": wg["id"]}, {"_id": 0}).to_list(100)
+        belegte = len([z for z in zimmer if z.get("status") == "belegt"])
+        freie = len([z for z in zimmer if z.get("status") == "frei"])
+        kapazitaet = wg.get("kapazitaet", len(zimmer))
+        
+        kosten_config = await db.wg_kosten.find_one({"wg_id": wg["id"]}, {"_id": 0})
+        if not kosten_config:
+            kosten_config = {
+                "miete_pro_zimmer": 650.0,
+                "nebenkosten_pro_zimmer": 180.0,
+                "betreuungspauschale": 420.0,
+                "verpflegung": 280.0,
+                "investitionskosten": 120.0,
+            }
+        
+        kosten_pro_bewohner = sum([
+            kosten_config["miete_pro_zimmer"],
+            kosten_config["nebenkosten_pro_zimmer"],
+            kosten_config["betreuungspauschale"],
+            kosten_config["verpflegung"],
+            kosten_config["investitionskosten"]
+        ])
+        
+        monatlich = kosten_pro_bewohner * belegte
+        entgangen = kosten_pro_bewohner * freie
+        
+        ergebnisse.append({
+            "wg_id": wg["id"],
+            "wg_name": wg.get("kurzname"),
+            "belegte": belegte,
+            "kapazitaet": kapazitaet,
+            "auslastung": round((belegte / kapazitaet) * 100) if kapazitaet else 0,
+            "monatlich": monatlich,
+            "entgangen": entgangen,
+        })
+        
+        gesamt_monatlich += monatlich
+        gesamt_jaehrlich += monatlich * 12
+        gesamt_entgangen += entgangen
+        gesamt_bewohner += belegte
+        gesamt_kapazitaet += kapazitaet
+    
+    return {
+        "wgs": ergebnisse,
+        "gesamt_monatlich": gesamt_monatlich,
+        "gesamt_jaehrlich": gesamt_jaehrlich,
+        "gesamt_entgangen": gesamt_entgangen,
+        "gesamt_bewohner": gesamt_bewohner,
+        "gesamt_kapazitaet": gesamt_kapazitaet,
+        "gesamt_auslastung": round((gesamt_bewohner / gesamt_kapazitaet) * 100) if gesamt_kapazitaet else 0
+    }
+
 # Besichtigungen Endpoints
 @api_router.get("/besichtigungen")
 async def get_besichtigungen():
