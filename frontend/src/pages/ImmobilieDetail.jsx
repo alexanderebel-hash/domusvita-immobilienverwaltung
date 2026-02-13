@@ -81,7 +81,7 @@ export default function ImmobilieDetail() {
       case "Untervermietet":
         return "status-untervermietet";
       default:
-        return "bg-white/10 text-white/80";
+        return "bg-gray-50 text-gray-700";
     }
   };
 
@@ -103,7 +103,7 @@ export default function ImmobilieDetail() {
       <Button
         variant="ghost"
         onClick={() => navigate("/immobilien")}
-        className="text-white/60 hover:text-white hover:bg-white/10 -ml-2"
+        className="text-gray-500 hover:text-gray-900 hover:bg-gray-50 -ml-2"
         data-testid="back-btn"
       >
         <ArrowLeft className="w-4 h-4 mr-2" />
@@ -124,7 +124,7 @@ export default function ImmobilieDetail() {
           <Button
             variant="outline"
             size="sm"
-            className="bg-white/10 border-white/20 text-white hover:bg-white/20 backdrop-blur-md"
+            className="bg-gray-50 border-gray-200 text-white hover:bg-gray-100 backdrop-blur-md"
             data-testid="edit-btn"
           >
             <Edit2 className="w-4 h-4 mr-2" />
@@ -135,21 +135,21 @@ export default function ImmobilieDetail() {
               <Button
                 variant="outline"
                 size="sm"
-                className="bg-red-500/20 border-red-500/30 text-red-400 hover:bg-red-500/30 backdrop-blur-md"
+                className="bg-red-50 border-red-500/30 text-red-500 hover:bg-red-500/30 backdrop-blur-md"
                 data-testid="delete-btn"
               >
                 <Trash2 className="w-4 h-4" />
               </Button>
             </AlertDialogTrigger>
-            <AlertDialogContent className="bg-[#0A0A0A] border-white/10">
+            <AlertDialogContent className="bg-[#0A0A0A] border-gray-200">
               <AlertDialogHeader>
-                <AlertDialogTitle className="text-white">Immobilie löschen?</AlertDialogTitle>
-                <AlertDialogDescription className="text-white/60">
+                <AlertDialogTitle className="text-gray-900">Immobilie löschen?</AlertDialogTitle>
+                <AlertDialogDescription className="text-gray-500">
                   Diese Aktion kann nicht rückgängig gemacht werden. Alle zugehörigen Einheiten werden ebenfalls gelöscht.
                 </AlertDialogDescription>
               </AlertDialogHeader>
               <AlertDialogFooter>
-                <AlertDialogCancel className="bg-white/5 border-white/10 text-white hover:bg-white/10">
+                <AlertDialogCancel className="bg-white border-gray-200 text-white hover:bg-gray-50">
                   Abbrechen
                 </AlertDialogCancel>
                 <AlertDialogAction
@@ -187,36 +187,36 @@ export default function ImmobilieDetail() {
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         <div className="glass-stat-card p-5" data-testid="stat-units">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-blue-500/20 flex items-center justify-center">
-              <Home className="w-5 h-5 text-blue-400" />
+            <div className="w-10 h-10 rounded-xl bg-blue-50 flex items-center justify-center">
+              <Home className="w-5 h-5 text-blue-500" />
             </div>
             <div>
               <p className="text-2xl font-bold text-white font-['Manrope']">{property.units_count}</p>
-              <p className="text-xs text-white/50">Einheiten</p>
+              <p className="text-xs text-gray-400">Einheiten</p>
             </div>
           </div>
         </div>
         <div className="glass-stat-card p-5" data-testid="stat-tenants">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-emerald-500/20 flex items-center justify-center">
-              <Users className="w-5 h-5 text-emerald-400" />
+            <div className="w-10 h-10 rounded-xl bg-emerald-50 flex items-center justify-center">
+              <Users className="w-5 h-5 text-emerald-500" />
             </div>
             <div>
               <p className="text-2xl font-bold text-white font-['Manrope']">
                 {units.filter((u) => !u.is_vacant).length}
               </p>
-              <p className="text-xs text-white/50">Mieter</p>
+              <p className="text-xs text-gray-400">Mieter</p>
             </div>
           </div>
         </div>
         <div className="glass-stat-card p-5" data-testid="stat-contracts">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-amber-500/20 flex items-center justify-center">
-              <FileText className="w-5 h-5 text-amber-400" />
+            <div className="w-10 h-10 rounded-xl bg-amber-50 flex items-center justify-center">
+              <FileText className="w-5 h-5 text-amber-500" />
             </div>
             <div>
               <p className="text-2xl font-bold text-white font-['Manrope']">0</p>
-              <p className="text-xs text-white/50">Verträge</p>
+              <p className="text-xs text-gray-400">Verträge</p>
             </div>
           </div>
         </div>
@@ -227,7 +227,7 @@ export default function ImmobilieDetail() {
             </div>
             <div>
               <p className="text-2xl font-bold text-white font-['Manrope']">0</p>
-              <p className="text-xs text-white/50">Wartungen</p>
+              <p className="text-xs text-gray-400">Wartungen</p>
             </div>
           </div>
         </div>
@@ -247,30 +247,30 @@ export default function ImmobilieDetail() {
           {units.length === 0 ? (
             <div className="text-center py-12">
               <Home className="w-10 h-10 text-white/20 mx-auto mb-3" />
-              <p className="text-white/50">Keine Einheiten vorhanden</p>
+              <p className="text-gray-400">Keine Einheiten vorhanden</p>
             </div>
           ) : (
             <div className="space-y-3">
               {units.map((unit) => (
                 <div
                   key={unit.id}
-                  className="flex items-center justify-between p-4 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 transition-all"
+                  className="flex items-center justify-between p-4 rounded-xl bg-white border border-gray-200 hover:bg-gray-50 transition-all"
                   data-testid={`unit-${unit.id}`}
                 >
                   <div className="flex items-center gap-4">
-                    <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${unit.is_vacant ? "bg-amber-500/20" : "bg-emerald-500/20"}`}>
-                      <Home className={`w-5 h-5 ${unit.is_vacant ? "text-amber-400" : "text-emerald-400"}`} />
+                    <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${unit.is_vacant ? "bg-amber-50" : "bg-emerald-50"}`}>
+                      <Home className={`w-5 h-5 ${unit.is_vacant ? "text-amber-500" : "text-emerald-500"}`} />
                     </div>
                     <div>
-                      <p className="text-white font-medium">Einheit {unit.unit_number}</p>
-                      <p className="text-white/50 text-sm">
+                      <p className="text-gray-900 font-medium">Einheit {unit.unit_number}</p>
+                      <p className="text-gray-400 text-sm">
                         {unit.rooms} Zimmer • {unit.area_sqm} m² • {unit.floor}. OG
                       </p>
                     </div>
                   </div>
                   <div className="text-right">
-                    <p className="text-white font-medium">{unit.rent_amount.toLocaleString("de-DE")} €</p>
-                    <p className={`text-sm ${unit.is_vacant ? "text-amber-400" : "text-emerald-400"}`}>
+                    <p className="text-gray-900 font-medium">{unit.rent_amount.toLocaleString("de-DE")} €</p>
+                    <p className={`text-sm ${unit.is_vacant ? "text-amber-500" : "text-emerald-500"}`}>
                       {unit.is_vacant ? "Leer" : unit.tenant_name}
                     </p>
                   </div>
@@ -293,24 +293,24 @@ export default function ImmobilieDetail() {
             <h2 className="text-lg font-semibold text-white font-['Manrope'] mb-4">Details</h2>
             <div className="space-y-3">
               <div className="flex justify-between text-sm">
-                <span className="text-white/50">Typ</span>
-                <span className="text-white">{property.property_type}</span>
+                <span className="text-gray-400">Typ</span>
+                <span className="text-gray-900">{property.property_type}</span>
               </div>
               <div className="flex justify-between text-sm">
-                <span className="text-white/50">Status</span>
-                <span className="text-white">{property.status}</span>
+                <span className="text-gray-400">Status</span>
+                <span className="text-gray-900">{property.status}</span>
               </div>
               <div className="flex justify-between text-sm">
-                <span className="text-white/50">Stadt</span>
-                <span className="text-white">{property.city}</span>
+                <span className="text-gray-400">Stadt</span>
+                <span className="text-gray-900">{property.city}</span>
               </div>
               <div className="flex justify-between text-sm">
-                <span className="text-white/50">PLZ</span>
-                <span className="text-white">{property.postal_code}</span>
+                <span className="text-gray-400">PLZ</span>
+                <span className="text-gray-900">{property.postal_code}</span>
               </div>
               <div className="flex justify-between text-sm">
-                <span className="text-white/50">Erstellt</span>
-                <span className="text-white">
+                <span className="text-gray-400">Erstellt</span>
+                <span className="text-gray-900">
                   {new Date(property.created_at).toLocaleDateString("de-DE")}
                 </span>
               </div>

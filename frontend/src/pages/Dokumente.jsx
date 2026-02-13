@@ -51,10 +51,10 @@ const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
 
 const categoryOptions = ["Vertrag", "Protokoll", "Rechnung", "Grundriss", "Sonstiges"];
 const categoryColors = {
-  Vertrag: "bg-blue-500/20 text-blue-400 border-blue-500/30",
-  Protokoll: "bg-emerald-500/20 text-emerald-400 border-emerald-500/30",
-  Rechnung: "bg-amber-500/20 text-amber-400 border-amber-500/30",
-  Grundriss: "bg-purple-500/20 text-purple-400 border-purple-500/30",
+  Vertrag: "bg-blue-50 text-blue-500 border-blue-500/30",
+  Protokoll: "bg-emerald-50 text-emerald-500 border-emerald-500/30",
+  Rechnung: "bg-amber-50 text-amber-500 border-amber-500/30",
+  Grundriss: "bg-purple-50 text-purple-500 border-purple-500/30",
   Sonstiges: "bg-gray-500/20 text-gray-400 border-gray-500/30",
 };
 
@@ -182,7 +182,7 @@ export default function Dokumente() {
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
           <h1 className="text-3xl font-bold text-white font-['Manrope']">Dokumente</h1>
-          <p className="text-white/50 mt-1">{documents.length} Dokumente verwalten</p>
+          <p className="text-gray-400 mt-1">{documents.length} Dokumente verwalten</p>
         </div>
         
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
@@ -192,10 +192,10 @@ export default function Dokumente() {
               Dokument hochladen
             </Button>
           </DialogTrigger>
-          <DialogContent className="bg-[#0A0A0A] border-white/10 text-white max-w-md">
+          <DialogContent className="bg-[#0A0A0A] border-gray-200 text-white max-w-md">
             <DialogHeader>
               <DialogTitle className="text-xl font-['Manrope']">Dokument hochladen</DialogTitle>
-              <DialogDescription className="text-white/50">
+              <DialogDescription className="text-gray-400">
                 Laden Sie ein Dokument zu einer Immobilie hoch.
               </DialogDescription>
             </DialogHeader>
@@ -203,12 +203,12 @@ export default function Dokumente() {
               <div>
                 <Label className="text-white/70">Immobilie *</Label>
                 <Select value={uploadData.property_id} onValueChange={(v) => setUploadData({ ...uploadData, property_id: v })}>
-                  <SelectTrigger className="mt-1 bg-white/5 border-white/10 text-white" data-testid="upload-property-select">
+                  <SelectTrigger className="mt-1 bg-white border-gray-200 text-white" data-testid="upload-property-select">
                     <SelectValue placeholder="Immobilie wählen" />
                   </SelectTrigger>
-                  <SelectContent className="bg-[#1A1A1A] border-white/10">
+                  <SelectContent className="bg-[#1A1A1A] border-gray-200">
                     {properties.map((p) => (
-                      <SelectItem key={p.id} value={p.id} className="text-white hover:bg-white/10">{p.name}</SelectItem>
+                      <SelectItem key={p.id} value={p.id} className="text-white hover:bg-gray-50">{p.name}</SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
@@ -216,12 +216,12 @@ export default function Dokumente() {
               <div>
                 <Label className="text-white/70">Kategorie</Label>
                 <Select value={uploadData.category} onValueChange={(v) => setUploadData({ ...uploadData, category: v })}>
-                  <SelectTrigger className="mt-1 bg-white/5 border-white/10 text-white" data-testid="upload-category-select">
+                  <SelectTrigger className="mt-1 bg-white border-gray-200 text-white" data-testid="upload-category-select">
                     <SelectValue />
                   </SelectTrigger>
-                  <SelectContent className="bg-[#1A1A1A] border-white/10">
+                  <SelectContent className="bg-[#1A1A1A] border-gray-200">
                     {categoryOptions.map((c) => (
-                      <SelectItem key={c} value={c} className="text-white hover:bg-white/10">{c}</SelectItem>
+                      <SelectItem key={c} value={c} className="text-white hover:bg-gray-50">{c}</SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
@@ -229,7 +229,7 @@ export default function Dokumente() {
               <div>
                 <Label className="text-white/70">Datei *</Label>
                 <div 
-                  className="mt-1 border-2 border-dashed border-white/20 rounded-xl p-6 text-center hover:border-white/40 transition-colors cursor-pointer"
+                  className="mt-1 border-2 border-dashed border-gray-200 rounded-xl p-6 text-center hover:border-white/40 transition-colors cursor-pointer"
                   onClick={() => fileInputRef.current?.click()}
                 >
                   <input
@@ -242,29 +242,29 @@ export default function Dokumente() {
                   />
                   {uploadData.file ? (
                     <div className="flex items-center justify-center gap-2">
-                      <FileText className="w-6 h-6 text-blue-400" />
-                      <span className="text-white">{uploadData.file.name}</span>
+                      <FileText className="w-6 h-6 text-blue-500" />
+                      <span className="text-gray-900">{uploadData.file.name}</span>
                       <Button
                         type="button"
                         size="sm"
                         variant="ghost"
                         onClick={(e) => { e.stopPropagation(); setUploadData({ ...uploadData, file: null }); }}
-                        className="text-white/50 hover:text-white"
+                        className="text-gray-400 hover:text-gray-900"
                       >
                         <X className="w-4 h-4" />
                       </Button>
                     </div>
                   ) : (
                     <>
-                      <Upload className="w-8 h-8 text-white/40 mx-auto mb-2" />
-                      <p className="text-white/60">Klicken oder Datei hierher ziehen</p>
-                      <p className="text-white/40 text-sm mt-1">PDF, DOC, XLS, JPG, PNG</p>
+                      <Upload className="w-8 h-8 text-gray-400 mx-auto mb-2" />
+                      <p className="text-gray-500">Klicken oder Datei hierher ziehen</p>
+                      <p className="text-gray-400 text-sm mt-1">PDF, DOC, XLS, JPG, PNG</p>
                     </>
                   )}
                 </div>
               </div>
               <div className="flex justify-end gap-3 pt-4">
-                <Button type="button" variant="outline" onClick={() => setIsDialogOpen(false)} className="bg-white/5 border-white/10 text-white hover:bg-white/10">
+                <Button type="button" variant="outline" onClick={() => setIsDialogOpen(false)} className="bg-white border-gray-200 text-white hover:bg-gray-50">
                   Abbrechen
                 </Button>
                 <Button type="submit" disabled={uploading} className="btn-primary" data-testid="submit-upload-btn">
@@ -280,41 +280,41 @@ export default function Dokumente() {
       <div className="glass-card p-4" data-testid="dokumente-filters">
         <div className="flex flex-col md:flex-row gap-4">
           <div className="relative flex-1">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/40" />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
             <Input
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               placeholder="Dokument suchen..."
-              className="pl-10 bg-white/5 border-white/10 text-white placeholder:text-white/30"
+              className="pl-10 bg-white border-gray-200 text-white placeholder:text-gray-300"
               data-testid="search-documents-input"
             />
           </div>
           <Select value={propertyFilter} onValueChange={setPropertyFilter}>
-            <SelectTrigger className="w-[200px] bg-white/5 border-white/10 text-white" data-testid="filter-property">
-              <Building2 className="w-4 h-4 mr-2 text-white/40" />
+            <SelectTrigger className="w-[200px] bg-white border-gray-200 text-white" data-testid="filter-property">
+              <Building2 className="w-4 h-4 mr-2 text-gray-400" />
               <SelectValue placeholder="Alle Immobilien" />
             </SelectTrigger>
-            <SelectContent className="bg-[#1A1A1A] border-white/10">
-              <SelectItem value="all" className="text-white hover:bg-white/10">Alle Immobilien</SelectItem>
+            <SelectContent className="bg-[#1A1A1A] border-gray-200">
+              <SelectItem value="all" className="text-white hover:bg-gray-50">Alle Immobilien</SelectItem>
               {properties.map((p) => (
-                <SelectItem key={p.id} value={p.id} className="text-white hover:bg-white/10">{p.name}</SelectItem>
+                <SelectItem key={p.id} value={p.id} className="text-white hover:bg-gray-50">{p.name}</SelectItem>
               ))}
             </SelectContent>
           </Select>
           <Select value={categoryFilter} onValueChange={setCategoryFilter}>
-            <SelectTrigger className="w-[180px] bg-white/5 border-white/10 text-white" data-testid="filter-category">
-              <Filter className="w-4 h-4 mr-2 text-white/40" />
+            <SelectTrigger className="w-[180px] bg-white border-gray-200 text-white" data-testid="filter-category">
+              <Filter className="w-4 h-4 mr-2 text-gray-400" />
               <SelectValue placeholder="Alle Kategorien" />
             </SelectTrigger>
-            <SelectContent className="bg-[#1A1A1A] border-white/10">
-              <SelectItem value="all" className="text-white hover:bg-white/10">Alle Kategorien</SelectItem>
+            <SelectContent className="bg-[#1A1A1A] border-gray-200">
+              <SelectItem value="all" className="text-white hover:bg-gray-50">Alle Kategorien</SelectItem>
               {categoryOptions.map((c) => (
-                <SelectItem key={c} value={c} className="text-white hover:bg-white/10">{c}</SelectItem>
+                <SelectItem key={c} value={c} className="text-white hover:bg-gray-50">{c}</SelectItem>
               ))}
             </SelectContent>
           </Select>
           {(propertyFilter || categoryFilter || searchTerm) && (
-            <Button variant="ghost" onClick={() => { setPropertyFilter(""); setCategoryFilter(""); setSearchTerm(""); }} className="text-white/60 hover:text-white">
+            <Button variant="ghost" onClick={() => { setPropertyFilter(""); setCategoryFilter(""); setSearchTerm(""); }} className="text-gray-500 hover:text-gray-900">
               <X className="w-4 h-4 mr-1" /> Filter zurücksetzen
             </Button>
           )}
@@ -326,7 +326,7 @@ export default function Dokumente() {
         <div className="glass-card p-12 text-center" data-testid="no-documents">
           <FolderOpen className="w-12 h-12 text-white/20 mx-auto mb-4" />
           <h3 className="text-lg font-medium text-white mb-2">Keine Dokumente gefunden</h3>
-          <p className="text-white/50 mb-4">Laden Sie Ihr erstes Dokument hoch</p>
+          <p className="text-gray-400 mb-4">Laden Sie Ihr erstes Dokument hoch</p>
           <Button onClick={() => setIsDialogOpen(true)} className="btn-primary">
             <Upload className="w-4 h-4 mr-2" /> Dokument hochladen
           </Button>
@@ -339,11 +339,11 @@ export default function Dokumente() {
             return (
               <div key={property.id} className="space-y-4" data-testid={`documents-group-${property.id}`}>
                 <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-lg bg-blue-500/20 flex items-center justify-center">
-                    <Building2 className="w-4 h-4 text-blue-400" />
+                  <div className="w-8 h-8 rounded-lg bg-blue-50 flex items-center justify-center">
+                    <Building2 className="w-4 h-4 text-blue-500" />
                   </div>
                   <h2 className="text-lg font-semibold text-white font-['Manrope']">{property.name}</h2>
-                  <span className="text-sm text-white/40">({propDocs.length} Dokumente)</span>
+                  <span className="text-sm text-gray-400">({propDocs.length} Dokumente)</span>
                 </div>
                 
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -353,34 +353,34 @@ export default function Dokumente() {
                     return (
                       <div
                         key={doc.id}
-                        className="glass-card p-4 hover:bg-white/10 transition-all opacity-0 animate-fade-in"
+                        className="glass-card p-4 hover:bg-gray-50 transition-all opacity-0 animate-fade-in"
                         style={{ animationDelay: `${idx * 0.05}s` }}
                         data-testid={`document-card-${doc.id}`}
                       >
                         <div className="flex items-start gap-4">
-                          <div className="w-12 h-12 rounded-xl bg-white/10 flex items-center justify-center flex-shrink-0">
-                            <FileIcon className="w-6 h-6 text-white/60" />
+                          <div className="w-12 h-12 rounded-xl bg-gray-50 flex items-center justify-center flex-shrink-0">
+                            <FileIcon className="w-6 h-6 text-gray-500" />
                           </div>
                           <div className="flex-1 min-w-0">
-                            <h3 className="text-white font-medium truncate">{doc.name}</h3>
+                            <h3 className="text-gray-900 font-medium truncate">{doc.name}</h3>
                             <div className="flex items-center gap-2 mt-1">
                               <span className={`px-2 py-0.5 rounded text-xs border ${categoryColors[doc.category]}`}>
                                 {doc.category}
                               </span>
-                              <span className="text-xs text-white/40">{formatFileSize(doc.file_size)}</span>
+                              <span className="text-xs text-gray-400">{formatFileSize(doc.file_size)}</span>
                             </div>
-                            <p className="text-xs text-white/40 mt-2">
+                            <p className="text-xs text-gray-400 mt-2">
                               {new Date(doc.created_at).toLocaleDateString("de-DE")}
                             </p>
                           </div>
                         </div>
                         
-                        <div className="flex gap-2 mt-4 pt-3 border-t border-white/10">
+                        <div className="flex gap-2 mt-4 pt-3 border-t border-gray-200">
                           <Button
                             size="sm"
                             variant="ghost"
                             onClick={() => window.open(doc.file_url, "_blank")}
-                            className="flex-1 text-white/60 hover:text-white hover:bg-white/10"
+                            className="flex-1 text-gray-500 hover:text-gray-900 hover:bg-gray-50"
                           >
                             <Eye className="w-4 h-4 mr-1" /> Anzeigen
                           </Button>
@@ -388,25 +388,25 @@ export default function Dokumente() {
                             size="sm"
                             variant="ghost"
                             onClick={() => window.open(doc.file_url, "_blank")}
-                            className="text-white/60 hover:text-white hover:bg-white/10"
+                            className="text-gray-500 hover:text-gray-900 hover:bg-gray-50"
                           >
                             <Download className="w-4 h-4" />
                           </Button>
                           <AlertDialog>
                             <AlertDialogTrigger asChild>
-                              <Button size="sm" variant="ghost" className="text-red-400 hover:text-red-300 hover:bg-red-500/10">
+                              <Button size="sm" variant="ghost" className="text-red-500 hover:text-red-300 hover:bg-red-500/10">
                                 <Trash2 className="w-4 h-4" />
                               </Button>
                             </AlertDialogTrigger>
-                            <AlertDialogContent className="bg-[#0A0A0A] border-white/10">
+                            <AlertDialogContent className="bg-[#0A0A0A] border-gray-200">
                               <AlertDialogHeader>
-                                <AlertDialogTitle className="text-white">Dokument löschen?</AlertDialogTitle>
-                                <AlertDialogDescription className="text-white/60">
+                                <AlertDialogTitle className="text-gray-900">Dokument löschen?</AlertDialogTitle>
+                                <AlertDialogDescription className="text-gray-500">
                                   Möchten Sie "{doc.name}" wirklich löschen?
                                 </AlertDialogDescription>
                               </AlertDialogHeader>
                               <AlertDialogFooter>
-                                <AlertDialogCancel className="bg-white/5 border-white/10 text-white hover:bg-white/10">Abbrechen</AlertDialogCancel>
+                                <AlertDialogCancel className="bg-white border-gray-200 text-white hover:bg-gray-50">Abbrechen</AlertDialogCancel>
                                 <AlertDialogAction onClick={() => handleDelete(doc.id)} className="bg-red-500 hover:bg-red-600 text-white">Löschen</AlertDialogAction>
                               </AlertDialogFooter>
                             </AlertDialogContent>
