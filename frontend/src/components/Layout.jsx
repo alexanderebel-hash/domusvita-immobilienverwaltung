@@ -47,7 +47,7 @@ export default function Layout() {
 
       <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
 
-      <main className="flex-1 lg:ml-64 pt-14 lg:pt-0 min-h-screen">
+      <main className="flex-1 lg:ml-64 pt-14 lg:pt-0 min-h-screen overflow-x-hidden">
         <Outlet />
       </main>
     </div>
