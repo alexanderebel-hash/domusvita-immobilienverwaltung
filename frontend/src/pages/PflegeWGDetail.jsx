@@ -33,9 +33,12 @@ export default function PflegeWGDetail() {
   const [showZimmerDialog, setShowZimmerDialog] = useState(false);
   const [imageError, setImageError] = useState(false);
   const [imageLoaded, setImageLoaded] = useState(false);
+  const [kosten, setKosten] = useState(null);
+  const [activeTab, setActiveTab] = useState('grundriss');
 
   useEffect(() => {
     fetchWG();
+    fetchKosten();
   }, [wgId]);
 
   const fetchWG = async () => {
@@ -48,6 +51,16 @@ export default function PflegeWGDetail() {
     } finally {
       setLoading(false);
     }
+  };
+
+  const fetchKosten = async () => {
+    try {
+      const res = await fetch(`${API_URL}/api/pflege-wgs/${wgId}/kosten`);
+      if (res.ok) {
+        const data = await res.json();
+        setKosten(data);
+      }
+    } catch (e) { /* ignore */ }
   };
 
   const handleZimmerClick = (zimmer) => {
