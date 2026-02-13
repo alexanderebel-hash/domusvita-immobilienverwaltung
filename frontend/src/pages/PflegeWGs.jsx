@@ -298,6 +298,57 @@ export default function PflegeWGs() {
         ))}
       </div>
 
+      {/* Gesamtkostenübersicht */}
+      {gesamtKosten && (
+        <Card className="bg-white/5 border-white/10 mt-8" data-testid="gesamt-kosten">
+          <CardHeader>
+            <CardTitle className="text-white flex items-center gap-2">
+              <Euro className="w-5 h-5" />
+              Finanzübersicht aller WGs
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
+              <div className="p-4 bg-white/5 rounded-lg">
+                <p className="text-white/60 text-sm">Auslastung gesamt</p>
+                <p className="text-2xl font-bold text-white">{gesamtKosten.gesamt_auslastung}%</p>
+                <p className="text-white/40 text-xs">{gesamtKosten.gesamt_bewohner}/{gesamtKosten.gesamt_kapazitaet} Plätze</p>
+              </div>
+              <div className="p-4 bg-white/5 rounded-lg">
+                <p className="text-white/60 text-sm">Monatliche Einnahmen</p>
+                <p className="text-2xl font-bold text-emerald-400">{gesamtKosten.gesamt_monatlich.toLocaleString('de-DE')} &euro;</p>
+              </div>
+              <div className="p-4 bg-white/5 rounded-lg">
+                <p className="text-white/60 text-sm">Jährliche Einnahmen</p>
+                <p className="text-2xl font-bold text-white">{gesamtKosten.gesamt_jaehrlich.toLocaleString('de-DE')} &euro;</p>
+              </div>
+              <div className="p-4 bg-red-500/10 rounded-lg border border-red-500/20">
+                <p className="text-red-400/80 text-sm">Entgangene Einnahmen</p>
+                <p className="text-2xl font-bold text-red-400">{gesamtKosten.gesamt_entgangen.toLocaleString('de-DE')} &euro;</p>
+                <p className="text-red-400/60 text-xs">pro Monat</p>
+              </div>
+            </div>
+            <div className="space-y-2">
+              {gesamtKosten.wgs.map(wg => (
+                <div key={wg.wg_id} className="flex items-center gap-4 p-3 bg-white/5 rounded-lg hover:bg-white/10 transition-colors cursor-pointer" onClick={() => navigate(`/pflege-wgs/${wg.wg_id}`)}>
+                  <span className="text-white font-medium w-40">{wg.wg_name}</span>
+                  <div className="flex-1">
+                    <div className="w-full bg-white/10 rounded-full h-2">
+                      <div className="h-2 rounded-full bg-blue-500 transition-all" style={{width: `${wg.auslastung}%`}}></div>
+                    </div>
+                  </div>
+                  <span className="text-white/60 text-sm w-16 text-right">{wg.auslastung}%</span>
+                  <span className="text-emerald-400 font-medium w-28 text-right">{wg.monatlich.toLocaleString('de-DE')} &euro;</span>
+                  {wg.entgangen > 0 && (
+                    <span className="text-red-400/60 text-sm w-28 text-right">-{wg.entgangen.toLocaleString('de-DE')} &euro;</span>
+                  )}
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
       {/* Pipeline Preview */}
       {dashboard?.pipeline && (
         <Card className="bg-white/5 border-white/10 mt-8">
