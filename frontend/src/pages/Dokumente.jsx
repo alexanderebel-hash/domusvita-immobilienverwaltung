@@ -181,7 +181,7 @@ export default function Dokumente() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold text-white font-['Manrope']">Dokumente</h1>
+          <h1 className="text-3xl font-bold text-gray-900 font-['Manrope']">Dokumente</h1>
           <p className="text-gray-400 mt-1">{documents.length} Dokumente verwalten</p>
         </div>
         
@@ -192,7 +192,7 @@ export default function Dokumente() {
               Dokument hochladen
             </Button>
           </DialogTrigger>
-          <DialogContent className="bg-[#0A0A0A] border-gray-200 text-white max-w-md">
+          <DialogContent className="bg-[#0A0A0A] border-gray-200 text-gray-900 max-w-md">
             <DialogHeader>
               <DialogTitle className="text-xl font-['Manrope']">Dokument hochladen</DialogTitle>
               <DialogDescription className="text-gray-400">
@@ -203,12 +203,12 @@ export default function Dokumente() {
               <div>
                 <Label className="text-white/70">Immobilie *</Label>
                 <Select value={uploadData.property_id} onValueChange={(v) => setUploadData({ ...uploadData, property_id: v })}>
-                  <SelectTrigger className="mt-1 bg-white border-gray-200 text-white" data-testid="upload-property-select">
+                  <SelectTrigger className="mt-1 bg-white border-gray-200 text-gray-900" data-testid="upload-property-select">
                     <SelectValue placeholder="Immobilie wählen" />
                   </SelectTrigger>
                   <SelectContent className="bg-[#1A1A1A] border-gray-200">
                     {properties.map((p) => (
-                      <SelectItem key={p.id} value={p.id} className="text-white hover:bg-gray-50">{p.name}</SelectItem>
+                      <SelectItem key={p.id} value={p.id} className="text-gray-900 hover:bg-gray-50">{p.name}</SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
@@ -216,12 +216,12 @@ export default function Dokumente() {
               <div>
                 <Label className="text-white/70">Kategorie</Label>
                 <Select value={uploadData.category} onValueChange={(v) => setUploadData({ ...uploadData, category: v })}>
-                  <SelectTrigger className="mt-1 bg-white border-gray-200 text-white" data-testid="upload-category-select">
+                  <SelectTrigger className="mt-1 bg-white border-gray-200 text-gray-900" data-testid="upload-category-select">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent className="bg-[#1A1A1A] border-gray-200">
                     {categoryOptions.map((c) => (
-                      <SelectItem key={c} value={c} className="text-white hover:bg-gray-50">{c}</SelectItem>
+                      <SelectItem key={c} value={c} className="text-gray-900 hover:bg-gray-50">{c}</SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
@@ -264,7 +264,7 @@ export default function Dokumente() {
                 </div>
               </div>
               <div className="flex justify-end gap-3 pt-4">
-                <Button type="button" variant="outline" onClick={() => setIsDialogOpen(false)} className="bg-white border-gray-200 text-white hover:bg-gray-50">
+                <Button type="button" variant="outline" onClick={() => setIsDialogOpen(false)} className="bg-white border-gray-200 text-gray-900 hover:bg-gray-50">
                   Abbrechen
                 </Button>
                 <Button type="submit" disabled={uploading} className="btn-primary" data-testid="submit-upload-btn">
@@ -277,7 +277,7 @@ export default function Dokumente() {
       </div>
 
       {/* Filters */}
-      <div className="glass-card p-4" data-testid="dokumente-filters">
+      <div className="bg-white rounded-2xl shadow-sm p-4" data-testid="dokumente-filters">
         <div className="flex flex-col md:flex-row gap-4">
           <div className="relative flex-1">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
@@ -285,31 +285,31 @@ export default function Dokumente() {
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               placeholder="Dokument suchen..."
-              className="pl-10 bg-white border-gray-200 text-white placeholder:text-gray-300"
+              className="pl-10 bg-white border-gray-200 text-gray-900 placeholder:text-gray-300"
               data-testid="search-documents-input"
             />
           </div>
           <Select value={propertyFilter} onValueChange={setPropertyFilter}>
-            <SelectTrigger className="w-[200px] bg-white border-gray-200 text-white" data-testid="filter-property">
+            <SelectTrigger className="w-[200px] bg-white border-gray-200 text-gray-900" data-testid="filter-property">
               <Building2 className="w-4 h-4 mr-2 text-gray-400" />
               <SelectValue placeholder="Alle Immobilien" />
             </SelectTrigger>
             <SelectContent className="bg-[#1A1A1A] border-gray-200">
-              <SelectItem value="all" className="text-white hover:bg-gray-50">Alle Immobilien</SelectItem>
+              <SelectItem value="all" className="text-gray-900 hover:bg-gray-50">Alle Immobilien</SelectItem>
               {properties.map((p) => (
-                <SelectItem key={p.id} value={p.id} className="text-white hover:bg-gray-50">{p.name}</SelectItem>
+                <SelectItem key={p.id} value={p.id} className="text-gray-900 hover:bg-gray-50">{p.name}</SelectItem>
               ))}
             </SelectContent>
           </Select>
           <Select value={categoryFilter} onValueChange={setCategoryFilter}>
-            <SelectTrigger className="w-[180px] bg-white border-gray-200 text-white" data-testid="filter-category">
+            <SelectTrigger className="w-[180px] bg-white border-gray-200 text-gray-900" data-testid="filter-category">
               <Filter className="w-4 h-4 mr-2 text-gray-400" />
               <SelectValue placeholder="Alle Kategorien" />
             </SelectTrigger>
             <SelectContent className="bg-[#1A1A1A] border-gray-200">
-              <SelectItem value="all" className="text-white hover:bg-gray-50">Alle Kategorien</SelectItem>
+              <SelectItem value="all" className="text-gray-900 hover:bg-gray-50">Alle Kategorien</SelectItem>
               {categoryOptions.map((c) => (
-                <SelectItem key={c} value={c} className="text-white hover:bg-gray-50">{c}</SelectItem>
+                <SelectItem key={c} value={c} className="text-gray-900 hover:bg-gray-50">{c}</SelectItem>
               ))}
             </SelectContent>
           </Select>
@@ -323,9 +323,9 @@ export default function Dokumente() {
 
       {/* Documents by Property */}
       {filteredDocuments.length === 0 ? (
-        <div className="glass-card p-12 text-center" data-testid="no-documents">
+        <div className="bg-white rounded-2xl shadow-sm p-12 text-center" data-testid="no-documents">
           <FolderOpen className="w-12 h-12 text-white/20 mx-auto mb-4" />
-          <h3 className="text-lg font-medium text-white mb-2">Keine Dokumente gefunden</h3>
+          <h3 className="text-lg font-medium text-gray-900 mb-2">Keine Dokumente gefunden</h3>
           <p className="text-gray-400 mb-4">Laden Sie Ihr erstes Dokument hoch</p>
           <Button onClick={() => setIsDialogOpen(true)} className="btn-primary">
             <Upload className="w-4 h-4 mr-2" /> Dokument hochladen
@@ -342,7 +342,7 @@ export default function Dokumente() {
                   <div className="w-8 h-8 rounded-lg bg-blue-50 flex items-center justify-center">
                     <Building2 className="w-4 h-4 text-blue-500" />
                   </div>
-                  <h2 className="text-lg font-semibold text-white font-['Manrope']">{property.name}</h2>
+                  <h2 className="text-lg font-semibold text-gray-900 font-['Manrope']">{property.name}</h2>
                   <span className="text-sm text-gray-400">({propDocs.length} Dokumente)</span>
                 </div>
                 
@@ -353,7 +353,7 @@ export default function Dokumente() {
                     return (
                       <div
                         key={doc.id}
-                        className="glass-card p-4 hover:bg-gray-50 transition-all opacity-0 animate-fade-in"
+                        className="bg-white rounded-2xl shadow-sm p-4 hover:bg-gray-50 transition-all opacity-0 animate-fade-in"
                         style={{ animationDelay: `${idx * 0.05}s` }}
                         data-testid={`document-card-${doc.id}`}
                       >
@@ -406,8 +406,8 @@ export default function Dokumente() {
                                 </AlertDialogDescription>
                               </AlertDialogHeader>
                               <AlertDialogFooter>
-                                <AlertDialogCancel className="bg-white border-gray-200 text-white hover:bg-gray-50">Abbrechen</AlertDialogCancel>
-                                <AlertDialogAction onClick={() => handleDelete(doc.id)} className="bg-red-500 hover:bg-red-600 text-white">Löschen</AlertDialogAction>
+                                <AlertDialogCancel className="bg-white border-gray-200 text-gray-900 hover:bg-gray-50">Abbrechen</AlertDialogCancel>
+                                <AlertDialogAction onClick={() => handleDelete(doc.id)} className="bg-red-500 hover:bg-red-600 text-gray-900">Löschen</AlertDialogAction>
                               </AlertDialogFooter>
                             </AlertDialogContent>
                           </AlertDialog>

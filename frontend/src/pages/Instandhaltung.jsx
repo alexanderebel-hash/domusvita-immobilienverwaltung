@@ -229,7 +229,7 @@ export default function Instandhaltung() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold text-white font-['Manrope']">Instandhaltung</h1>
+          <h1 className="text-3xl font-bold text-gray-900 font-['Manrope']">Instandhaltung</h1>
           <p className="text-gray-400 mt-1">{tickets.length} Wartungsaufgaben</p>
         </div>
         
@@ -240,7 +240,7 @@ export default function Instandhaltung() {
               Neues Ticket
             </Button>
           </DialogTrigger>
-          <DialogContent className="bg-[#0A0A0A] border-gray-200 text-white max-w-lg max-h-[90vh] overflow-y-auto">
+          <DialogContent className="bg-[#0A0A0A] border-gray-200 text-gray-900 max-w-lg max-h-[90vh] overflow-y-auto">
             <DialogHeader>
               <DialogTitle className="text-xl font-['Manrope']">
                 {editingTicket ? "Ticket bearbeiten" : "Neues Ticket"}
@@ -253,12 +253,12 @@ export default function Instandhaltung() {
               <div>
                 <Label className="text-white/70">Immobilie *</Label>
                 <Select value={formData.property_id} onValueChange={(v) => setFormData({ ...formData, property_id: v })}>
-                  <SelectTrigger className="mt-1 bg-white border-gray-200 text-white" data-testid="ticket-property-select">
+                  <SelectTrigger className="mt-1 bg-white border-gray-200 text-gray-900" data-testid="ticket-property-select">
                     <SelectValue placeholder="Immobilie wählen" />
                   </SelectTrigger>
                   <SelectContent className="bg-[#1A1A1A] border-gray-200">
                     {properties.map((p) => (
-                      <SelectItem key={p.id} value={p.id} className="text-white hover:bg-gray-50">{p.name}</SelectItem>
+                      <SelectItem key={p.id} value={p.id} className="text-gray-900 hover:bg-gray-50">{p.name}</SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
@@ -269,7 +269,7 @@ export default function Instandhaltung() {
                   value={formData.title}
                   onChange={(e) => setFormData({ ...formData, title: e.target.value })}
                   placeholder="Kurze Beschreibung"
-                  className="mt-1 bg-white border-gray-200 text-white"
+                  className="mt-1 bg-white border-gray-200 text-gray-900"
                   data-testid="ticket-title-input"
                 />
               </div>
@@ -277,12 +277,12 @@ export default function Instandhaltung() {
                 <div>
                   <Label className="text-white/70">Kategorie</Label>
                   <Select value={formData.category} onValueChange={(v) => setFormData({ ...formData, category: v })}>
-                    <SelectTrigger className="mt-1 bg-white border-gray-200 text-white">
+                    <SelectTrigger className="mt-1 bg-white border-gray-200 text-gray-900">
                       <SelectValue placeholder="Wählen" />
                     </SelectTrigger>
                     <SelectContent className="bg-[#1A1A1A] border-gray-200">
                       {categoryOptions.map((c) => (
-                        <SelectItem key={c} value={c} className="text-white hover:bg-gray-50">{c}</SelectItem>
+                        <SelectItem key={c} value={c} className="text-gray-900 hover:bg-gray-50">{c}</SelectItem>
                       ))}
                     </SelectContent>
                   </Select>
@@ -290,12 +290,12 @@ export default function Instandhaltung() {
                 <div>
                   <Label className="text-white/70">Priorität</Label>
                   <Select value={formData.priority} onValueChange={(v) => setFormData({ ...formData, priority: v })}>
-                    <SelectTrigger className="mt-1 bg-white border-gray-200 text-white">
+                    <SelectTrigger className="mt-1 bg-white border-gray-200 text-gray-900">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent className="bg-[#1A1A1A] border-gray-200">
                       {priorityOptions.map((p) => (
-                        <SelectItem key={p} value={p} className="text-white hover:bg-gray-50">{p}</SelectItem>
+                        <SelectItem key={p} value={p} className="text-gray-900 hover:bg-gray-50">{p}</SelectItem>
                       ))}
                     </SelectContent>
                   </Select>
@@ -305,13 +305,13 @@ export default function Instandhaltung() {
                 <div>
                   <Label className="text-white/70">Handwerker zuweisen</Label>
                   <Select value={formData.assigned_to_id} onValueChange={(v) => setFormData({ ...formData, assigned_to_id: v })}>
-                    <SelectTrigger className="mt-1 bg-white border-gray-200 text-white">
+                    <SelectTrigger className="mt-1 bg-white border-gray-200 text-gray-900">
                       <SelectValue placeholder="Optional" />
                     </SelectTrigger>
                     <SelectContent className="bg-[#1A1A1A] border-gray-200">
-                      <SelectItem value="none" className="text-white hover:bg-gray-50">Nicht zugewiesen</SelectItem>
+                      <SelectItem value="none" className="text-gray-900 hover:bg-gray-50">Nicht zugewiesen</SelectItem>
                       {handwerker.map((h) => (
-                        <SelectItem key={h.id} value={h.id} className="text-white hover:bg-gray-50">
+                        <SelectItem key={h.id} value={h.id} className="text-gray-900 hover:bg-gray-50">
                           {h.name} {h.specialty && `(${h.specialty})`}
                         </SelectItem>
                       ))}
@@ -324,7 +324,7 @@ export default function Instandhaltung() {
                     type="date"
                     value={formData.scheduled_date}
                     onChange={(e) => setFormData({ ...formData, scheduled_date: e.target.value })}
-                    className="mt-1 bg-white border-gray-200 text-white"
+                    className="mt-1 bg-white border-gray-200 text-gray-900"
                   />
                 </div>
               </div>
@@ -334,7 +334,7 @@ export default function Instandhaltung() {
                   value={formData.description}
                   onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                   placeholder="Detaillierte Beschreibung..."
-                  className="mt-1 bg-white border-gray-200 text-white resize-none"
+                  className="mt-1 bg-white border-gray-200 text-gray-900 resize-none"
                   rows={3}
                 />
               </div>
@@ -345,7 +345,7 @@ export default function Instandhaltung() {
                     type="number"
                     value={formData.cost}
                     onChange={(e) => setFormData({ ...formData, cost: parseFloat(e.target.value) || 0 })}
-                    className="mt-1 bg-white border-gray-200 text-white"
+                    className="mt-1 bg-white border-gray-200 text-gray-900"
                   />
                 </div>
                 <div className="flex items-end gap-3">
@@ -361,12 +361,12 @@ export default function Instandhaltung() {
                     value={formData.recurrence_interval_days}
                     onChange={(e) => setFormData({ ...formData, recurrence_interval_days: parseInt(e.target.value) || 0 })}
                     placeholder="z.B. 30 für monatlich"
-                    className="mt-1 bg-white border-gray-200 text-white"
+                    className="mt-1 bg-white border-gray-200 text-gray-900"
                   />
                 </div>
               )}
               <div className="flex justify-end gap-3 pt-4">
-                <Button type="button" variant="outline" onClick={() => { setIsDialogOpen(false); resetForm(); }} className="bg-white border-gray-200 text-white hover:bg-gray-50">
+                <Button type="button" variant="outline" onClick={() => { setIsDialogOpen(false); resetForm(); }} className="bg-white border-gray-200 text-gray-900 hover:bg-gray-50">
                   Abbrechen
                 </Button>
                 <Button type="submit" disabled={submitting} className="btn-primary" data-testid="submit-ticket-btn">
@@ -380,48 +380,48 @@ export default function Instandhaltung() {
 
       {/* Stats Row */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <div className="glass-stat-card p-4">
+        <div className="bg-white rounded-2xl shadow-sm p-4">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-xl bg-amber-50 flex items-center justify-center">
               <Clock className="w-5 h-5 text-amber-500" />
             </div>
             <div>
-              <p className="text-2xl font-bold text-white">{openCount}</p>
+              <p className="text-2xl font-bold text-gray-900">{openCount}</p>
               <p className="text-xs text-gray-400">Offen</p>
             </div>
           </div>
         </div>
-        <div className="glass-stat-card p-4">
+        <div className="bg-white rounded-2xl shadow-sm p-4">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-xl bg-red-50 flex items-center justify-center">
               <AlertTriangle className="w-5 h-5 text-red-500" />
             </div>
             <div>
-              <p className="text-2xl font-bold text-white">{urgentCount}</p>
+              <p className="text-2xl font-bold text-gray-900">{urgentCount}</p>
               <p className="text-xs text-gray-400">Dringend</p>
             </div>
           </div>
         </div>
-        <div className="glass-stat-card p-4">
+        <div className="bg-white rounded-2xl shadow-sm p-4">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-xl bg-blue-50 flex items-center justify-center">
               <Wrench className="w-5 h-5 text-blue-500" />
             </div>
             <div>
-              <p className="text-2xl font-bold text-white">
+              <p className="text-2xl font-bold text-gray-900">
                 {tickets.filter((t) => t.status === "In Bearbeitung").length}
               </p>
               <p className="text-xs text-gray-400">In Arbeit</p>
             </div>
           </div>
         </div>
-        <div className="glass-stat-card p-4">
+        <div className="bg-white rounded-2xl shadow-sm p-4">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-xl bg-emerald-50 flex items-center justify-center">
               <CheckCircle2 className="w-5 h-5 text-emerald-500" />
             </div>
             <div>
-              <p className="text-2xl font-bold text-white">
+              <p className="text-2xl font-bold text-gray-900">
                 {tickets.filter((t) => t.status === "Erledigt").length}
               </p>
               <p className="text-xs text-gray-400">Erledigt</p>
@@ -431,29 +431,29 @@ export default function Instandhaltung() {
       </div>
 
       {/* Filters */}
-      <div className="glass-card p-4" data-testid="maintenance-filters">
+      <div className="bg-white rounded-2xl shadow-sm p-4" data-testid="maintenance-filters">
         <div className="flex flex-col md:flex-row gap-4">
           <Select value={statusFilter} onValueChange={setStatusFilter}>
-            <SelectTrigger className="w-[180px] bg-white border-gray-200 text-white" data-testid="filter-status">
+            <SelectTrigger className="w-[180px] bg-white border-gray-200 text-gray-900" data-testid="filter-status">
               <Filter className="w-4 h-4 mr-2 text-gray-400" />
               <SelectValue placeholder="Alle Status" />
             </SelectTrigger>
             <SelectContent className="bg-[#1A1A1A] border-gray-200">
-              <SelectItem value="all" className="text-white hover:bg-gray-50">Alle Status</SelectItem>
+              <SelectItem value="all" className="text-gray-900 hover:bg-gray-50">Alle Status</SelectItem>
               {statusOptions.map((s) => (
-                <SelectItem key={s} value={s} className="text-white hover:bg-gray-50">{s}</SelectItem>
+                <SelectItem key={s} value={s} className="text-gray-900 hover:bg-gray-50">{s}</SelectItem>
               ))}
             </SelectContent>
           </Select>
           <Select value={priorityFilter} onValueChange={setPriorityFilter}>
-            <SelectTrigger className="w-[180px] bg-white border-gray-200 text-white" data-testid="filter-priority">
+            <SelectTrigger className="w-[180px] bg-white border-gray-200 text-gray-900" data-testid="filter-priority">
               <AlertTriangle className="w-4 h-4 mr-2 text-gray-400" />
               <SelectValue placeholder="Alle Prioritäten" />
             </SelectTrigger>
             <SelectContent className="bg-[#1A1A1A] border-gray-200">
-              <SelectItem value="all" className="text-white hover:bg-gray-50">Alle Prioritäten</SelectItem>
+              <SelectItem value="all" className="text-gray-900 hover:bg-gray-50">Alle Prioritäten</SelectItem>
               {priorityOptions.map((p) => (
-                <SelectItem key={p} value={p} className="text-white hover:bg-gray-50">{p}</SelectItem>
+                <SelectItem key={p} value={p} className="text-gray-900 hover:bg-gray-50">{p}</SelectItem>
               ))}
             </SelectContent>
           </Select>
@@ -467,9 +467,9 @@ export default function Instandhaltung() {
 
       {/* Tickets List */}
       {tickets.length === 0 ? (
-        <div className="glass-card p-12 text-center" data-testid="no-tickets">
+        <div className="bg-white rounded-2xl shadow-sm p-12 text-center" data-testid="no-tickets">
           <Wrench className="w-12 h-12 text-white/20 mx-auto mb-4" />
-          <h3 className="text-lg font-medium text-white mb-2">Keine Wartungsaufgaben</h3>
+          <h3 className="text-lg font-medium text-gray-900 mb-2">Keine Wartungsaufgaben</h3>
           <p className="text-gray-400 mb-4">Erstellen Sie Ihr erstes Ticket</p>
           <Button onClick={() => setIsDialogOpen(true)} className="btn-primary">
             <Plus className="w-4 h-4 mr-2" /> Ticket erstellen
@@ -480,7 +480,7 @@ export default function Instandhaltung() {
           {tickets.map((ticket, idx) => (
             <div
               key={ticket.id}
-              className="glass-card p-5 hover:bg-gray-50 transition-all opacity-0 animate-fade-in"
+              className="bg-white rounded-2xl shadow-sm p-5 hover:bg-gray-50 transition-all opacity-0 animate-fade-in"
               style={{ animationDelay: `${idx * 0.05}s` }}
               data-testid={`ticket-card-${ticket.id}`}
             >
@@ -503,7 +503,7 @@ export default function Instandhaltung() {
                       </span>
                     )}
                   </div>
-                  <h3 className="text-lg font-semibold text-white font-['Manrope']">{ticket.title}</h3>
+                  <h3 className="text-lg font-semibold text-gray-900 font-['Manrope']">{ticket.title}</h3>
                   <div className="flex items-center gap-4 mt-2 text-sm text-gray-500">
                     <div className="flex items-center gap-1">
                       <Building2 className="w-4 h-4" />
@@ -537,12 +537,12 @@ export default function Instandhaltung() {
                   )}
                   
                   <Select value={ticket.status} onValueChange={(v) => handleStatusChange(ticket.id, v)}>
-                    <SelectTrigger className="w-[160px] bg-white border-gray-200 text-white">
+                    <SelectTrigger className="w-[160px] bg-white border-gray-200 text-gray-900">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent className="bg-[#1A1A1A] border-gray-200">
                       {statusOptions.map((s) => (
-                        <SelectItem key={s} value={s} className="text-white hover:bg-gray-50">{s}</SelectItem>
+                        <SelectItem key={s} value={s} className="text-gray-900 hover:bg-gray-50">{s}</SelectItem>
                       ))}
                     </SelectContent>
                   </Select>
@@ -564,8 +564,8 @@ export default function Instandhaltung() {
                         </AlertDialogDescription>
                       </AlertDialogHeader>
                       <AlertDialogFooter>
-                        <AlertDialogCancel className="bg-white border-gray-200 text-white hover:bg-gray-50">Abbrechen</AlertDialogCancel>
-                        <AlertDialogAction onClick={() => handleDelete(ticket.id)} className="bg-red-500 hover:bg-red-600 text-white">Löschen</AlertDialogAction>
+                        <AlertDialogCancel className="bg-white border-gray-200 text-gray-900 hover:bg-gray-50">Abbrechen</AlertDialogCancel>
+                        <AlertDialogAction onClick={() => handleDelete(ticket.id)} className="bg-red-500 hover:bg-red-600 text-gray-900">Löschen</AlertDialogAction>
                       </AlertDialogFooter>
                     </AlertDialogContent>
                   </AlertDialog>
