@@ -8,21 +8,6 @@ import { Badge } from '../components/ui/badge';
 
 const API_URL = process.env.REACT_APP_BACKEND_URL || '';
 
-// Status colors
-const STATUS_COLORS = {
-  frei: 'bg-green-500',
-  belegt: 'bg-blue-500',
-  reserviert: 'bg-orange-500',
-  renovierung: 'bg-gray-500'
-};
-
-const DRINGLICHKEIT_COLORS = {
-  sofort: 'bg-red-500 text-white',
-  '4_wochen': 'bg-orange-500 text-white',
-  '3_monate': 'bg-yellow-500 text-black',
-  flexibel: 'bg-green-500 text-white'
-};
-
 export default function PflegeWGs() {
   const navigate = useNavigate();
   const [wgs, setWgs] = useState([]);
@@ -31,9 +16,7 @@ export default function PflegeWGs() {
   const [searchTerm, setSearchTerm] = useState('');
   const [gesamtKosten, setGesamtKosten] = useState(null);
 
-  useEffect(() => {
-    fetchData();
-  }, []);
+  useEffect(() => { fetchData(); }, []);
 
   const fetchData = async () => {
     try {
@@ -42,350 +25,185 @@ export default function PflegeWGs() {
         fetch(`${API_URL}/api/klienten/dashboard`),
         fetch(`${API_URL}/api/pflege-wgs/kosten/gesamt`)
       ]);
-      
-      const wgsData = await wgsRes.json();
-      const dashData = await dashRes.json();
-      
-      setWgs(wgsData);
-      setDashboard(dashData);
-      
-      if (kostenRes.ok) {
-        setGesamtKosten(await kostenRes.json());
-      }
-    } catch (error) {
-      console.error('Error fetching data:', error);
-    } finally {
-      setLoading(false);
-    }
+      setWgs(await wgsRes.json());
+      setDashboard(await dashRes.json());
+      if (kostenRes.ok) setGesamtKosten(await kostenRes.json());
+    } catch (error) { console.error('Error:', error); }
+    finally { setLoading(false); }
   };
 
-  const filteredWgs = wgs.filter(wg => 
+  const filteredWgs = wgs.filter(wg =>
     wg.kurzname.toLowerCase().includes(searchTerm.toLowerCase()) ||
     wg.property_address?.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   if (loading) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
-      </div>
-    );
+    return <div className="flex items-center justify-center min-h-[60vh]"><div className="animate-spin rounded-full h-10 w-10 border-b-2 border-blue-500"></div></div>;
   }
 
   return (
-    <div className="space-y-6 p-4 md:p-6" data-testid="pflege-wgs-page">
+    <div className="space-y-5 p-4 md:p-8" data-testid="pflege-wgs-page">
       {/* Header */}
       <div className="flex flex-col gap-4">
         <div>
-          <h1 className="text-2xl md:text-3xl font-bold text-white">Pflege-Wohngemeinschaften</h1>
-          <p className="text-white/60 mt-1 text-sm md:text-base">Klientenmanagement für ambulant betreute WGs</p>
+          <h1 className="text-2xl md:text-3xl font-bold text-gray-900">Pflege-Wohngemeinschaften</h1>
+          <p className="text-gray-500 mt-1 text-sm">Klientenmanagement für ambulant betreute WGs</p>
         </div>
         <div className="flex gap-2 flex-wrap">
-          <Button 
-            onClick={() => navigate('/pflege-wgs/pipeline')}
-            className="bg-blue-600 hover:bg-blue-700 text-sm"
-            data-testid="pipeline-btn"
-          >
-            <Users className="w-4 h-4 mr-1.5" />
-            Pipeline
+          <Button onClick={() => navigate('/pflege-wgs/pipeline')} className="bg-blue-500 hover:bg-blue-600 text-white rounded-xl text-sm" data-testid="pipeline-btn">
+            <Users className="w-4 h-4 mr-1.5" /> Pipeline
           </Button>
-          <Button 
-            onClick={() => navigate('/pflege-wgs/besichtigungen')}
-            variant="outline"
-            className="border-white/20 text-white hover:bg-white/10 text-sm"
-            data-testid="besichtigungen-btn"
-          >
-            <Calendar className="w-4 h-4 mr-1.5" />
-            Besichtigungen
+          <Button onClick={() => navigate('/pflege-wgs/besichtigungen')} variant="outline" className="border-gray-200 text-gray-700 hover:bg-gray-50 rounded-xl text-sm" data-testid="besichtigungen-btn">
+            <Calendar className="w-4 h-4 mr-1.5" /> Besichtigungen
           </Button>
-          <Button 
-            onClick={() => navigate('/pflege-wgs/klienten/neu')}
-            className="bg-green-600 hover:bg-green-700 text-sm"
-            data-testid="new-klient-btn"
-          >
-            <Plus className="w-4 h-4 mr-1.5" />
-            Neue Anfrage
+          <Button onClick={() => navigate('/pflege-wgs/klienten/neu')} className="bg-emerald-500 hover:bg-emerald-600 text-white rounded-xl text-sm" data-testid="new-klient-btn">
+            <Plus className="w-4 h-4 mr-1.5" /> Neue Anfrage
           </Button>
         </div>
       </div>
 
-      {/* Dashboard Stats */}
+      {/* Stats */}
       {dashboard && (
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          <Card className="bg-white/5 border-white/10">
-            <CardContent className="p-4">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+          {[
+            { label: 'Bewohner', value: dashboard.bewohner, icon: Users, color: 'blue' },
+            { label: 'Freie Zimmer', value: dashboard.freie_zimmer, icon: Bed, color: 'emerald' },
+            { label: 'Interessenten', value: dashboard.interessenten, icon: Clock, color: 'orange' },
+            { label: 'Pflege-WGs', value: wgs.length, icon: Building2, color: 'purple' },
+          ].map((s, i) => (
+            <div key={i} className="bg-white rounded-2xl p-4 shadow-sm">
               <div className="flex items-center gap-3">
-                <div className="p-2 bg-blue-500/20 rounded-lg">
-                  <Users className="w-5 h-5 text-blue-400" />
+                <div className={`w-10 h-10 rounded-xl bg-${s.color}-50 flex items-center justify-center`}>
+                  <s.icon className={`w-5 h-5 text-${s.color}-500`} />
                 </div>
                 <div>
-                  <p className="text-2xl font-bold text-white">{dashboard.bewohner}</p>
-                  <p className="text-xs text-white/60">Bewohner</p>
+                  <p className="text-2xl font-bold text-gray-900">{s.value}</p>
+                  <p className="text-xs text-gray-500">{s.label}</p>
                 </div>
               </div>
-            </CardContent>
-          </Card>
-          
-          <Card className="bg-white/5 border-white/10">
-            <CardContent className="p-4">
-              <div className="flex items-center gap-3">
-                <div className="p-2 bg-green-500/20 rounded-lg">
-                  <Bed className="w-5 h-5 text-green-400" />
-                </div>
-                <div>
-                  <p className="text-2xl font-bold text-white">{dashboard.freie_zimmer}</p>
-                  <p className="text-xs text-white/60">Freie Zimmer</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-          
-          <Card className="bg-white/5 border-white/10">
-            <CardContent className="p-4">
-              <div className="flex items-center gap-3">
-                <div className="p-2 bg-orange-500/20 rounded-lg">
-                  <Clock className="w-5 h-5 text-orange-400" />
-                </div>
-                <div>
-                  <p className="text-2xl font-bold text-white">{dashboard.interessenten}</p>
-                  <p className="text-xs text-white/60">Interessenten</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-          
-          <Card className="bg-white/5 border-white/10">
-            <CardContent className="p-4">
-              <div className="flex items-center gap-3">
-                <div className="p-2 bg-purple-500/20 rounded-lg">
-                  <Building2 className="w-5 h-5 text-purple-400" />
-                </div>
-                <div>
-                  <p className="text-2xl font-bold text-white">{wgs.length}</p>
-                  <p className="text-xs text-white/60">Pflege-WGs</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+            </div>
+          ))}
         </div>
       )}
 
-      {/* Handlungsbedarf */}
+      {/* Alerts */}
       {dashboard?.handlungsbedarf?.length > 0 && (
-        <div className="flex flex-wrap gap-3">
+        <div className="flex flex-wrap gap-2">
           {dashboard.handlungsbedarf.map((item, idx) => (
-            <Card 
-              key={idx}
-              className={`border-l-4 ${
-                item.prioritaet === 'hoch' ? 'border-l-red-500 bg-red-500/10' :
-                item.prioritaet === 'mittel' ? 'border-l-orange-500 bg-orange-500/10' :
-                'border-l-yellow-500 bg-yellow-500/10'
-              } border-white/10`}
-            >
-              <CardContent className="p-4 flex items-center gap-3">
-                <AlertCircle className={`w-5 h-5 ${
-                  item.prioritaet === 'hoch' ? 'text-red-400' :
-                  item.prioritaet === 'mittel' ? 'text-orange-400' :
-                  'text-yellow-400'
-                }`} />
-                <div>
-                  <p className="text-white font-medium">{item.text}</p>
-                  <p className="text-white/60 text-sm">{item.details}</p>
-                </div>
-              </CardContent>
-            </Card>
+            <div key={idx} className={`flex items-center gap-3 px-4 py-3 rounded-2xl border ${
+              item.prioritaet === 'hoch' ? 'bg-red-50 border-red-100' :
+              item.prioritaet === 'mittel' ? 'bg-orange-50 border-orange-100' :
+              'bg-yellow-50 border-yellow-100'
+            }`}>
+              <AlertCircle className={`w-4 h-4 ${
+                item.prioritaet === 'hoch' ? 'text-red-500' : item.prioritaet === 'mittel' ? 'text-orange-500' : 'text-yellow-500'
+              }`} />
+              <div>
+                <p className="text-sm font-medium text-gray-900">{item.text}</p>
+                <p className="text-xs text-gray-500">{item.details}</p>
+              </div>
+            </div>
           ))}
         </div>
       )}
 
       {/* Search */}
       <div className="relative max-w-md">
-        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/40" />
-        <Input
-          placeholder="WG suchen..."
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          className="pl-10 bg-white/5 border-white/10 text-white placeholder:text-white/40"
-          data-testid="search-input"
-        />
+        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+        <Input placeholder="WG suchen..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)}
+          className="pl-10 bg-white border-gray-200 text-gray-900 placeholder:text-gray-400 rounded-xl" data-testid="search-input" />
       </div>
 
       {/* WG Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {filteredWgs.map(wg => (
-          <Card 
-            key={wg.id}
-            className="bg-white/5 border-white/10 hover:bg-white/10 transition-all cursor-pointer group"
-            onClick={() => navigate(`/pflege-wgs/${wg.id}`)}
-            data-testid={`wg-card-${wg.id}`}
-          >
-            <CardHeader className="pb-2">
-              <div className="flex items-start justify-between">
-                <div>
-                  <CardTitle className="text-xl text-white group-hover:text-blue-400 transition-colors">
-                    {wg.kurzname}
-                  </CardTitle>
-                  <p className="text-white/60 text-sm mt-1">{wg.property_address}</p>
-                </div>
-                {wg.grundriss_url && (
-                  <Badge className="bg-blue-500/20 text-blue-400 border-0">
-                    Grundriss
-                  </Badge>
-                )}
+          <div key={wg.id} onClick={() => navigate(`/pflege-wgs/${wg.id}`)}
+            className="bg-white rounded-2xl shadow-sm hover:shadow-md transition-all cursor-pointer group p-5"
+            data-testid={`wg-card-${wg.id}`}>
+            <div className="flex items-start justify-between mb-3">
+              <div>
+                <h3 className="text-lg font-semibold text-gray-900 group-hover:text-blue-600 transition-colors">{wg.kurzname}</h3>
+                <p className="text-gray-500 text-sm">{wg.property_address}</p>
               </div>
-            </CardHeader>
-            <CardContent>
-              {/* Belegungsring */}
-              <div className="flex items-center gap-4 mb-4">
-                <div className="relative w-16 h-16">
-                  <svg className="w-16 h-16 transform -rotate-90">
-                    <circle
-                      cx="32"
-                      cy="32"
-                      r="28"
-                      stroke="currentColor"
-                      strokeWidth="6"
-                      fill="none"
-                      className="text-white/10"
-                    />
-                    <circle
-                      cx="32"
-                      cy="32"
-                      r="28"
-                      stroke="currentColor"
-                      strokeWidth="6"
-                      fill="none"
-                      strokeDasharray={`${(wg.belegte_zimmer / wg.kapazitaet) * 176} 176`}
-                      className="text-blue-500"
-                    />
-                  </svg>
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <span className="text-white font-bold text-sm">
-                      {wg.belegte_zimmer}/{wg.kapazitaet}
-                    </span>
-                  </div>
-                </div>
-                <div className="flex-1">
-                  <div className="flex items-center gap-2 text-sm">
-                    <span className="w-3 h-3 rounded-full bg-green-500"></span>
-                    <span className="text-white/80">{wg.freie_zimmer} frei</span>
-                  </div>
-                  <div className="flex items-center gap-2 text-sm mt-1">
-                    <span className="w-3 h-3 rounded-full bg-blue-500"></span>
-                    <span className="text-white/80">{wg.belegte_zimmer} belegt</span>
-                  </div>
-                  {wg.reservierte_zimmer > 0 && (
-                    <div className="flex items-center gap-2 text-sm mt-1">
-                      <span className="w-3 h-3 rounded-full bg-orange-500"></span>
-                      <span className="text-white/80">{wg.reservierte_zimmer} reserviert</span>
-                    </div>
-                  )}
+              {wg.grundriss_url && <Badge className="bg-blue-50 text-blue-600 border-0 text-xs">Grundriss</Badge>}
+            </div>
+            <div className="flex items-center gap-4 mb-3">
+              <div className="relative w-14 h-14">
+                <svg className="w-14 h-14 transform -rotate-90">
+                  <circle cx="28" cy="28" r="24" stroke="#E5E5EA" strokeWidth="5" fill="none" />
+                  <circle cx="28" cy="28" r="24" stroke="#007AFF" strokeWidth="5" fill="none"
+                    strokeDasharray={`${(wg.belegte_zimmer / wg.kapazitaet) * 151} 151`} />
+                </svg>
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <span className="text-gray-900 font-bold text-xs">{wg.belegte_zimmer}/{wg.kapazitaet}</span>
                 </div>
               </div>
-
-              {/* Description */}
-              <p className="text-white/60 text-sm line-clamp-2">{wg.beschreibung}</p>
-
-              {/* Action hint */}
-              <div className="mt-4 pt-4 border-t border-white/10 flex items-center justify-between">
-                <span className="text-white/40 text-sm">Klicken für Details</span>
-                <Button size="sm" variant="ghost" className="text-blue-400 hover:text-blue-300 p-0">
-                  Grundriss ansehen →
-                </Button>
+              <div className="flex-1 space-y-1">
+                <div className="flex items-center gap-2 text-sm">
+                  <span className="w-2.5 h-2.5 rounded-full bg-emerald-400"></span>
+                  <span className="text-gray-600">{wg.freie_zimmer} frei</span>
+                </div>
+                <div className="flex items-center gap-2 text-sm">
+                  <span className="w-2.5 h-2.5 rounded-full bg-blue-400"></span>
+                  <span className="text-gray-600">{wg.belegte_zimmer} belegt</span>
+                </div>
               </div>
-            </CardContent>
-          </Card>
+            </div>
+            <p className="text-gray-500 text-sm line-clamp-2 mb-3">{wg.beschreibung}</p>
+            <div className="pt-3 border-t border-gray-100 flex justify-end">
+              <span className="text-blue-500 text-sm font-medium">Details ansehen →</span>
+            </div>
+          </div>
         ))}
       </div>
 
-      {/* Gesamtkostenübersicht */}
+      {/* Kosten */}
       {gesamtKosten && (
-        <Card className="bg-white/5 border-white/10 mt-8" data-testid="gesamt-kosten">
-          <CardHeader>
-            <CardTitle className="text-white flex items-center gap-2">
-              <Euro className="w-5 h-5" />
-              Finanzübersicht aller WGs
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
-              <div className="p-4 bg-white/5 rounded-lg">
-                <p className="text-white/60 text-sm">Auslastung gesamt</p>
-                <p className="text-2xl font-bold text-white">{gesamtKosten.gesamt_auslastung}%</p>
-                <p className="text-white/40 text-xs">{gesamtKosten.gesamt_bewohner}/{gesamtKosten.gesamt_kapazitaet} Plätze</p>
+        <div className="bg-white rounded-2xl shadow-sm p-6" data-testid="gesamt-kosten">
+          <h2 className="text-base font-semibold text-gray-900 flex items-center gap-2 mb-4">
+            <Euro className="w-5 h-5 text-gray-400" /> Finanzübersicht
+          </h2>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-4">
+            <div className="p-3 bg-gray-50 rounded-xl"><p className="text-xs text-gray-500">Auslastung</p><p className="text-xl font-bold text-gray-900">{gesamtKosten.gesamt_auslastung}%</p></div>
+            <div className="p-3 bg-gray-50 rounded-xl"><p className="text-xs text-gray-500">Monatlich</p><p className="text-xl font-bold text-emerald-600">{gesamtKosten.gesamt_monatlich.toLocaleString('de-DE')} &euro;</p></div>
+            <div className="p-3 bg-gray-50 rounded-xl"><p className="text-xs text-gray-500">Jährlich</p><p className="text-xl font-bold text-gray-900">{gesamtKosten.gesamt_jaehrlich.toLocaleString('de-DE')} &euro;</p></div>
+            <div className="p-3 bg-red-50 rounded-xl"><p className="text-xs text-red-500">Entgangen</p><p className="text-xl font-bold text-red-500">{gesamtKosten.gesamt_entgangen.toLocaleString('de-DE')} &euro;</p></div>
+          </div>
+          <div className="space-y-2">
+            {gesamtKosten.wgs.map(wg => (
+              <div key={wg.wg_id} onClick={() => navigate(`/pflege-wgs/${wg.wg_id}`)}
+                className="flex items-center gap-3 p-3 bg-gray-50 rounded-xl hover:bg-gray-100 transition-colors cursor-pointer">
+                <span className="text-sm font-medium text-gray-900 w-36">{wg.wg_name}</span>
+                <div className="flex-1"><div className="w-full bg-gray-200 rounded-full h-1.5"><div className="h-1.5 rounded-full bg-blue-500" style={{width: `${wg.auslastung}%`}}></div></div></div>
+                <span className="text-xs text-gray-500 w-12 text-right">{wg.auslastung}%</span>
+                <span className="text-sm font-medium text-emerald-600 w-24 text-right">{wg.monatlich.toLocaleString('de-DE')} &euro;</span>
               </div>
-              <div className="p-4 bg-white/5 rounded-lg">
-                <p className="text-white/60 text-sm">Monatliche Einnahmen</p>
-                <p className="text-2xl font-bold text-emerald-400">{gesamtKosten.gesamt_monatlich.toLocaleString('de-DE')} &euro;</p>
-              </div>
-              <div className="p-4 bg-white/5 rounded-lg">
-                <p className="text-white/60 text-sm">Jährliche Einnahmen</p>
-                <p className="text-2xl font-bold text-white">{gesamtKosten.gesamt_jaehrlich.toLocaleString('de-DE')} &euro;</p>
-              </div>
-              <div className="p-4 bg-red-500/10 rounded-lg border border-red-500/20">
-                <p className="text-red-400/80 text-sm">Entgangene Einnahmen</p>
-                <p className="text-2xl font-bold text-red-400">{gesamtKosten.gesamt_entgangen.toLocaleString('de-DE')} &euro;</p>
-                <p className="text-red-400/60 text-xs">pro Monat</p>
-              </div>
-            </div>
-            <div className="space-y-2">
-              {gesamtKosten.wgs.map(wg => (
-                <div key={wg.wg_id} className="flex items-center gap-4 p-3 bg-white/5 rounded-lg hover:bg-white/10 transition-colors cursor-pointer" onClick={() => navigate(`/pflege-wgs/${wg.wg_id}`)}>
-                  <span className="text-white font-medium w-40">{wg.wg_name}</span>
-                  <div className="flex-1">
-                    <div className="w-full bg-white/10 rounded-full h-2">
-                      <div className="h-2 rounded-full bg-blue-500 transition-all" style={{width: `${wg.auslastung}%`}}></div>
-                    </div>
-                  </div>
-                  <span className="text-white/60 text-sm w-16 text-right">{wg.auslastung}%</span>
-                  <span className="text-emerald-400 font-medium w-28 text-right">{wg.monatlich.toLocaleString('de-DE')} &euro;</span>
-                  {wg.entgangen > 0 && (
-                    <span className="text-red-400/60 text-sm w-28 text-right">-{wg.entgangen.toLocaleString('de-DE')} &euro;</span>
-                  )}
-                </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
+            ))}
+          </div>
+        </div>
       )}
 
       {/* Pipeline Preview */}
       {dashboard?.pipeline && (
-        <Card className="bg-white/5 border-white/10 mt-8">
-          <CardHeader>
-            <CardTitle className="text-white flex items-center gap-2">
-              <Users className="w-5 h-5" />
-              Anfragen-Pipeline
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="flex gap-4 overflow-x-auto pb-4">
-              {dashboard.pipeline.map(stage => (
-                <div 
-                  key={stage.status}
-                  className="min-w-[160px] p-4 bg-white/5 rounded-lg border border-white/10"
-                >
-                  <div className="flex items-center justify-between mb-2">
-                    <span className="text-white/80 text-sm font-medium">{stage.label}</span>
-                    {stage.dringend > 0 && (
-                      <Badge className="bg-red-500/20 text-red-400 border-0 text-xs">
-                        {stage.dringend} dringend
-                      </Badge>
-                    )}
-                  </div>
-                  <p className="text-3xl font-bold text-white">{stage.anzahl}</p>
+        <div className="bg-white rounded-2xl shadow-sm p-6">
+          <h2 className="text-base font-semibold text-gray-900 flex items-center gap-2 mb-4">
+            <Users className="w-5 h-5 text-gray-400" /> Anfragen-Pipeline
+          </h2>
+          <div className="flex gap-3 overflow-x-auto pb-2">
+            {dashboard.pipeline.map(stage => (
+              <div key={stage.status} className="min-w-[140px] p-4 bg-gray-50 rounded-xl">
+                <div className="flex items-center justify-between mb-1.5">
+                  <span className="text-gray-600 text-xs font-medium">{stage.label}</span>
+                  {stage.dringend > 0 && <Badge className="bg-red-50 text-red-500 border-0 text-[10px]">{stage.dringend}</Badge>}
                 </div>
-              ))}
-            </div>
-            <Button 
-              onClick={() => navigate('/pflege-wgs/pipeline')}
-              variant="ghost" 
-              className="mt-2 text-blue-400 hover:text-blue-300"
-            >
-              Zur vollständigen Pipeline →
-            </Button>
-          </CardContent>
-        </Card>
+                <p className="text-2xl font-bold text-gray-900">{stage.anzahl}</p>
+              </div>
+            ))}
+          </div>
+          <Button onClick={() => navigate('/pflege-wgs/pipeline')} variant="ghost" className="mt-2 text-blue-500 hover:text-blue-600 text-sm p-0">
+            Zur vollständigen Pipeline →
+          </Button>
+        </div>
       )}
     </div>
   );
