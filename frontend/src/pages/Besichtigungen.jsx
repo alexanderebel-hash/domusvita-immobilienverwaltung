@@ -157,14 +157,14 @@ export default function Besichtigungen() {
           <Button 
             variant="ghost" 
             onClick={() => navigate('/pflege-wgs')}
-            className="text-white/60 hover:text-white"
+            className="text-gray-500 hover:text-gray-900"
           >
             <ArrowLeft className="w-4 h-4 mr-2" />
             Zurück
           </Button>
           <div>
             <h1 className="text-2xl font-bold text-white">Besichtigungen</h1>
-            <p className="text-white/60">Termine für Interessenten</p>
+            <p className="text-gray-500">Termine für Interessenten</p>
           </div>
         </div>
         <Button 
@@ -178,7 +178,7 @@ export default function Besichtigungen() {
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Calendar */}
-        <Card className="lg:col-span-2 bg-white/5 border-white/10">
+        <Card className="lg:col-span-2 bg-white border-gray-200">
           <CardHeader>
             <div className="flex items-center justify-between">
               <CardTitle className="text-white flex items-center gap-2">
@@ -199,7 +199,7 @@ export default function Besichtigungen() {
             {/* Weekday headers */}
             <div className="grid grid-cols-7 gap-1 mb-2">
               {WEEKDAYS.map(day => (
-                <div key={day} className="text-center text-white/60 text-sm py-2">
+                <div key={day} className="text-center text-gray-500 text-sm py-2">
                   {day}
                 </div>
               ))}
@@ -218,15 +218,15 @@ export default function Besichtigungen() {
                     disabled={!date}
                     className={`
                       aspect-square p-1 rounded-lg text-sm transition-all relative
-                      ${!date ? 'invisible' : 'hover:bg-white/10'}
+                      ${!date ? 'invisible' : 'hover:bg-gray-50'}
                       ${isToday(date) ? 'ring-2 ring-blue-500' : ''}
                       ${isSelected ? 'bg-blue-500/30' : ''}
-                      ${dayBesichtigungen.length > 0 ? 'bg-green-500/20' : ''}
+                      ${dayBesichtigungen.length > 0 ? 'bg-emerald-50' : ''}
                     `}
                   >
                     {date && (
                       <>
-                        <span className={`${isToday(date) ? 'text-blue-400 font-bold' : 'text-white'}`}>
+                        <span className={`${isToday(date) ? 'text-blue-500 font-bold' : 'text-white'}`}>
                           {date.getDate()}
                         </span>
                         {dayBesichtigungen.length > 0 && (
@@ -246,7 +246,7 @@ export default function Besichtigungen() {
         </Card>
 
         {/* Selected Day Details */}
-        <Card className="bg-white/5 border-white/10">
+        <Card className="bg-white border-gray-200">
           <CardHeader>
             <CardTitle className="text-white flex items-center gap-2">
               <Clock className="w-5 h-5" />
@@ -266,9 +266,9 @@ export default function Besichtigungen() {
                       const klient = klienten.find(k => k.id === bes.klient_id);
                       const wg = wgs.find(w => w.id === bes.pflege_wg_id);
                       return (
-                        <div key={bes.id} className="p-3 bg-white/5 rounded-lg border border-white/10">
+                        <div key={bes.id} className="p-3 bg-white rounded-lg border border-gray-200">
                           <div className="flex items-center justify-between mb-2">
-                            <span className="text-white font-medium">
+                            <span className="text-gray-900 font-medium">
                               {new Date(bes.termin).toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' })} Uhr
                             </span>
                             <Badge className={
@@ -281,18 +281,18 @@ export default function Besichtigungen() {
                           </div>
                           {klient && (
                             <p className="text-white flex items-center gap-2">
-                              <User className="w-4 h-4 text-white/60" />
+                              <User className="w-4 h-4 text-gray-500" />
                               {klient.vorname} {klient.nachname}
                             </p>
                           )}
                           {wg && (
-                            <p className="text-white/60 text-sm flex items-center gap-2 mt-1">
+                            <p className="text-gray-500 text-sm flex items-center gap-2 mt-1">
                               <MapPin className="w-4 h-4" />
                               {wg.kurzname}
                             </p>
                           )}
                           {bes.notizen && (
-                            <p className="text-white/50 text-sm mt-2">{bes.notizen}</p>
+                            <p className="text-gray-400 text-sm mt-2">{bes.notizen}</p>
                           )}
                         </div>
                       );
@@ -300,7 +300,7 @@ export default function Besichtigungen() {
                   </div>
                 ) : (
                   <div className="text-center py-8">
-                    <p className="text-white/40 mb-4">Keine Besichtigungen</p>
+                    <p className="text-gray-400 mb-4">Keine Besichtigungen</p>
                     <Button 
                       size="sm"
                       onClick={() => setShowNewDialog(true)}
@@ -313,7 +313,7 @@ export default function Besichtigungen() {
                 )}
               </>
             ) : (
-              <p className="text-white/40 text-center py-8">
+              <p className="text-gray-400 text-center py-8">
                 Klicken Sie auf einen Tag im Kalender
               </p>
             )}
@@ -322,9 +322,9 @@ export default function Besichtigungen() {
       </div>
 
       {/* Upcoming List */}
-      <Card className="bg-white/5 border-white/10">
+      <Card className="bg-white border-gray-200">
         <CardHeader>
-          <CardTitle className="text-white">Anstehende Besichtigungen</CardTitle>
+          <CardTitle className="text-gray-900">Anstehende Besichtigungen</CardTitle>
         </CardHeader>
         <CardContent>
           {besichtigungen.filter(b => new Date(b.termin) >= new Date()).length > 0 ? (
@@ -339,20 +339,20 @@ export default function Besichtigungen() {
                   const date = new Date(bes.termin);
                   
                   return (
-                    <div key={bes.id} className="flex items-center gap-4 p-3 bg-white/5 rounded-lg">
+                    <div key={bes.id} className="flex items-center gap-4 p-3 bg-white rounded-lg">
                       <div className="text-center min-w-[60px]">
                         <p className="text-2xl font-bold text-white">{date.getDate()}</p>
-                        <p className="text-white/60 text-xs">{MONTHS[date.getMonth()].slice(0, 3)}</p>
+                        <p className="text-gray-500 text-xs">{MONTHS[date.getMonth()].slice(0, 3)}</p>
                       </div>
                       <div className="flex-1">
-                        <p className="text-white font-medium">
+                        <p className="text-gray-900 font-medium">
                           {klient ? `${klient.vorname} ${klient.nachname}` : 'Unbekannt'}
                         </p>
-                        <p className="text-white/60 text-sm">
+                        <p className="text-gray-500 text-sm">
                           {date.toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' })} Uhr • {wg?.kurzname || 'WG'}
                         </p>
                       </div>
-                      <Badge className="bg-blue-500/20 text-blue-400">
+                      <Badge className="bg-blue-50 text-blue-500">
                         {bes.status || 'geplant'}
                       </Badge>
                     </div>
@@ -360,28 +360,28 @@ export default function Besichtigungen() {
                 })}
             </div>
           ) : (
-            <p className="text-white/40 text-center py-8">Keine anstehenden Besichtigungen</p>
+            <p className="text-gray-400 text-center py-8">Keine anstehenden Besichtigungen</p>
           )}
         </CardContent>
       </Card>
 
       {/* New Besichtigung Dialog */}
       <Dialog open={showNewDialog} onOpenChange={setShowNewDialog}>
-        <DialogContent className="bg-gray-900 border-white/10 text-white">
+        <DialogContent className="bg-white border-gray-200 text-white">
           <DialogHeader>
             <DialogTitle>Neue Besichtigung planen</DialogTitle>
           </DialogHeader>
           <div className="space-y-4">
             <div>
-              <label className="text-white/60 text-sm">Interessent *</label>
+              <label className="text-gray-500 text-sm">Interessent *</label>
               <Select 
                 value={newBesichtigung.klient_id} 
                 onValueChange={(v) => setNewBesichtigung({...newBesichtigung, klient_id: v})}
               >
-                <SelectTrigger className="bg-white/5 border-white/10 text-white">
+                <SelectTrigger className="bg-white border-gray-200 text-white">
                   <SelectValue placeholder="Auswählen..." />
                 </SelectTrigger>
-                <SelectContent className="bg-gray-900 border-white/10">
+                <SelectContent className="bg-white border-gray-200">
                   {klienten.map(k => (
                     <SelectItem key={k.id} value={k.id}>
                       {k.vorname} {k.nachname}
@@ -391,15 +391,15 @@ export default function Besichtigungen() {
               </Select>
             </div>
             <div>
-              <label className="text-white/60 text-sm">Wohngemeinschaft *</label>
+              <label className="text-gray-500 text-sm">Wohngemeinschaft *</label>
               <Select 
                 value={newBesichtigung.pflege_wg_id} 
                 onValueChange={(v) => setNewBesichtigung({...newBesichtigung, pflege_wg_id: v})}
               >
-                <SelectTrigger className="bg-white/5 border-white/10 text-white">
+                <SelectTrigger className="bg-white border-gray-200 text-white">
                   <SelectValue placeholder="Auswählen..." />
                 </SelectTrigger>
-                <SelectContent className="bg-gray-900 border-white/10">
+                <SelectContent className="bg-white border-gray-200">
                   {wgs.map(wg => (
                     <SelectItem key={wg.id} value={wg.id}>
                       {wg.kurzname} ({wg.freie_zimmer} frei)
@@ -409,20 +409,20 @@ export default function Besichtigungen() {
               </Select>
             </div>
             <div>
-              <label className="text-white/60 text-sm">Termin *</label>
+              <label className="text-gray-500 text-sm">Termin *</label>
               <Input
                 type="datetime-local"
                 value={newBesichtigung.termin}
                 onChange={(e) => setNewBesichtigung({...newBesichtigung, termin: e.target.value})}
-                className="bg-white/5 border-white/10 text-white"
+                className="bg-white border-gray-200 text-white"
               />
             </div>
             <div>
-              <label className="text-white/60 text-sm">Notizen</label>
+              <label className="text-gray-500 text-sm">Notizen</label>
               <Textarea
                 value={newBesichtigung.notizen}
                 onChange={(e) => setNewBesichtigung({...newBesichtigung, notizen: e.target.value})}
-                className="bg-white/5 border-white/10 text-white"
+                className="bg-white border-gray-200 text-white"
                 placeholder="z.B. Kontaktperson kommt mit..."
               />
             </div>
