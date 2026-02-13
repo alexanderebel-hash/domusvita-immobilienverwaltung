@@ -2,18 +2,8 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import {
-  Building2,
-  Home,
-  ClipboardList,
-  Calendar,
-  Plus,
-  MessageSquare,
-  AlertTriangle,
-  Info,
-  CheckCircle2,
-  Send,
-  Loader2,
-  ArrowRight,
+  Building2, Home, ClipboardList, Calendar, Plus, MessageSquare,
+  AlertTriangle, Info, CheckCircle2, Send, Loader2, ArrowRight,
 } from "lucide-react";
 import { Button } from "../components/ui/button";
 import { Input } from "../components/ui/input";
@@ -30,15 +20,11 @@ export default function Dashboard() {
   const [aiResponse, setAiResponse] = useState("");
   const [aiLoading, setAiLoading] = useState(false);
 
-  useEffect(() => {
-    fetchDashboardData();
-  }, []);
+  useEffect(() => { fetchDashboardData(); }, []);
 
   const fetchDashboardData = async () => {
     try {
-      // Seed database first
       await axios.post(`${API}/seed`);
-      
       const [statsRes, insightsRes] = await Promise.all([
         axios.get(`${API}/dashboard/stats`),
         axios.get(`${API}/dashboard/insights`),
@@ -46,49 +32,35 @@ export default function Dashboard() {
       setStats(statsRes.data);
       setInsights(insightsRes.data);
     } catch (error) {
-      console.error("Error fetching dashboard data:", error);
       toast.error("Fehler beim Laden der Dashboard-Daten");
-    } finally {
-      setLoading(false);
-    }
+    } finally { setLoading(false); }
   };
 
   const handleAiQuery = async (e) => {
     e.preventDefault();
     if (!aiQuery.trim()) return;
-
     setAiLoading(true);
     setAiResponse("");
     try {
       const res = await axios.post(`${API}/ai/query`, { query: aiQuery });
       setAiResponse(res.data.response);
-    } catch (error) {
-      console.error("AI query error:", error);
-      toast.error("KI-Anfrage fehlgeschlagen");
-    } finally {
-      setAiLoading(false);
-    }
+    } catch (error) { toast.error("KI-Anfrage fehlgeschlagen"); }
+    finally { setAiLoading(false); }
   };
 
   const getInsightIcon = (type) => {
     switch (type) {
-      case "warning":
-        return <AlertTriangle className="w-5 h-5 text-amber-400" />;
-      case "success":
-        return <CheckCircle2 className="w-5 h-5 text-emerald-400" />;
-      default:
-        return <Info className="w-5 h-5 text-blue-400" />;
+      case "warning": return <AlertTriangle className="w-5 h-5 text-amber-500" />;
+      case "success": return <CheckCircle2 className="w-5 h-5 text-emerald-500" />;
+      default: return <Info className="w-5 h-5 text-blue-500" />;
     }
   };
 
   const getInsightClass = (type) => {
     switch (type) {
-      case "warning":
-        return "insight-warning";
-      case "success":
-        return "insight-success";
-      default:
-        return "insight-info";
+      case "warning": return "insight-warning";
+      case "success": return "insight-success";
+      default: return "insight-info";
     }
   };
 
@@ -101,216 +73,98 @@ export default function Dashboard() {
   }
 
   return (
-    <div className="space-y-8 animate-fade-in" data-testid="dashboard">
-      {/* Header */}
+    <div className="space-y-6 p-4 md:p-8 animate-fade-in" data-testid="dashboard">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-white font-['Manrope']">Dashboard</h1>
-          <p className="text-white/50 mt-1">Willkommen zurück! Hier ist Ihre Übersicht.</p>
+          <h1 className="text-2xl md:text-3xl font-bold text-gray-900">Dashboard</h1>
+          <p className="text-gray-500 mt-1 text-sm">Willkommen zurück! Hier ist Ihre Übersicht.</p>
         </div>
-        <Button 
-          onClick={() => navigate("/immobilien")}
-          className="btn-primary flex items-center gap-2"
-          data-testid="add-property-btn"
-        >
-          <Plus className="w-4 h-4" />
-          Immobilie hinzufügen
+        <Button onClick={() => navigate("/immobilien")} className="bg-blue-500 hover:bg-blue-600 text-white rounded-xl" data-testid="add-property-btn">
+          <Plus className="w-4 h-4 mr-1.5" /> Immobilie
         </Button>
       </div>
 
-      {/* Stats Grid - Bento Layout */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        {/* Total Properties */}
-        <div 
-          className="glass-stat-card p-6 opacity-0 animate-fade-in stagger-1"
-          data-testid="stat-properties"
-        >
-          <div className="flex items-center justify-between mb-4">
-            <div className="w-12 h-12 rounded-xl bg-blue-500/20 flex items-center justify-center">
-              <Building2 className="w-6 h-6 text-blue-400" />
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        {[
+          { label: "Immobilien", value: stats?.total_properties || 0, icon: Building2, color: "blue", sub: "Gesamt" },
+          { label: "Leerstehend", value: stats?.vacant_units || 0, icon: Home, color: "amber", sub: "Einheiten" },
+          { label: "Aufgaben", value: stats?.pending_tasks || 0, icon: ClipboardList, color: "emerald", sub: "Offen" },
+          { label: "Fristen", value: stats?.upcoming_deadlines || 0, icon: Calendar, color: "rose", sub: "Bald fällig" },
+        ].map((s, i) => (
+          <div key={i} className="bg-white rounded-2xl p-5 shadow-sm" data-testid={`stat-${s.label.toLowerCase()}`}>
+            <div className="flex items-center justify-between mb-3">
+              <div className={`w-10 h-10 rounded-xl bg-${s.color}-50 flex items-center justify-center`}>
+                <s.icon className={`w-5 h-5 text-${s.color}-500`} />
+              </div>
+              <span className="text-[11px] text-gray-400 uppercase tracking-wider font-medium">{s.sub}</span>
             </div>
-            <span className="text-xs text-white/40 uppercase tracking-wider">Gesamt</span>
+            <p className="text-3xl font-bold text-gray-900">{s.value}</p>
+            <p className="text-sm text-gray-500 mt-0.5">{s.label}</p>
           </div>
-          <p className="text-4xl font-bold text-white font-['Manrope']">{stats?.total_properties || 0}</p>
-          <p className="text-sm text-white/50 mt-1">Immobilien</p>
-        </div>
-
-        {/* Vacant Units */}
-        <div 
-          className="glass-stat-card p-6 opacity-0 animate-fade-in stagger-2"
-          data-testid="stat-vacant"
-        >
-          <div className="flex items-center justify-between mb-4">
-            <div className="w-12 h-12 rounded-xl bg-amber-500/20 flex items-center justify-center">
-              <Home className="w-6 h-6 text-amber-400" />
-            </div>
-            <span className="text-xs text-white/40 uppercase tracking-wider">Leer</span>
-          </div>
-          <p className="text-4xl font-bold text-white font-['Manrope']">{stats?.vacant_units || 0}</p>
-          <p className="text-sm text-white/50 mt-1">Leerstehende Einheiten</p>
-        </div>
-
-        {/* Pending Tasks */}
-        <div 
-          className="glass-stat-card p-6 opacity-0 animate-fade-in stagger-3"
-          data-testid="stat-tasks"
-        >
-          <div className="flex items-center justify-between mb-4">
-            <div className="w-12 h-12 rounded-xl bg-emerald-500/20 flex items-center justify-center">
-              <ClipboardList className="w-6 h-6 text-emerald-400" />
-            </div>
-            <span className="text-xs text-white/40 uppercase tracking-wider">Offen</span>
-          </div>
-          <p className="text-4xl font-bold text-white font-['Manrope']">{stats?.pending_tasks || 0}</p>
-          <p className="text-sm text-white/50 mt-1">Offene Aufgaben</p>
-        </div>
-
-        {/* Upcoming Deadlines */}
-        <div 
-          className="glass-stat-card p-6 opacity-0 animate-fade-in stagger-4"
-          data-testid="stat-deadlines"
-        >
-          <div className="flex items-center justify-between mb-4">
-            <div className="w-12 h-12 rounded-xl bg-rose-500/20 flex items-center justify-center">
-              <Calendar className="w-6 h-6 text-rose-400" />
-            </div>
-            <span className="text-xs text-white/40 uppercase tracking-wider">Bald</span>
-          </div>
-          <p className="text-4xl font-bold text-white font-['Manrope']">{stats?.upcoming_deadlines || 0}</p>
-          <p className="text-sm text-white/50 mt-1">Anstehende Fristen</p>
-        </div>
+        ))}
       </div>
 
-      {/* Main Content Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* AI Assistant - Takes 2 columns */}
-        <div className="lg:col-span-2 glass-card p-6 opacity-0 animate-fade-in stagger-5" data-testid="ai-assistant-card">
-          <div className="flex items-center gap-3 mb-6">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 to-emerald-500 flex items-center justify-center">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
+        <div className="lg:col-span-2 bg-white rounded-2xl p-6 shadow-sm" data-testid="ai-assistant-card">
+          <div className="flex items-center gap-3 mb-5">
+            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center shadow-md shadow-blue-500/20">
               <MessageSquare className="w-5 h-5 text-white" />
             </div>
             <div>
-              <h2 className="text-lg font-semibold text-white font-['Manrope']">KI-Assistent</h2>
-              <p className="text-xs text-white/50">Fragen Sie alles über Ihre Immobilien</p>
+              <h2 className="text-base font-semibold text-gray-900">KI-Assistent</h2>
+              <p className="text-xs text-gray-400">Fragen Sie alles über Ihre Immobilien</p>
             </div>
           </div>
-
-          <form onSubmit={handleAiQuery} className="flex gap-3 mb-4">
-            <Input
-              value={aiQuery}
-              onChange={(e) => setAiQuery(e.target.value)}
-              placeholder="z.B. Wie viele Einheiten stehen leer?"
-              className="flex-1 bg-white/5 border-white/10 text-white placeholder:text-white/30 focus:border-blue-500/50"
-              data-testid="ai-query-input"
-            />
-            <Button 
-              type="submit" 
-              disabled={aiLoading}
-              className="btn-primary"
-              data-testid="ai-query-submit"
-            >
-              {aiLoading ? (
-                <Loader2 className="w-4 h-4 animate-spin" />
-              ) : (
-                <Send className="w-4 h-4" />
-              )}
+          <form onSubmit={handleAiQuery} className="flex gap-2 mb-4">
+            <Input value={aiQuery} onChange={(e) => setAiQuery(e.target.value)} placeholder="z.B. Wie viele Einheiten stehen leer?" className="flex-1 bg-gray-50 border-gray-200 text-gray-900 placeholder:text-gray-400 rounded-xl" data-testid="ai-query-input" />
+            <Button type="submit" disabled={aiLoading} className="bg-blue-500 hover:bg-blue-600 text-white rounded-xl" data-testid="ai-query-submit">
+              {aiLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
             </Button>
           </form>
-
           {aiResponse && (
-            <div 
-              className="p-4 rounded-xl bg-white/5 border border-white/10"
-              data-testid="ai-response"
-            >
-              <p className="text-white/80 text-sm leading-relaxed">{aiResponse}</p>
+            <div className="p-4 rounded-xl bg-blue-50 border border-blue-100" data-testid="ai-response">
+              <p className="text-gray-700 text-sm leading-relaxed">{aiResponse}</p>
             </div>
           )}
-
           {!aiResponse && (
-            <div className="grid grid-cols-2 gap-3">
-              <button 
-                onClick={() => setAiQuery("Wie ist die aktuelle Belegungsrate?")}
-                className="p-3 text-left text-sm text-white/60 bg-white/5 rounded-lg hover:bg-white/10 transition-all"
-                data-testid="ai-suggestion-1"
-              >
-                "Wie ist die aktuelle Belegungsrate?"
-              </button>
-              <button 
-                onClick={() => setAiQuery("Welche Wartungsaufgaben sind offen?")}
-                className="p-3 text-left text-sm text-white/60 bg-white/5 rounded-lg hover:bg-white/10 transition-all"
-                data-testid="ai-suggestion-2"
-              >
-                "Welche Wartungsaufgaben sind offen?"
-              </button>
+            <div className="grid grid-cols-2 gap-2">
+              {["Wie ist die aktuelle Belegungsrate?", "Welche Wartungsaufgaben sind offen?"].map((q, i) => (
+                <button key={i} onClick={() => setAiQuery(q)} className="p-3 text-left text-sm text-gray-500 bg-gray-50 rounded-xl hover:bg-gray-100 transition-all" data-testid={`ai-suggestion-${i+1}`}>"{q}"</button>
+              ))}
             </div>
           )}
         </div>
 
-        {/* Insights */}
-        <div className="glass-card p-6 opacity-0 animate-fade-in stagger-5" data-testid="insights-card">
-          <h2 className="text-lg font-semibold text-white font-['Manrope'] mb-4">Einblicke</h2>
-          <div className="space-y-3">
-            {insights.map((insight, index) => (
-              <div 
-                key={index}
-                className={`insight-card ${getInsightClass(insight.type)}`}
-                data-testid={`insight-${index}`}
-              >
+        <div className="bg-white rounded-2xl p-6 shadow-sm" data-testid="insights-card">
+          <h2 className="text-base font-semibold text-gray-900 mb-4">Einblicke</h2>
+          <div className="space-y-2.5">
+            {insights.map((insight, i) => (
+              <div key={i} className={`insight-card ${getInsightClass(insight.type)}`} data-testid={`insight-${i}`}>
                 {getInsightIcon(insight.type)}
-                <p className="text-sm text-white/80">{insight.message}</p>
+                <p className="text-sm text-gray-700">{insight.message}</p>
               </div>
             ))}
           </div>
         </div>
       </div>
 
-      {/* Quick Actions */}
-      <div className="glass-card p-6 opacity-0 animate-fade-in" style={{ animationDelay: "0.6s" }}>
-        <h2 className="text-lg font-semibold text-white font-['Manrope'] mb-4">Schnellaktionen</h2>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <button 
-            onClick={() => navigate("/immobilien")}
-            className="quick-action-btn group"
-            data-testid="quick-action-properties"
-          >
-            <div className="w-10 h-10 rounded-xl bg-blue-500/20 flex items-center justify-center group-hover:bg-blue-500/30 transition-colors">
-              <Building2 className="w-5 h-5 text-blue-400" />
-            </div>
-            <div className="flex-1">
-              <p className="text-sm font-medium text-white">Immobilien verwalten</p>
-              <p className="text-xs text-white/50">Alle Objekte anzeigen</p>
-            </div>
-            <ArrowRight className="w-4 h-4 text-white/30 group-hover:text-white/60 transition-colors" />
+      <div className="bg-white rounded-2xl p-6 shadow-sm">
+        <h2 className="text-base font-semibold text-gray-900 mb-4">Schnellaktionen</h2>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+          <button onClick={() => navigate("/immobilien")} className="quick-action-btn group" data-testid="quick-action-properties">
+            <div className="w-10 h-10 rounded-xl bg-blue-50 flex items-center justify-center"><Building2 className="w-5 h-5 text-blue-500" /></div>
+            <div className="flex-1 text-left"><p className="text-sm font-medium text-gray-900">Immobilien</p><p className="text-xs text-gray-400">Alle Objekte anzeigen</p></div>
+            <ArrowRight className="w-4 h-4 text-gray-300 group-hover:text-gray-500 transition-colors" />
           </button>
-
-          <button 
-            className="quick-action-btn group opacity-50 cursor-not-allowed"
-            data-testid="quick-action-maintenance"
-            disabled
-          >
-            <div className="w-10 h-10 rounded-xl bg-emerald-500/20 flex items-center justify-center">
-              <ClipboardList className="w-5 h-5 text-emerald-400" />
-            </div>
-            <div className="flex-1">
-              <p className="text-sm font-medium text-white">Wartung erstellen</p>
-              <p className="text-xs text-white/50">Neues Ticket anlegen</p>
-            </div>
-            <span className="text-[10px] bg-white/10 px-2 py-0.5 rounded-full">Bald</span>
+          <button onClick={() => navigate("/instandhaltung")} className="quick-action-btn group" data-testid="quick-action-maintenance">
+            <div className="w-10 h-10 rounded-xl bg-emerald-50 flex items-center justify-center"><ClipboardList className="w-5 h-5 text-emerald-500" /></div>
+            <div className="flex-1 text-left"><p className="text-sm font-medium text-gray-900">Instandhaltung</p><p className="text-xs text-gray-400">Tickets verwalten</p></div>
+            <ArrowRight className="w-4 h-4 text-gray-300 group-hover:text-gray-500 transition-colors" />
           </button>
-
-          <button 
-            className="quick-action-btn group opacity-50 cursor-not-allowed"
-            data-testid="quick-action-contract"
-            disabled
-          >
-            <div className="w-10 h-10 rounded-xl bg-amber-500/20 flex items-center justify-center">
-              <Calendar className="w-5 h-5 text-amber-400" />
-            </div>
-            <div className="flex-1">
-              <p className="text-sm font-medium text-white">Vertrag prüfen</p>
-              <p className="text-xs text-white/50">Ablaufende Verträge</p>
-            </div>
-            <span className="text-[10px] bg-white/10 px-2 py-0.5 rounded-full">Bald</span>
+          <button onClick={() => navigate("/pflege-wgs")} className="quick-action-btn group" data-testid="quick-action-pflege">
+            <div className="w-10 h-10 rounded-xl bg-pink-50 flex items-center justify-center"><Home className="w-5 h-5 text-pink-500" /></div>
+            <div className="flex-1 text-left"><p className="text-sm font-medium text-gray-900">Pflege-WGs</p><p className="text-xs text-gray-400">Klientenmanagement</p></div>
+            <ArrowRight className="w-4 h-4 text-gray-300 group-hover:text-gray-500 transition-colors" />
           </button>
         </div>
       </div>
