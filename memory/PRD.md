@@ -10,6 +10,17 @@ Build "DomusVita" - a premium property management app for German care homes with
 
 ## What's Been Implemented
 
+### February 13, 2025 - v2.5 Mobile Responsive
+
+**MOBILE OPTIMIERUNG:**
+- Sidebar auf mobil einklappbar (Hamburger-Menü)
+- Automatisches Schließen bei Seitenwechsel
+- Overlay-Hintergrund beim Öffnen
+- X-Button zum Schließen
+- Mobile Header mit zentriertem "DomusVita"
+- Alle Seiten mobil optimiert (Padding, Schriftgrößen, Flex-Wrapping)
+- Pipeline-Kanban scrollbar auf mobil (schmälere Spalten)
+
 ### February 13, 2025 - v2.4 Klientenmanagement Phase 3
 
 **DOCUMENT MANAGEMENT:**
