@@ -114,7 +114,20 @@ export default function PflegeWGDetail() {
         </div>
       </div>
 
-      {/* Main Content */}
+      {/* Main Content with Tabs */}
+      <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+        <TabsList className="bg-white/5 border-white/10 mb-6">
+          <TabsTrigger value="grundriss" className="data-[state=active]:bg-white/10" data-testid="tab-grundriss">
+            <Bed className="w-4 h-4 mr-2" />
+            Grundriss & Bewohner
+          </TabsTrigger>
+          <TabsTrigger value="kosten" className="data-[state=active]:bg-white/10" data-testid="tab-kosten">
+            <Euro className="w-4 h-4 mr-2" />
+            Kostenübersicht
+          </TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="grundriss">
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Grundriss */}
         <Card className="lg:col-span-2 bg-white/5 border-white/10">
@@ -288,6 +301,91 @@ export default function PflegeWGDetail() {
           </CardContent>
         </Card>
       </div>
+        </TabsContent>
+
+        {/* Kostenübersicht Tab */}
+        <TabsContent value="kosten">
+          {kosten ? (
+            <div className="space-y-6">
+              {/* Summary Cards */}
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <Card className="bg-white/5 border-white/10">
+                  <CardContent className="p-4">
+                    <p className="text-white/60 text-sm">Auslastung</p>
+                    <p className="text-2xl font-bold text-white">{kosten.auslastung_prozent}%</p>
+                    <p className="text-white/40 text-xs">{kosten.belegte_zimmer}/{kosten.kapazitaet} Zimmer</p>
+                  </CardContent>
+                </Card>
+                <Card className="bg-white/5 border-white/10">
+                  <CardContent className="p-4">
+                    <p className="text-white/60 text-sm">Monatlich gesamt</p>
+                    <p className="text-2xl font-bold text-emerald-400">{kosten.gesamt_monatlich.toLocaleString('de-DE')} &euro;</p>
+                  </CardContent>
+                </Card>
+                <Card className="bg-white/5 border-white/10">
+                  <CardContent className="p-4">
+                    <p className="text-white/60 text-sm">Jährlich gesamt</p>
+                    <p className="text-2xl font-bold text-white">{kosten.gesamt_jaehrlich.toLocaleString('de-DE')} &euro;</p>
+                  </CardContent>
+                </Card>
+                <Card className="bg-red-500/10 border-red-500/30">
+                  <CardContent className="p-4">
+                    <p className="text-red-400/80 text-sm">Entgangene Einnahmen</p>
+                    <p className="text-2xl font-bold text-red-400">{kosten.entgangene_einnahmen.toLocaleString('de-DE')} &euro;</p>
+                    <p className="text-red-400/60 text-xs">pro Monat durch Leerstand</p>
+                  </CardContent>
+                </Card>
+              </div>
+
+              {/* Cost Breakdown */}
+              <Card className="bg-white/5 border-white/10">
+                <CardHeader>
+                  <CardTitle className="text-white flex items-center gap-2">
+                    <Euro className="w-5 h-5" />
+                    Kostenaufstellung pro Bewohner
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-3">
+                    {Object.entries(kosten.kosten_detail).map(([key, val]) => {
+                      const labels = {
+                        miete: 'Miete',
+                        nebenkosten: 'Nebenkosten',
+                        betreuungspauschale: 'Betreuungspauschale',
+                        verpflegung: 'Verpflegung',
+                        investitionskosten: 'Investitionskosten'
+                      };
+                      return (
+                        <div key={key} className="flex items-center justify-between p-3 bg-white/5 rounded-lg">
+                          <span className="text-white">{labels[key] || key}</span>
+                          <div className="flex items-center gap-8">
+                            <span className="text-white/60 text-sm">{val.pro_zimmer.toLocaleString('de-DE')} &euro;/Zimmer</span>
+                            <span className="text-white font-medium w-28 text-right">{val.gesamt.toLocaleString('de-DE')} &euro;</span>
+                          </div>
+                        </div>
+                      );
+                    })}
+                    <div className="flex items-center justify-between p-3 bg-emerald-500/10 border border-emerald-500/30 rounded-lg">
+                      <span className="text-emerald-400 font-medium">Gesamt pro Bewohner</span>
+                      <span className="text-emerald-400 font-bold text-lg">{kosten.kosten_pro_bewohner.toLocaleString('de-DE')} &euro;/Monat</span>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              <div className="p-3 bg-yellow-500/10 border border-yellow-500/30 rounded-lg">
+                <p className="text-yellow-400 text-sm">
+                  Die Kostensätze sind Standardwerte. Sie können die echten Kosten später hinterlegen.
+                </p>
+              </div>
+            </div>
+          ) : (
+            <div className="flex items-center justify-center py-12">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
+            </div>
+          )}
+        </TabsContent>
+      </Tabs>
 
       {/* Zimmer Dialog */}
       <Dialog open={showZimmerDialog} onOpenChange={setShowZimmerDialog}>
