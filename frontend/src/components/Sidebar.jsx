@@ -29,27 +29,27 @@ export default function Sidebar({ isOpen, onClose }) {
   const location = useLocation();
 
   return (
-    <aside 
+    <aside
       className={`fixed left-0 top-0 h-full w-64 glass-sidebar z-50 flex flex-col transition-transform duration-300 ease-in-out ${
-        isOpen ? 'translate-x-0' : '-translate-x-full'
+        isOpen ? "translate-x-0" : "-translate-x-full"
       } lg:translate-x-0`}
       data-testid="sidebar"
     >
       {/* Logo + Close */}
-      <div className="p-6 border-b border-white/10">
+      <div className="p-5 border-b border-gray-200/60">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 to-emerald-500 flex items-center justify-center">
+            <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center shadow-md shadow-blue-500/20">
               <Building2 className="w-5 h-5 text-white" />
             </div>
             <div>
-              <h1 className="text-xl font-bold text-white font-['Manrope']">DomusVita</h1>
-              <p className="text-xs text-white/50">Immobilienverwaltung</p>
+              <h1 className="text-lg font-bold text-gray-900">DomusVita</h1>
+              <p className="text-[11px] text-gray-400 font-medium">Immobilienverwaltung</p>
             </div>
           </div>
           <button
             onClick={onClose}
-            className="lg:hidden p-1.5 text-white/50 hover:text-white rounded-lg hover:bg-white/10 transition-colors"
+            className="lg:hidden p-1.5 text-gray-400 hover:text-gray-600 rounded-lg hover:bg-gray-100 transition-colors"
             data-testid="close-sidebar-btn"
           >
             <X className="w-5 h-5" />
@@ -58,7 +58,7 @@ export default function Sidebar({ isOpen, onClose }) {
       </div>
 
       {/* Navigation */}
-      <nav className="flex-1 p-4 space-y-1 overflow-y-auto">
+      <nav className="flex-1 p-3 space-y-0.5 overflow-y-auto">
         {navItems.map((item) => {
           const Icon = item.icon;
           const isActive = location.pathname === item.path;
@@ -68,21 +68,21 @@ export default function Sidebar({ isOpen, onClose }) {
               key={item.name}
               to={item.path}
               data-testid={`nav-${item.name.toLowerCase()}`}
-              className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 ${
+              className={`flex items-center gap-3 px-3.5 py-2.5 rounded-xl transition-all duration-200 ${
                 isActive
-                  ? "bg-white/10 text-white border-r-2 border-blue-500"
-                  : "text-white/60 hover:text-white hover:bg-white/5"
+                  ? "bg-blue-50 text-blue-600 font-medium"
+                  : "text-gray-600 hover:text-gray-900 hover:bg-gray-100/70"
               }`}
             >
-              <Icon className="w-5 h-5" />
-              <span className="text-sm font-medium">{item.name}</span>
+              <Icon className={`w-[18px] h-[18px] ${isActive ? "text-blue-500" : ""}`} />
+              <span className="text-[13.5px]">{item.name}</span>
             </NavLink>
           );
         })}
-        
-        {/* Pflege-WGs Sektion */}
-        <div className="pt-4 mt-4 border-t border-white/10">
-          <p className="px-4 py-2 text-xs font-semibold text-white/40 uppercase tracking-wider">
+
+        {/* Pflege-WGs */}
+        <div className="pt-4 mt-3 border-t border-gray-200/60">
+          <p className="px-3.5 py-1.5 text-[11px] font-semibold text-gray-400 uppercase tracking-wider">
             Klientenmanagement
           </p>
           {pflegeItems.map((item) => {
@@ -93,33 +93,33 @@ export default function Sidebar({ isOpen, onClose }) {
               <NavLink
                 key={item.name}
                 to={item.path}
-                data-testid={`nav-${item.name.toLowerCase().replace('-', '')}`}
-                className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 ${
+                data-testid={`nav-${item.name.toLowerCase().replace("-", "")}`}
+                className={`flex items-center gap-3 px-3.5 py-2.5 rounded-xl transition-all duration-200 ${
                   isActive
-                    ? "bg-gradient-to-r from-pink-500/20 to-purple-500/20 text-white border-r-2 border-pink-500"
-                    : "text-white/60 hover:text-white hover:bg-white/5"
+                    ? "bg-pink-50 text-pink-600 font-medium"
+                    : "text-gray-600 hover:text-gray-900 hover:bg-gray-100/70"
                 }`}
               >
-                <Icon className={`w-5 h-5 ${isActive ? 'text-pink-400' : ''}`} />
-                <span className="text-sm font-medium">{item.name}</span>
+                <Icon className={`w-[18px] h-[18px] ${isActive ? "text-pink-500" : ""}`} />
+                <span className="text-[13.5px]">{item.name}</span>
               </NavLink>
             );
           })}
         </div>
       </nav>
 
-      {/* AI Assistant Teaser */}
-      <div className="p-4 border-t border-white/10">
-        <div className="p-4 rounded-xl bg-gradient-to-br from-blue-500/20 to-emerald-500/10 border border-white/10">
-          <div className="flex items-center gap-2 mb-2">
-            <Sparkles className="w-4 h-4 text-blue-400" />
-            <span className="text-sm font-medium text-white">KI-Assistent</span>
+      {/* AI Assistant */}
+      <div className="p-3 border-t border-gray-200/60">
+        <div className="p-3.5 rounded-2xl bg-gradient-to-br from-blue-50 to-indigo-50 border border-blue-100/60">
+          <div className="flex items-center gap-2 mb-1.5">
+            <Sparkles className="w-4 h-4 text-blue-500" />
+            <span className="text-[13px] font-semibold text-gray-800">KI-Assistent</span>
           </div>
-          <p className="text-xs text-white/60 mb-3">
+          <p className="text-[11px] text-gray-500 mb-2.5">
             Fragen Sie mich zu Ihren Immobilien
           </p>
-          <button 
-            className="w-full text-xs py-2 px-3 rounded-lg bg-white/10 text-white/80 hover:bg-white/20 transition-all"
+          <button
+            className="w-full text-[12px] py-2 px-3 rounded-xl bg-white/80 text-blue-600 font-medium hover:bg-white transition-all border border-blue-100/60 shadow-sm"
             data-testid="ai-assistant-button"
           >
             Chat starten
@@ -128,13 +128,13 @@ export default function Sidebar({ isOpen, onClose }) {
       </div>
 
       {/* Settings */}
-      <div className="p-4 border-t border-white/10">
-        <button 
-          className="flex items-center gap-3 px-4 py-3 w-full rounded-xl text-white/60 hover:text-white hover:bg-white/5 transition-all"
+      <div className="p-3 border-t border-gray-200/60">
+        <button
+          className="flex items-center gap-3 px-3.5 py-2.5 w-full rounded-xl text-gray-500 hover:text-gray-700 hover:bg-gray-100/70 transition-all"
           data-testid="settings-button"
         >
-          <Settings className="w-5 h-5" />
-          <span className="text-sm font-medium">Einstellungen</span>
+          <Settings className="w-[18px] h-[18px]" />
+          <span className="text-[13.5px]">Einstellungen</span>
         </button>
       </div>
     </aside>
