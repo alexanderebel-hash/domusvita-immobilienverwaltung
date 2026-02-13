@@ -22,7 +22,7 @@ import "./App.css";
 
 function App() {
   return (
-    <div className="App min-h-screen bg-[#050505]">
+    <div className="App min-h-screen bg-[#F2F2F7]">
       <BrowserRouter>
         <Routes>
           {/* Main App Routes */}
