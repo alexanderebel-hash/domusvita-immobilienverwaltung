@@ -218,14 +218,14 @@ export default function Instandhaltung() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-[60vh]" data-testid="instandhaltung-loading">
+      <div className="flex items-center justify-center min-h-[60vh]" className="overflow-x-hidden" data-testid="instandhaltung-loading">
         <Loader2 className="w-8 h-8 text-blue-500 animate-spin" />
       </div>
     );
   }
 
   return (
-    <div className="space-y-8 animate-fade-in" data-testid="instandhaltung-page">
+    <div className="space-y-8 animate-fade-in" className="overflow-x-hidden" data-testid="instandhaltung-page">
       {/* Header */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
@@ -235,7 +235,7 @@ export default function Instandhaltung() {
         
         <Dialog open={isDialogOpen} onOpenChange={(open) => { setIsDialogOpen(open); if (!open) resetForm(); }}>
           <DialogTrigger asChild>
-            <Button className="btn-primary flex items-center gap-2" data-testid="create-ticket-btn">
+            <Button className="btn-primary flex items-center gap-2" className="overflow-x-hidden" data-testid="create-ticket-btn">
               <Plus className="w-4 h-4" />
               Neues Ticket
             </Button>
@@ -253,7 +253,7 @@ export default function Instandhaltung() {
               <div>
                 <Label className="text-white/70">Immobilie *</Label>
                 <Select value={formData.property_id} onValueChange={(v) => setFormData({ ...formData, property_id: v })}>
-                  <SelectTrigger className="mt-1 bg-white border-gray-200 text-gray-900" data-testid="ticket-property-select">
+                  <SelectTrigger className="mt-1 bg-white border-gray-200 text-gray-900" className="overflow-x-hidden" data-testid="ticket-property-select">
                     <SelectValue placeholder="Immobilie wählen" />
                   </SelectTrigger>
                   <SelectContent className="bg-[#1A1A1A] border-gray-200">
@@ -270,7 +270,7 @@ export default function Instandhaltung() {
                   onChange={(e) => setFormData({ ...formData, title: e.target.value })}
                   placeholder="Kurze Beschreibung"
                   className="mt-1 bg-white border-gray-200 text-gray-900"
-                  data-testid="ticket-title-input"
+                  className="overflow-x-hidden" data-testid="ticket-title-input"
                 />
               </div>
               <div className="grid grid-cols-2 gap-4">
@@ -369,7 +369,7 @@ export default function Instandhaltung() {
                 <Button type="button" variant="outline" onClick={() => { setIsDialogOpen(false); resetForm(); }} className="bg-white border-gray-200 text-gray-900 hover:bg-gray-50">
                   Abbrechen
                 </Button>
-                <Button type="submit" disabled={submitting} className="btn-primary" data-testid="submit-ticket-btn">
+                <Button type="submit" disabled={submitting} className="btn-primary" className="overflow-x-hidden" data-testid="submit-ticket-btn">
                   {submitting ? <Loader2 className="w-4 h-4 animate-spin" /> : editingTicket ? "Speichern" : "Erstellen"}
                 </Button>
               </div>
@@ -431,10 +431,10 @@ export default function Instandhaltung() {
       </div>
 
       {/* Filters */}
-      <div className="bg-white rounded-2xl shadow-sm p-4" data-testid="maintenance-filters">
+      <div className="bg-white rounded-2xl shadow-sm p-4" className="overflow-x-hidden" data-testid="maintenance-filters">
         <div className="flex flex-col md:flex-row gap-4">
           <Select value={statusFilter} onValueChange={setStatusFilter}>
-            <SelectTrigger className="w-[180px] bg-white border-gray-200 text-gray-900" data-testid="filter-status">
+            <SelectTrigger className="w-[180px] bg-white border-gray-200 text-gray-900" className="overflow-x-hidden" data-testid="filter-status">
               <Filter className="w-4 h-4 mr-2 text-gray-400" />
               <SelectValue placeholder="Alle Status" />
             </SelectTrigger>
@@ -446,7 +446,7 @@ export default function Instandhaltung() {
             </SelectContent>
           </Select>
           <Select value={priorityFilter} onValueChange={setPriorityFilter}>
-            <SelectTrigger className="w-[180px] bg-white border-gray-200 text-gray-900" data-testid="filter-priority">
+            <SelectTrigger className="w-[180px] bg-white border-gray-200 text-gray-900" className="overflow-x-hidden" data-testid="filter-priority">
               <AlertTriangle className="w-4 h-4 mr-2 text-gray-400" />
               <SelectValue placeholder="Alle Prioritäten" />
             </SelectTrigger>
@@ -467,7 +467,7 @@ export default function Instandhaltung() {
 
       {/* Tickets List */}
       {tickets.length === 0 ? (
-        <div className="bg-white rounded-2xl shadow-sm p-12 text-center" data-testid="no-tickets">
+        <div className="bg-white rounded-2xl shadow-sm p-12 text-center" className="overflow-x-hidden" data-testid="no-tickets">
           <Wrench className="w-12 h-12 text-white/20 mx-auto mb-4" />
           <h3 className="text-lg font-medium text-gray-900 mb-2">Keine Wartungsaufgaben</h3>
           <p className="text-gray-400 mb-4">Erstellen Sie Ihr erstes Ticket</p>
@@ -476,7 +476,7 @@ export default function Instandhaltung() {
           </Button>
         </div>
       ) : (
-        <div className="space-y-3" data-testid="tickets-list">
+        <div className="space-y-3" className="overflow-x-hidden" data-testid="tickets-list">
           {tickets.map((ticket, idx) => (
             <div
               key={ticket.id}
