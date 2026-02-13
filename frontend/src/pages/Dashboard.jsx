@@ -73,11 +73,11 @@ export default function Dashboard() {
   }
 
   return (
-    <div className="space-y-6 p-4 md:p-8 animate-fade-in" data-testid="dashboard">
+    <div className="space-y-5 p-4 md:p-8 animate-fade-in overflow-x-hidden" data-testid="dashboard">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl md:text-3xl font-bold text-gray-900">Dashboard</h1>
-          <p className="text-gray-500 mt-1 text-sm">Willkommen zurück! Hier ist Ihre Übersicht.</p>
+          <h1 className="text-xl md:text-3xl font-bold text-gray-900">Dashboard</h1>
+          <p className="text-gray-500 mt-0.5 text-xs md:text-sm">Willkommen zurück!</p>
         </div>
         <Button onClick={() => navigate("/immobilien")} className="bg-blue-500 hover:bg-blue-600 text-white rounded-xl" data-testid="add-property-btn">
           <Plus className="w-4 h-4 mr-1.5" /> Immobilie
