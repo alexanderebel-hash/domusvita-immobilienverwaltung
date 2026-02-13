@@ -29,6 +29,7 @@ export default function PflegeWGs() {
   const [dashboard, setDashboard] = useState(null);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
+  const [gesamtKosten, setGesamtKosten] = useState(null);
 
   useEffect(() => {
     fetchData();
