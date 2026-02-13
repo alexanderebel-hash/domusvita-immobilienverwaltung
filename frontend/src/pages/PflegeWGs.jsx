@@ -37,9 +37,10 @@ export default function PflegeWGs() {
 
   const fetchData = async () => {
     try {
-      const [wgsRes, dashRes] = await Promise.all([
+      const [wgsRes, dashRes, kostenRes] = await Promise.all([
         fetch(`${API_URL}/api/pflege-wgs`),
-        fetch(`${API_URL}/api/klienten/dashboard`)
+        fetch(`${API_URL}/api/klienten/dashboard`),
+        fetch(`${API_URL}/api/pflege-wgs/kosten/gesamt`)
       ]);
       
       const wgsData = await wgsRes.json();
@@ -47,6 +48,10 @@ export default function PflegeWGs() {
       
       setWgs(wgsData);
       setDashboard(dashData);
+      
+      if (kostenRes.ok) {
+        setGesamtKosten(await kostenRes.json());
+      }
     } catch (error) {
       console.error('Error fetching data:', error);
     } finally {
