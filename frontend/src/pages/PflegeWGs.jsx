@@ -73,37 +73,37 @@ export default function PflegeWGs() {
   }
 
   return (
-    <div className="space-y-6 p-6" data-testid="pflege-wgs-page">
+    <div className="space-y-6 p-4 md:p-6" data-testid="pflege-wgs-page">
       {/* Header */}
-      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+      <div className="flex flex-col gap-4">
         <div>
-          <h1 className="text-3xl font-bold text-white">Pflege-Wohngemeinschaften</h1>
-          <p className="text-white/60 mt-1">Klientenmanagement für ambulant betreute WGs</p>
+          <h1 className="text-2xl md:text-3xl font-bold text-white">Pflege-Wohngemeinschaften</h1>
+          <p className="text-white/60 mt-1 text-sm md:text-base">Klientenmanagement für ambulant betreute WGs</p>
         </div>
-        <div className="flex gap-3 flex-wrap">
+        <div className="flex gap-2 flex-wrap">
           <Button 
             onClick={() => navigate('/pflege-wgs/pipeline')}
-            className="bg-blue-600 hover:bg-blue-700"
+            className="bg-blue-600 hover:bg-blue-700 text-sm"
             data-testid="pipeline-btn"
           >
-            <Users className="w-4 h-4 mr-2" />
+            <Users className="w-4 h-4 mr-1.5" />
             Pipeline
           </Button>
           <Button 
             onClick={() => navigate('/pflege-wgs/besichtigungen')}
             variant="outline"
-            className="border-white/20 text-white hover:bg-white/10"
+            className="border-white/20 text-white hover:bg-white/10 text-sm"
             data-testid="besichtigungen-btn"
           >
-            <Calendar className="w-4 h-4 mr-2" />
+            <Calendar className="w-4 h-4 mr-1.5" />
             Besichtigungen
           </Button>
           <Button 
             onClick={() => navigate('/pflege-wgs/klienten/neu')}
-            className="bg-green-600 hover:bg-green-700"
+            className="bg-green-600 hover:bg-green-700 text-sm"
             data-testid="new-klient-btn"
           >
-            <Plus className="w-4 h-4 mr-2" />
+            <Plus className="w-4 h-4 mr-1.5" />
             Neue Anfrage
           </Button>
         </div>
