@@ -89,28 +89,29 @@ export default function PflegeWGDetail() {
   }
 
   return (
-    <div className="space-y-6 p-6" data-testid="wg-detail-page">
+    <div className="space-y-4 md:space-y-6 p-4 md:p-6" data-testid="wg-detail-page">
       {/* Header */}
-      <div className="flex items-center gap-4">
-        <Button 
-          variant="ghost" 
-          onClick={() => navigate('/pflege-wgs')}
-          className="text-white/60 hover:text-white"
-        >
-          <ArrowLeft className="w-4 h-4 mr-2" />
-          Zurück
-        </Button>
-        <div className="flex-1">
-          <h1 className="text-3xl font-bold text-white">{wg.kurzname}</h1>
-          <p className="text-white/60">{wg.property_address}</p>
-        </div>
-        <div className="flex gap-2">
-          <Badge className={`${STATUS_COLORS.frei.bg} text-white`}>
-            {wg.freie_zimmer} frei
-          </Badge>
-          <Badge className={`${STATUS_COLORS.belegt.bg} text-white`}>
-            {wg.belegte_zimmer} belegt
-          </Badge>
+      <div className="flex flex-col gap-3">
+        <div className="flex items-center gap-3">
+          <Button 
+            variant="ghost" 
+            onClick={() => navigate('/pflege-wgs')}
+            className="text-white/60 hover:text-white p-2"
+          >
+            <ArrowLeft className="w-4 h-4" />
+          </Button>
+          <div className="flex-1 min-w-0">
+            <h1 className="text-xl md:text-3xl font-bold text-white truncate">{wg.kurzname}</h1>
+            <p className="text-white/60 text-sm truncate">{wg.property_address}</p>
+          </div>
+          <div className="flex gap-1.5 flex-shrink-0">
+            <Badge className={`${STATUS_COLORS.frei.bg} text-white text-xs`}>
+              {wg.freie_zimmer} frei
+            </Badge>
+            <Badge className={`${STATUS_COLORS.belegt.bg} text-white text-xs`}>
+              {wg.belegte_zimmer} belegt
+            </Badge>
+          </div>
         </div>
       </div>
 
