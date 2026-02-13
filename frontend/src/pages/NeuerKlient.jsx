@@ -103,7 +103,7 @@ export default function NeuerKlient() {
   };
 
   return (
-    <div className="p-6 max-w-4xl mx-auto" className="overflow-x-hidden" data-testid="neuer-klient-page">
+    <div className="p-6 max-w-4xl mx-auto" data-testid="neuer-klient-page">
       {/* Header */}
       <div className="flex items-center gap-4 mb-6">
         <Button 

@@ -170,14 +170,14 @@ export default function Immobilien() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-[60vh]" className="overflow-x-hidden" data-testid="immobilien-loading">
+      <div className="flex items-center justify-center min-h-[60vh]" data-testid="immobilien-loading">
         <Loader2 className="w-8 h-8 text-blue-500 animate-spin" />
       </div>
     );
   }
 
   return (
-    <div className="space-y-8 animate-fade-in" className="overflow-x-hidden" data-testid="immobilien-page">
+    <div className="space-y-8 animate-fade-in" data-testid="immobilien-page">
       {/* Header */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
@@ -187,7 +187,7 @@ export default function Immobilien() {
         
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <DialogTrigger asChild>
-            <Button className="btn-primary flex items-center gap-2" className="overflow-x-hidden" data-testid="create-property-btn">
+            <Button className="btn-primary flex items-center gap-2" data-testid="create-property-btn">
               <Plus className="w-4 h-4" />
               Neue Immobilie
             </Button>
@@ -208,7 +208,7 @@ export default function Immobilien() {
                     onChange={(e) => setNewProperty({ ...newProperty, name: e.target.value })}
                     placeholder="z.B. Mehrfamilienhaus Berlin"
                     className="mt-1 bg-white border-gray-200 text-gray-900"
-                    className="overflow-x-hidden" data-testid="property-name-input"
+                    data-testid="property-name-input"
                   />
                 </div>
                 <div className="col-span-2">
@@ -218,7 +218,7 @@ export default function Immobilien() {
                     onChange={(e) => setNewProperty({ ...newProperty, address: e.target.value })}
                     placeholder="Straße und Hausnummer"
                     className="mt-1 bg-white border-gray-200 text-gray-900"
-                    className="overflow-x-hidden" data-testid="property-address-input"
+                    data-testid="property-address-input"
                   />
                 </div>
                 <div>
@@ -228,7 +228,7 @@ export default function Immobilien() {
                     onChange={(e) => setNewProperty({ ...newProperty, city: e.target.value })}
                     placeholder="Berlin"
                     className="mt-1 bg-white border-gray-200 text-gray-900"
-                    className="overflow-x-hidden" data-testid="property-city-input"
+                    data-testid="property-city-input"
                   />
                 </div>
                 <div>
@@ -238,7 +238,7 @@ export default function Immobilien() {
                     onChange={(e) => setNewProperty({ ...newProperty, postal_code: e.target.value })}
                     placeholder="10115"
                     className="mt-1 bg-white border-gray-200 text-gray-900"
-                    className="overflow-x-hidden" data-testid="property-postal-input"
+                    data-testid="property-postal-input"
                   />
                 </div>
                 <div>
@@ -247,7 +247,7 @@ export default function Immobilien() {
                     value={newProperty.property_type}
                     onValueChange={(value) => setNewProperty({ ...newProperty, property_type: value })}
                   >
-                    <SelectTrigger className="mt-1 bg-white border-gray-200 text-gray-900" className="overflow-x-hidden" data-testid="property-type-select">
+                    <SelectTrigger className="mt-1 bg-white border-gray-200 text-gray-900" data-testid="property-type-select">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent className="bg-[#1A1A1A] border-gray-200">
@@ -265,7 +265,7 @@ export default function Immobilien() {
                     value={newProperty.status}
                     onValueChange={(value) => setNewProperty({ ...newProperty, status: value })}
                   >
-                    <SelectTrigger className="mt-1 bg-white border-gray-200 text-gray-900" className="overflow-x-hidden" data-testid="property-status-select">
+                    <SelectTrigger className="mt-1 bg-white border-gray-200 text-gray-900" data-testid="property-status-select">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent className="bg-[#1A1A1A] border-gray-200">
@@ -285,7 +285,7 @@ export default function Immobilien() {
                     value={newProperty.units_count}
                     onChange={(e) => setNewProperty({ ...newProperty, units_count: parseInt(e.target.value) || 1 })}
                     className="mt-1 bg-white border-gray-200 text-gray-900"
-                    className="overflow-x-hidden" data-testid="property-units-input"
+                    data-testid="property-units-input"
                   />
                 </div>
               </div>
@@ -295,7 +295,7 @@ export default function Immobilien() {
                   variant="outline"
                   onClick={() => setIsDialogOpen(false)}
                   className="bg-white border-gray-200 text-gray-900 hover:bg-gray-50"
-                  className="overflow-x-hidden" data-testid="cancel-create-btn"
+                  data-testid="cancel-create-btn"
                 >
                   Abbrechen
                 </Button>
@@ -303,7 +303,7 @@ export default function Immobilien() {
                   type="submit"
                   disabled={submitting}
                   className="btn-primary"
-                  className="overflow-x-hidden" data-testid="submit-create-btn"
+                  data-testid="submit-create-btn"
                 >
                   {submitting ? <Loader2 className="w-4 h-4 animate-spin" /> : "Erstellen"}
                 </Button>
@@ -314,7 +314,7 @@ export default function Immobilien() {
       </div>
 
       {/* Filters */}
-      <div className="bg-white rounded-2xl shadow-sm p-4" className="overflow-x-hidden" data-testid="filters-section">
+      <div className="bg-white rounded-2xl shadow-sm p-4" data-testid="filters-section">
         <div className="flex flex-col lg:flex-row gap-4">
           {/* Search */}
           <div className="relative flex-1">
@@ -324,14 +324,14 @@ export default function Immobilien() {
               onChange={(e) => setSearchTerm(e.target.value)}
               placeholder="Suchen nach Name, Adresse oder Stadt..."
               className="pl-10 bg-white border-gray-200 text-gray-900 placeholder:text-gray-300"
-              className="overflow-x-hidden" data-testid="search-input"
+              data-testid="search-input"
             />
           </div>
 
           {/* Filter Selects */}
           <div className="flex flex-wrap gap-3">
             <Select value={filters.type} onValueChange={(value) => setFilters({ ...filters, type: value })}>
-              <SelectTrigger className="w-[160px] bg-white border-gray-200 text-gray-900" className="overflow-x-hidden" data-testid="filter-type">
+              <SelectTrigger className="w-[160px] bg-white border-gray-200 text-gray-900" data-testid="filter-type">
                 <Filter className="w-4 h-4 mr-2 text-gray-400" />
                 <SelectValue placeholder="Typ" />
               </SelectTrigger>
@@ -346,7 +346,7 @@ export default function Immobilien() {
             </Select>
 
             <Select value={filters.city} onValueChange={(value) => setFilters({ ...filters, city: value })}>
-              <SelectTrigger className="w-[160px] bg-white border-gray-200 text-gray-900" className="overflow-x-hidden" data-testid="filter-city">
+              <SelectTrigger className="w-[160px] bg-white border-gray-200 text-gray-900" data-testid="filter-city">
                 <MapPin className="w-4 h-4 mr-2 text-gray-400" />
                 <SelectValue placeholder="Stadt" />
               </SelectTrigger>
@@ -361,7 +361,7 @@ export default function Immobilien() {
             </Select>
 
             <Select value={filters.status} onValueChange={(value) => setFilters({ ...filters, status: value })}>
-              <SelectTrigger className="w-[160px] bg-white border-gray-200 text-gray-900" className="overflow-x-hidden" data-testid="filter-status">
+              <SelectTrigger className="w-[160px] bg-white border-gray-200 text-gray-900" data-testid="filter-status">
                 <Home className="w-4 h-4 mr-2 text-gray-400" />
                 <SelectValue placeholder="Status" />
               </SelectTrigger>
@@ -380,7 +380,7 @@ export default function Immobilien() {
                 variant="ghost"
                 onClick={clearFilters}
                 className="text-gray-500 hover:text-gray-900 hover:bg-gray-50"
-                className="overflow-x-hidden" data-testid="clear-filters-btn"
+                data-testid="clear-filters-btn"
               >
                 <X className="w-4 h-4 mr-1" />
                 Filter zurücksetzen
@@ -393,14 +393,14 @@ export default function Immobilien() {
             <button
               onClick={() => setViewMode("grid")}
               className={`p-2 rounded-md transition-all ${viewMode === "grid" ? "bg-gray-50 text-gray-900" : "text-gray-400 hover:text-gray-900"}`}
-              className="overflow-x-hidden" data-testid="view-grid-btn"
+              data-testid="view-grid-btn"
             >
               <Grid3X3 className="w-4 h-4" />
             </button>
             <button
               onClick={() => setViewMode("list")}
               className={`p-2 rounded-md transition-all ${viewMode === "list" ? "bg-gray-50 text-gray-900" : "text-gray-400 hover:text-gray-900"}`}
-              className="overflow-x-hidden" data-testid="view-list-btn"
+              data-testid="view-list-btn"
             >
               <List className="w-4 h-4" />
             </button>
@@ -410,7 +410,7 @@ export default function Immobilien() {
 
       {/* Properties Grid */}
       {filteredProperties.length === 0 ? (
-        <div className="bg-white rounded-2xl shadow-sm p-12 text-center" className="overflow-x-hidden" data-testid="no-properties">
+        <div className="bg-white rounded-2xl shadow-sm p-12 text-center" data-testid="no-properties">
           <Building2 className="w-12 h-12 text-white/20 mx-auto mb-4" />
           <h3 className="text-lg font-medium text-gray-900 mb-2">Keine Immobilien gefunden</h3>
           <p className="text-gray-400 mb-4">
@@ -426,7 +426,7 @@ export default function Immobilien() {
           )}
         </div>
       ) : viewMode === "grid" ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" className="overflow-x-hidden" data-testid="properties-grid">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" data-testid="properties-grid">
           {filteredProperties.map((property, index) => (
             <div
               key={property.id}
@@ -476,7 +476,7 @@ export default function Immobilien() {
           ))}
         </div>
       ) : (
-        <div className="space-y-3" className="overflow-x-hidden" data-testid="properties-list">
+        <div className="space-y-3" data-testid="properties-list">
           {filteredProperties.map((property, index) => (
             <div
               key={property.id}

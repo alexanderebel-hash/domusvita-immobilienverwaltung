@@ -187,14 +187,14 @@ export default function Kontakte() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-[60vh]" className="overflow-x-hidden" data-testid="kontakte-loading">
+      <div className="flex items-center justify-center min-h-[60vh]" data-testid="kontakte-loading">
         <Loader2 className="w-8 h-8 text-blue-500 animate-spin" />
       </div>
     );
   }
 
   return (
-    <div className="space-y-8 animate-fade-in" className="overflow-x-hidden" data-testid="kontakte-page">
+    <div className="space-y-8 animate-fade-in" data-testid="kontakte-page">
       {/* Header */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
@@ -204,7 +204,7 @@ export default function Kontakte() {
         
         <Dialog open={isDialogOpen} onOpenChange={(open) => { setIsDialogOpen(open); if (!open) resetForm(); }}>
           <DialogTrigger asChild>
-            <Button className="btn-primary flex items-center gap-2" className="overflow-x-hidden" data-testid="create-contact-btn">
+            <Button className="btn-primary flex items-center gap-2" data-testid="create-contact-btn">
               <Plus className="w-4 h-4" />
               Neuer Kontakt
             </Button>
@@ -226,13 +226,13 @@ export default function Kontakte() {
                   onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                   placeholder="Vollständiger Name"
                   className="mt-1 bg-white border-gray-200 text-gray-900"
-                  className="overflow-x-hidden" data-testid="contact-name-input"
+                  data-testid="contact-name-input"
                 />
               </div>
               <div>
                 <Label className="text-white/70">Rolle</Label>
                 <Select value={formData.role} onValueChange={(v) => setFormData({ ...formData, role: v })}>
-                  <SelectTrigger className="mt-1 bg-white border-gray-200 text-gray-900" className="overflow-x-hidden" data-testid="contact-role-select">
+                  <SelectTrigger className="mt-1 bg-white border-gray-200 text-gray-900" data-testid="contact-role-select">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent className="bg-[#1A1A1A] border-gray-200">
@@ -251,7 +251,7 @@ export default function Kontakte() {
                     onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                     placeholder="email@beispiel.de"
                     className="mt-1 bg-white border-gray-200 text-gray-900"
-                    className="overflow-x-hidden" data-testid="contact-email-input"
+                    data-testid="contact-email-input"
                   />
                 </div>
                 <div>
@@ -261,7 +261,7 @@ export default function Kontakte() {
                     onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                     placeholder="+49 30 12345678"
                     className="mt-1 bg-white border-gray-200 text-gray-900"
-                    className="overflow-x-hidden" data-testid="contact-phone-input"
+                    data-testid="contact-phone-input"
                   />
                 </div>
               </div>
@@ -322,7 +322,7 @@ export default function Kontakte() {
                 <Button type="button" variant="outline" onClick={() => { setIsDialogOpen(false); resetForm(); }} className="bg-white border-gray-200 text-gray-900 hover:bg-gray-50">
                   Abbrechen
                 </Button>
-                <Button type="submit" disabled={submitting} className="btn-primary" className="overflow-x-hidden" data-testid="submit-contact-btn">
+                <Button type="submit" disabled={submitting} className="btn-primary" data-testid="submit-contact-btn">
                   {submitting ? <Loader2 className="w-4 h-4 animate-spin" /> : editingContact ? "Speichern" : "Erstellen"}
                 </Button>
               </div>
@@ -332,7 +332,7 @@ export default function Kontakte() {
       </div>
 
       {/* Filters */}
-      <div className="bg-white rounded-2xl shadow-sm p-4" className="overflow-x-hidden" data-testid="kontakte-filters">
+      <div className="bg-white rounded-2xl shadow-sm p-4" data-testid="kontakte-filters">
         <div className="flex flex-col md:flex-row gap-4">
           <div className="relative flex-1">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
@@ -341,11 +341,11 @@ export default function Kontakte() {
               onChange={(e) => setSearchTerm(e.target.value)}
               placeholder="Suchen nach Name, E-Mail oder Firma..."
               className="pl-10 bg-white border-gray-200 text-gray-900 placeholder:text-gray-300"
-              className="overflow-x-hidden" data-testid="search-contacts-input"
+              data-testid="search-contacts-input"
             />
           </div>
           <Select value={roleFilter} onValueChange={setRoleFilter}>
-            <SelectTrigger className="w-[180px] bg-white border-gray-200 text-gray-900" className="overflow-x-hidden" data-testid="filter-role">
+            <SelectTrigger className="w-[180px] bg-white border-gray-200 text-gray-900" data-testid="filter-role">
               <Users className="w-4 h-4 mr-2 text-gray-400" />
               <SelectValue placeholder="Alle Rollen" />
             </SelectTrigger>
@@ -366,7 +366,7 @@ export default function Kontakte() {
 
       {/* Contacts by Role */}
       {filteredContacts.length === 0 ? (
-        <div className="bg-white rounded-2xl shadow-sm p-12 text-center" className="overflow-x-hidden" data-testid="no-contacts">
+        <div className="bg-white rounded-2xl shadow-sm p-12 text-center" data-testid="no-contacts">
           <Users className="w-12 h-12 text-white/20 mx-auto mb-4" />
           <h3 className="text-lg font-medium text-gray-900 mb-2">Keine Kontakte gefunden</h3>
           <p className="text-gray-400 mb-4">Fügen Sie Ihren ersten Kontakt hinzu</p>
