@@ -19,10 +19,10 @@ const PIPELINE_COLUMNS = [
 ];
 
 const DRINGLICHKEIT_COLORS = {
-  sofort: 'border-l-red-500 bg-red-500/10',
-  '4_wochen': 'border-l-orange-500 bg-orange-500/10',
-  '3_monate': 'border-l-yellow-500 bg-yellow-500/10',
-  flexibel: 'border-l-green-500 bg-green-500/10'
+  sofort: 'border-l-red-500 bg-red-50',
+  '4_wochen': 'border-l-orange-500 bg-orange-50',
+  '3_monate': 'border-l-yellow-500 bg-yellow-50',
+  flexibel: 'border-l-green-500 bg-emerald-50'
 };
 
 const PFLEGEGRAD_BADGE = {
@@ -147,19 +147,19 @@ export default function KlientenPipeline() {
   return (
     <div className="h-screen flex flex-col" data-testid="pipeline-page">
       {/* Header */}
-      <div className="p-4 md:p-6 border-b border-white/10">
+      <div className="p-4 md:p-6 border-b border-gray-200">
         <div className="flex flex-col gap-3">
           <div className="flex items-center gap-3">
             <Button 
               variant="ghost" 
               onClick={() => navigate('/pflege-wgs')}
-              className="text-white/60 hover:text-white p-2"
+              className="text-gray-500 hover:text-gray-900 p-2"
             >
               <ArrowLeft className="w-4 h-4" />
             </Button>
             <div className="flex-1 min-w-0">
               <h1 className="text-xl md:text-2xl font-bold text-white">Anfragen-Pipeline</h1>
-              <p className="text-white/60 text-sm">{klienten.length} Interessenten</p>
+              <p className="text-gray-500 text-sm">{klienten.length} Interessenten</p>
             </div>
           </div>
           
@@ -168,7 +168,7 @@ export default function KlientenPipeline() {
               placeholder="Suchen..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="flex-1 bg-white/5 border-white/10 text-white text-sm"
+              className="flex-1 bg-white border-gray-200 text-white text-sm"
             />
             <Button 
               onClick={() => navigate('/pflege-wgs/klienten/neu')}
@@ -192,13 +192,13 @@ export default function KlientenPipeline() {
             return (
               <div
                 key={column.key}
-                className="w-64 md:w-80 flex-shrink-0 flex flex-col bg-white/5 rounded-xl border border-white/10"
+                className="w-64 md:w-80 flex-shrink-0 flex flex-col bg-white rounded-xl border border-gray-200"
                 onDragOver={handleDragOver}
                 onDrop={(e) => handleDrop(e, column.key)}
                 data-testid={`column-${column.key}`}
               >
                 {/* Column Header */}
-                <div className="p-4 border-b border-white/10">
+                <div className="p-4 border-b border-gray-200">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
                       <span className={`w-3 h-3 rounded-full ${column.color}`}></span>
@@ -206,11 +206,11 @@ export default function KlientenPipeline() {
                     </div>
                     <div className="flex items-center gap-2">
                       {dringendCount > 0 && (
-                        <Badge className="bg-red-500/20 text-red-400 border-0">
+                        <Badge className="bg-red-50 text-red-500 border-0">
                           {dringendCount} dringend
                         </Badge>
                       )}
-                      <Badge className="bg-white/10 text-white border-0">
+                      <Badge className="bg-gray-50 text-white border-0">
                         {columnKlienten.length}
                       </Badge>
                     </div>
@@ -225,7 +225,7 @@ export default function KlientenPipeline() {
                       draggable
                       onDragStart={(e) => handleDragStart(e, klient)}
                       onClick={() => navigate(`/pflege-wgs/klienten/${klient.id}`)}
-                      className={`p-4 rounded-lg border-l-4 cursor-pointer transition-all hover:scale-[1.02] ${DRINGLICHKEIT_COLORS[klient.dringlichkeit] || 'border-l-gray-500 bg-white/5'} border border-white/10 hover:border-white/20`}
+                      className={`p-4 rounded-lg border-l-4 cursor-pointer transition-all hover:scale-[1.02] ${DRINGLICHKEIT_COLORS[klient.dringlichkeit] || 'border-l-gray-500 bg-white/5'} border border-gray-200 hover:border-gray-200`}
                       data-testid={`klient-card-${klient.id}`}
                     >
                       {/* Name */}
@@ -234,7 +234,7 @@ export default function KlientenPipeline() {
                           <h4 className="text-white font-medium">
                             {klient.vorname} {klient.nachname}
                           </h4>
-                          <p className="text-white/60 text-sm">{klient.kontakt_name}</p>
+                          <p className="text-gray-500 text-sm">{klient.kontakt_name}</p>
                         </div>
                         {klient.pflegegrad && klient.pflegegrad !== 'keiner' && (
                           <Badge className={`${PFLEGEGRAD_BADGE[klient.pflegegrad]} text-white text-xs`}>
@@ -245,7 +245,7 @@ export default function KlientenPipeline() {
 
                       {/* Besonderheiten */}
                       {klient.besonderheiten && (
-                        <p className="text-white/50 text-xs mb-2 line-clamp-2">
+                        <p className="text-gray-400 text-xs mb-2 line-clamp-2">
                           {klient.besonderheiten}
                         </p>
                       )}
@@ -254,7 +254,7 @@ export default function KlientenPipeline() {
                       {klient.bevorzugte_wgs?.length > 0 && (
                         <div className="flex flex-wrap gap-1 mb-2">
                           {getWGNames(klient.bevorzugte_wgs).map(name => (
-                            <Badge key={name} className="bg-blue-500/20 text-blue-400 border-0 text-xs">
+                            <Badge key={name} className="bg-blue-50 text-blue-500 border-0 text-xs">
                               {name}
                             </Badge>
                           ))}
@@ -262,8 +262,8 @@ export default function KlientenPipeline() {
                       )}
 
                       {/* Footer */}
-                      <div className="flex items-center justify-between mt-3 pt-3 border-t border-white/10">
-                        <span className="text-white/40 text-xs flex items-center gap-1">
+                      <div className="flex items-center justify-between mt-3 pt-3 border-t border-gray-200">
+                        <span className="text-gray-400 text-xs flex items-center gap-1">
                           <Clock className="w-3 h-3" />
                           {formatDate(klient.anfrage_am)}
                         </span>
@@ -274,7 +274,7 @@ export default function KlientenPipeline() {
                             <Button 
                               size="sm" 
                               variant="ghost" 
-                              className="h-6 w-6 p-0 text-white/40 hover:text-green-400"
+                              className="h-6 w-6 p-0 text-gray-400 hover:text-emerald-500"
                               onClick={(e) => {
                                 e.stopPropagation();
                                 window.location.href = `tel:${klient.kontakt_telefon}`;
@@ -287,7 +287,7 @@ export default function KlientenPipeline() {
                             <Button 
                               size="sm" 
                               variant="ghost" 
-                              className="h-6 w-6 p-0 text-white/40 hover:text-blue-400"
+                              className="h-6 w-6 p-0 text-gray-400 hover:text-blue-500"
                               onClick={(e) => {
                                 e.stopPropagation();
                                 window.location.href = `mailto:${klient.kontakt_email}`;
@@ -302,7 +302,7 @@ export default function KlientenPipeline() {
                   ))}
 
                   {columnKlienten.length === 0 && (
-                    <div className="text-center py-8 text-white/40">
+                    <div className="text-center py-8 text-gray-400">
                       <p className="text-sm">Keine Anfragen</p>
                     </div>
                   )}
@@ -312,12 +312,12 @@ export default function KlientenPipeline() {
           })}
 
           {/* Abgesagt Column */}
-          <div className="w-64 flex-shrink-0 flex flex-col bg-white/5 rounded-xl border border-white/10 opacity-60">
-            <div className="p-4 border-b border-white/10">
+          <div className="w-64 flex-shrink-0 flex flex-col bg-white rounded-xl border border-gray-200 opacity-60">
+            <div className="p-4 border-b border-gray-200">
               <div className="flex items-center gap-2">
                 <span className="w-3 h-3 rounded-full bg-gray-500"></span>
-                <h3 className="text-white/60 font-medium">Abgesagt</h3>
-                <Badge className="bg-white/10 text-white/60 border-0">
+                <h3 className="text-gray-500 font-medium">Abgesagt</h3>
+                <Badge className="bg-gray-50 text-gray-500 border-0">
                   {klienten.filter(k => k.status === 'abgesagt').length}
                 </Badge>
               </div>
@@ -328,8 +328,8 @@ export default function KlientenPipeline() {
               onDrop={(e) => handleDrop(e, 'abgesagt')}
             >
               {klienten.filter(k => k.status === 'abgesagt').slice(0, 3).map(klient => (
-                <div key={klient.id} className="p-3 bg-white/5 rounded-lg mb-2 opacity-60">
-                  <p className="text-white/60 text-sm">{klient.vorname} {klient.nachname}</p>
+                <div key={klient.id} className="p-3 bg-white rounded-lg mb-2 opacity-60">
+                  <p className="text-gray-500 text-sm">{klient.vorname} {klient.nachname}</p>
                 </div>
               ))}
             </div>
