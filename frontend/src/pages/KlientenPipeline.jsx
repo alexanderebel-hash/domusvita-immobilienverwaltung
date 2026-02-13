@@ -147,35 +147,36 @@ export default function KlientenPipeline() {
   return (
     <div className="h-screen flex flex-col" data-testid="pipeline-page">
       {/* Header */}
-      <div className="p-6 border-b border-white/10">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-4">
+      <div className="p-4 md:p-6 border-b border-white/10">
+        <div className="flex flex-col gap-3">
+          <div className="flex items-center gap-3">
             <Button 
               variant="ghost" 
               onClick={() => navigate('/pflege-wgs')}
-              className="text-white/60 hover:text-white"
+              className="text-white/60 hover:text-white p-2"
             >
-              <ArrowLeft className="w-4 h-4 mr-2" />
-              Zurück
+              <ArrowLeft className="w-4 h-4" />
             </Button>
-            <div>
-              <h1 className="text-2xl font-bold text-white">Anfragen-Pipeline</h1>
+            <div className="flex-1 min-w-0">
+              <h1 className="text-xl md:text-2xl font-bold text-white">Anfragen-Pipeline</h1>
               <p className="text-white/60 text-sm">{klienten.length} Interessenten</p>
             </div>
           </div>
           
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-2">
             <Input
               placeholder="Suchen..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-64 bg-white/5 border-white/10 text-white"
+              className="flex-1 bg-white/5 border-white/10 text-white text-sm"
             />
             <Button 
               onClick={() => navigate('/pflege-wgs/klienten/neu')}
-              className="bg-green-600 hover:bg-green-700"
+              className="bg-green-600 hover:bg-green-700 text-sm flex-shrink-0"
             >
-              Neue Anfrage
+              <Plus className="w-4 h-4 mr-1" />
+              <span className="hidden sm:inline">Neue Anfrage</span>
+              <span className="sm:hidden">Neu</span>
             </Button>
           </div>
         </div>
