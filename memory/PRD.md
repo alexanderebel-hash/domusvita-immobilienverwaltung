@@ -10,6 +10,27 @@ Build "DomusVita" - a premium property management app for German care homes with
 
 ## What's Been Implemented
 
+### February 13, 2025 - v2.6 Apple Light Design + WhatsApp
+
+**KOMPLETTES REDESIGN - HELLES APPLE-DESIGN:**
+- Heller Hintergrund (#F2F2F7 - Apple System Grouped Background)
+- Weiße Karten mit sanften Schatten (shadow-sm)
+- Inter Font (SF Pro-ähnlich)
+- Klare Farbhierarchie: text-gray-900 (primär), text-gray-500 (sekundär)
+- Blaue Akzentfarbe (#007AFF)
+- Abgerundete Ecken (16px/rounded-2xl)
+- Alle 13+ Seiten auf helles Design umgestellt
+- Sidebar: frosted-glass Effekt auf weiß mit dezenten Trennlinien
+- Toaster-Benachrichtigungen im hellen Theme
+
+**WHATSAPP BUSINESS VORBEREITUNG:**
+- Backend-Webhook für eingehende Twilio WhatsApp-Nachrichten
+- Automatische Zuordnung zu Klienten über Telefonnummer
+- WhatsApp-Senden-Endpoint (MOCKED, benötigt Twilio-Konfiguration)
+- WhatsApp-Button auf Klient-Detailseite (öffnet wa.me Link)
+- Unzugeordnete Nachrichten werden separat gespeichert
+- Provider-Empfehlung: Twilio WhatsApp API
+
 ### February 13, 2025 - v2.5 Mobile Responsive
 
 **MOBILE OPTIMIERUNG:**
