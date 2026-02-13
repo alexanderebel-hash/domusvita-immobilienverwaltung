@@ -202,14 +202,14 @@ export default function Vertraege() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-[60vh]" className="overflow-x-hidden" data-testid="vertraege-loading">
+      <div className="flex items-center justify-center min-h-[60vh]" data-testid="vertraege-loading">
         <Loader2 className="w-8 h-8 text-blue-500 animate-spin" />
       </div>
     );
   }
 
   return (
-    <div className="space-y-8 animate-fade-in" className="overflow-x-hidden" data-testid="vertraege-page">
+    <div className="space-y-8 animate-fade-in" data-testid="vertraege-page">
       {/* Header */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
@@ -219,7 +219,7 @@ export default function Vertraege() {
         
         <Dialog open={isDialogOpen} onOpenChange={(open) => { setIsDialogOpen(open); if (!open) resetForm(); }}>
           <DialogTrigger asChild>
-            <Button className="btn-primary flex items-center gap-2" className="overflow-x-hidden" data-testid="create-contract-btn">
+            <Button className="btn-primary flex items-center gap-2" data-testid="create-contract-btn">
               <Plus className="w-4 h-4" />
               Neuer Vertrag
             </Button>
@@ -237,7 +237,7 @@ export default function Vertraege() {
               <div>
                 <Label className="text-white/70">Immobilie *</Label>
                 <Select value={formData.property_id} onValueChange={(v) => setFormData({ ...formData, property_id: v })}>
-                  <SelectTrigger className="mt-1 bg-white border-gray-200 text-gray-900" className="overflow-x-hidden" data-testid="contract-property-select">
+                  <SelectTrigger className="mt-1 bg-white border-gray-200 text-gray-900" data-testid="contract-property-select">
                     <SelectValue placeholder="Immobilie wählen" />
                   </SelectTrigger>
                   <SelectContent className="bg-[#1A1A1A] border-gray-200">
@@ -251,7 +251,7 @@ export default function Vertraege() {
                 <div>
                   <Label className="text-white/70">Vertragsart *</Label>
                   <Select value={formData.contract_type} onValueChange={(v) => setFormData({ ...formData, contract_type: v })}>
-                    <SelectTrigger className="mt-1 bg-white border-gray-200 text-gray-900" className="overflow-x-hidden" data-testid="contract-type-select">
+                    <SelectTrigger className="mt-1 bg-white border-gray-200 text-gray-900" data-testid="contract-type-select">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent className="bg-[#1A1A1A] border-gray-200">
@@ -283,7 +283,7 @@ export default function Vertraege() {
                   onChange={(e) => setFormData({ ...formData, title: e.target.value })}
                   placeholder="Vertragstitel"
                   className="mt-1 bg-white border-gray-200 text-gray-900"
-                  className="overflow-x-hidden" data-testid="contract-title-input"
+                  data-testid="contract-title-input"
                 />
               </div>
               <div className="grid grid-cols-2 gap-4">
@@ -294,7 +294,7 @@ export default function Vertraege() {
                     value={formData.start_date}
                     onChange={(e) => setFormData({ ...formData, start_date: e.target.value })}
                     className="mt-1 bg-white border-gray-200 text-gray-900"
-                    className="overflow-x-hidden" data-testid="contract-start-date"
+                    data-testid="contract-start-date"
                   />
                 </div>
                 <div>
@@ -304,7 +304,7 @@ export default function Vertraege() {
                     value={formData.end_date}
                     onChange={(e) => setFormData({ ...formData, end_date: e.target.value })}
                     className="mt-1 bg-white border-gray-200 text-gray-900"
-                    className="overflow-x-hidden" data-testid="contract-end-date"
+                    data-testid="contract-end-date"
                   />
                 </div>
               </div>
@@ -352,7 +352,7 @@ export default function Vertraege() {
                 <Button type="button" variant="outline" onClick={() => { setIsDialogOpen(false); resetForm(); }} className="bg-white border-gray-200 text-gray-900 hover:bg-gray-50">
                   Abbrechen
                 </Button>
-                <Button type="submit" disabled={submitting} className="btn-primary" className="overflow-x-hidden" data-testid="submit-contract-btn">
+                <Button type="submit" disabled={submitting} className="btn-primary" data-testid="submit-contract-btn">
                   {submitting ? <Loader2 className="w-4 h-4 animate-spin" /> : editingContract ? "Speichern" : "Erstellen"}
                 </Button>
               </div>
@@ -363,7 +363,7 @@ export default function Vertraege() {
 
       {/* Alert Banner */}
       {expiringCount > 0 && (
-        <div className="bg-white rounded-2xl shadow-sm p-4 border-l-4 border-amber-500 flex items-center gap-4" className="overflow-x-hidden" data-testid="expiring-alert">
+        <div className="bg-white rounded-2xl shadow-sm p-4 border-l-4 border-amber-500 flex items-center gap-4" data-testid="expiring-alert">
           <AlertTriangle className="w-6 h-6 text-amber-500" />
           <div className="flex-1">
             <p className="text-gray-900 font-medium">{expiringCount} Verträge laufen in den nächsten 30 Tagen ab</p>
@@ -376,10 +376,10 @@ export default function Vertraege() {
       )}
 
       {/* Filters */}
-      <div className="bg-white rounded-2xl shadow-sm p-4" className="overflow-x-hidden" data-testid="vertraege-filters">
+      <div className="bg-white rounded-2xl shadow-sm p-4" data-testid="vertraege-filters">
         <div className="flex flex-col md:flex-row gap-4">
           <Select value={typeFilter} onValueChange={setTypeFilter}>
-            <SelectTrigger className="w-[200px] bg-white border-gray-200 text-gray-900" className="overflow-x-hidden" data-testid="filter-type">
+            <SelectTrigger className="w-[200px] bg-white border-gray-200 text-gray-900" data-testid="filter-type">
               <FileText className="w-4 h-4 mr-2 text-gray-400" />
               <SelectValue placeholder="Alle Vertragsarten" />
             </SelectTrigger>
@@ -407,7 +407,7 @@ export default function Vertraege() {
 
       {/* Contracts List */}
       {contracts.length === 0 ? (
-        <div className="bg-white rounded-2xl shadow-sm p-12 text-center" className="overflow-x-hidden" data-testid="no-contracts">
+        <div className="bg-white rounded-2xl shadow-sm p-12 text-center" data-testid="no-contracts">
           <FileText className="w-12 h-12 text-white/20 mx-auto mb-4" />
           <h3 className="text-lg font-medium text-gray-900 mb-2">Keine Verträge gefunden</h3>
           <p className="text-gray-400 mb-4">Erfassen Sie Ihren ersten Vertrag</p>
@@ -416,7 +416,7 @@ export default function Vertraege() {
           </Button>
         </div>
       ) : (
-        <div className="space-y-4" className="overflow-x-hidden" data-testid="contracts-list">
+        <div className="space-y-4" data-testid="contracts-list">
           {contracts.map((contract, idx) => {
             const expiry = getExpiryStatus(contract.days_until_expiry);
             const ExpiryIcon = expiry.icon;

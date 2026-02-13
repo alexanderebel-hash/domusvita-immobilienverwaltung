@@ -145,7 +145,7 @@ export default function KlientenPipeline() {
   }
 
   return (
-    <div className="h-screen flex flex-col" className="overflow-x-hidden" data-testid="pipeline-page">
+    <div className="h-screen flex flex-col" data-testid="pipeline-page">
       {/* Header */}
       <div className="p-4 md:p-6 border-b border-gray-200">
         <div className="flex flex-col gap-3">

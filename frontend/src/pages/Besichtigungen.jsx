@@ -150,7 +150,7 @@ export default function Besichtigungen() {
   }
 
   return (
-    <div className="p-6 space-y-6" className="overflow-x-hidden" data-testid="besichtigungen-page">
+    <div className="p-6 space-y-6" data-testid="besichtigungen-page">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-4">

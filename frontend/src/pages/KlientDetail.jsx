@@ -285,7 +285,7 @@ export default function KlientDetail() {
   if (!klient) return null;
 
   return (
-    <div className="p-4 md:p-6 space-y-4 md:space-y-6" className="overflow-x-hidden" data-testid="klient-detail-page">
+    <div className="p-4 md:p-6 space-y-4 md:space-y-6" data-testid="klient-detail-page">
       {/* Header */}
       <div className="flex flex-col gap-4">
         <div className="flex items-center gap-3">
@@ -293,7 +293,7 @@ export default function KlientDetail() {
             variant="ghost" 
             onClick={() => navigate('/pflege-wgs/pipeline')}
             className="text-gray-500 hover:text-gray-900 p-2"
-            className="overflow-x-hidden" data-testid="back-button"
+            data-testid="back-button"
           >
             <ArrowLeft className="w-4 h-4" />
           </Button>
@@ -305,7 +305,7 @@ export default function KlientDetail() {
               <Badge 
                 className={`${STATUS_COLORS[klient.status]} text-gray-900 cursor-pointer text-xs`}
                 onClick={() => setShowStatusDialog(true)}
-                className="overflow-x-hidden" data-testid="status-badge"
+                data-testid="status-badge"
               >
                 {STATUS_LABELS[klient.status]}
               </Badge>
@@ -335,7 +335,7 @@ export default function KlientDetail() {
               size="sm"
               className="border-emerald-300 text-emerald-500 hover:bg-emerald-50"
               onClick={() => window.location.href = `tel:${klient.kontakt_telefon}`}
-              className="overflow-x-hidden" data-testid="call-button"
+              data-testid="call-button"
             >
               <Phone className="w-4 h-4 mr-1.5" />
               Anrufen
@@ -346,7 +346,7 @@ export default function KlientDetail() {
             size="sm"
             className="border-blue-300 text-blue-500 hover:bg-blue-50"
             onClick={openEmailDialog}
-            className="overflow-x-hidden" data-testid="email-button"
+            data-testid="email-button"
           >
             <Mail className="w-4 h-4 mr-1.5" />
             E-Mail
@@ -357,7 +357,7 @@ export default function KlientDetail() {
               size="sm"
               className="border-emerald-300 text-emerald-600 hover:bg-emerald-50"
               onClick={() => window.open(`https://wa.me/${klient.kontakt_telefon?.replace(/[^0-9+]/g, '').replace('+', '')}`, '_blank')}
-              className="overflow-x-hidden" data-testid="whatsapp-button"
+              data-testid="whatsapp-button"
             >
               <MessageSquare className="w-4 h-4 mr-1.5" />
               WhatsApp
@@ -367,7 +367,7 @@ export default function KlientDetail() {
             size="sm"
             onClick={() => setShowNoteDialog(true)}
             className="bg-purple-600 hover:bg-purple-700 text-white"
-            className="overflow-x-hidden" data-testid="add-note-button"
+            data-testid="add-note-button"
           >
             <Plus className="w-4 h-4 mr-1.5" />
             Eintrag
@@ -378,25 +378,25 @@ export default function KlientDetail() {
       {/* Tabs */}
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
         <TabsList className="bg-white border-gray-200">
-          <TabsTrigger value="uebersicht" className="data-[state=active]:bg-gray-50" className="overflow-x-hidden" data-testid="tab-uebersicht">
+          <TabsTrigger value="uebersicht" className="data-[state=active]:bg-gray-50" data-testid="tab-uebersicht">
             <User className="w-4 h-4 mr-2" />
             Übersicht
           </TabsTrigger>
-          <TabsTrigger value="kommunikation" className="data-[state=active]:bg-gray-50" className="overflow-x-hidden" data-testid="tab-kommunikation">
+          <TabsTrigger value="kommunikation" className="data-[state=active]:bg-gray-50" data-testid="tab-kommunikation">
             <MessageSquare className="w-4 h-4 mr-2" />
             Kommunikation
             {klient.kommunikation?.length > 0 && (
               <Badge className="ml-2 bg-blue-50 text-blue-500 border-0 text-xs">{klient.kommunikation.length}</Badge>
             )}
           </TabsTrigger>
-          <TabsTrigger value="dokumente" className="data-[state=active]:bg-gray-50" className="overflow-x-hidden" data-testid="tab-dokumente">
+          <TabsTrigger value="dokumente" className="data-[state=active]:bg-gray-50" data-testid="tab-dokumente">
             <FileText className="w-4 h-4 mr-2" />
             Dokumente
             {dokumente.length > 0 && (
               <Badge className="ml-2 bg-blue-50 text-blue-500 border-0 text-xs">{dokumente.length}</Badge>
             )}
           </TabsTrigger>
-          <TabsTrigger value="verlauf" className="data-[state=active]:bg-gray-50" className="overflow-x-hidden" data-testid="tab-verlauf">
+          <TabsTrigger value="verlauf" className="data-[state=active]:bg-gray-50" data-testid="tab-verlauf">
             <History className="w-4 h-4 mr-2" />
             Verlauf
           </TabsTrigger>
@@ -578,7 +578,7 @@ export default function KlientDetail() {
                   <Send className="w-4 h-4 mr-2" />
                   E-Mail senden
                 </Button>
-                <Button onClick={() => setShowNoteDialog(true)} size="sm" className="overflow-x-hidden" data-testid="new-entry-btn">
+                <Button onClick={() => setShowNoteDialog(true)} size="sm" data-testid="new-entry-btn">
                   <Plus className="w-4 h-4 mr-2" />
                   Neuer Eintrag
                 </Button>
@@ -669,7 +669,7 @@ export default function KlientDetail() {
                   size="sm" 
                   onClick={() => fileInputRef.current?.click()}
                   disabled={uploading}
-                  className="overflow-x-hidden" data-testid="upload-document-btn"
+                  data-testid="upload-document-btn"
                 >
                   <Upload className="w-4 h-4 mr-2" />
                   {uploading ? 'Hochladen...' : 'Hochladen'}
@@ -828,7 +828,7 @@ export default function KlientDetail() {
             <Button variant="ghost" onClick={() => setShowNoteDialog(false)}>
               Abbrechen
             </Button>
-            <Button onClick={handleAddNote} className="bg-blue-600 hover:bg-blue-700" className="overflow-x-hidden" data-testid="save-note-btn">
+            <Button onClick={handleAddNote} className="bg-blue-600 hover:bg-blue-700" data-testid="save-note-btn">
               Speichern
             </Button>
           </DialogFooter>
@@ -857,7 +857,7 @@ export default function KlientDetail() {
             <Button variant="ghost" onClick={() => setShowStatusDialog(false)}>
               Abbrechen
             </Button>
-            <Button onClick={handleStatusChange} className="bg-blue-600 hover:bg-blue-700" className="overflow-x-hidden" data-testid="save-status-btn">
+            <Button onClick={handleStatusChange} className="bg-blue-600 hover:bg-blue-700" data-testid="save-status-btn">
               Speichern
             </Button>
           </DialogFooter>
@@ -944,7 +944,7 @@ export default function KlientDetail() {
               onClick={handleSendEmail} 
               className="bg-blue-600 hover:bg-blue-700"
               disabled={sendingEmail}
-              className="overflow-x-hidden" data-testid="send-email-btn"
+              data-testid="send-email-btn"
             >
               <Send className="w-4 h-4 mr-2" />
               {sendingEmail ? 'Wird gesendet...' : 'Senden'}

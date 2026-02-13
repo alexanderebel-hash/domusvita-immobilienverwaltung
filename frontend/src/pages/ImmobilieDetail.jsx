@@ -87,7 +87,7 @@ export default function ImmobilieDetail() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-[60vh]" className="overflow-x-hidden" data-testid="detail-loading">
+      <div className="flex items-center justify-center min-h-[60vh]" data-testid="detail-loading">
         <Loader2 className="w-8 h-8 text-blue-500 animate-spin" />
       </div>
     );
@@ -98,13 +98,13 @@ export default function ImmobilieDetail() {
   }
 
   return (
-    <div className="space-y-8 animate-fade-in" className="overflow-x-hidden" data-testid="property-detail">
+    <div className="space-y-8 animate-fade-in" data-testid="property-detail">
       {/* Back Button */}
       <Button
         variant="ghost"
         onClick={() => navigate("/immobilien")}
         className="text-gray-500 hover:text-gray-900 hover:bg-gray-50 -ml-2"
-        className="overflow-x-hidden" data-testid="back-btn"
+        data-testid="back-btn"
       >
         <ArrowLeft className="w-4 h-4 mr-2" />
         Zurück zur Übersicht
@@ -125,7 +125,7 @@ export default function ImmobilieDetail() {
             variant="outline"
             size="sm"
             className="bg-gray-50 border-gray-200 text-gray-900 hover:bg-gray-100 backdrop-blur-md"
-            className="overflow-x-hidden" data-testid="edit-btn"
+            data-testid="edit-btn"
           >
             <Edit2 className="w-4 h-4 mr-2" />
             Bearbeiten
@@ -136,7 +136,7 @@ export default function ImmobilieDetail() {
                 variant="outline"
                 size="sm"
                 className="bg-red-50 border-red-500/30 text-red-500 hover:bg-red-500/30 backdrop-blur-md"
-                className="overflow-x-hidden" data-testid="delete-btn"
+                data-testid="delete-btn"
               >
                 <Trash2 className="w-4 h-4" />
               </Button>
@@ -156,7 +156,7 @@ export default function ImmobilieDetail() {
                   onClick={handleDelete}
                   disabled={deleting}
                   className="bg-red-500 hover:bg-red-600 text-gray-900"
-                  className="overflow-x-hidden" data-testid="confirm-delete-btn"
+                  data-testid="confirm-delete-btn"
                 >
                   {deleting ? <Loader2 className="w-4 h-4 animate-spin" /> : "Löschen"}
                 </AlertDialogAction>
@@ -185,7 +185,7 @@ export default function ImmobilieDetail() {
 
       {/* Stats Row */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <div className="bg-white rounded-2xl shadow-sm p-5" className="overflow-x-hidden" data-testid="stat-units">
+        <div className="bg-white rounded-2xl shadow-sm p-5" data-testid="stat-units">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-xl bg-blue-50 flex items-center justify-center">
               <Home className="w-5 h-5 text-blue-500" />
@@ -196,7 +196,7 @@ export default function ImmobilieDetail() {
             </div>
           </div>
         </div>
-        <div className="bg-white rounded-2xl shadow-sm p-5" className="overflow-x-hidden" data-testid="stat-tenants">
+        <div className="bg-white rounded-2xl shadow-sm p-5" data-testid="stat-tenants">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-xl bg-emerald-50 flex items-center justify-center">
               <Users className="w-5 h-5 text-emerald-500" />
@@ -209,7 +209,7 @@ export default function ImmobilieDetail() {
             </div>
           </div>
         </div>
-        <div className="bg-white rounded-2xl shadow-sm p-5" className="overflow-x-hidden" data-testid="stat-contracts">
+        <div className="bg-white rounded-2xl shadow-sm p-5" data-testid="stat-contracts">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-xl bg-amber-50 flex items-center justify-center">
               <FileText className="w-5 h-5 text-amber-500" />
@@ -220,7 +220,7 @@ export default function ImmobilieDetail() {
             </div>
           </div>
         </div>
-        <div className="bg-white rounded-2xl shadow-sm p-5" className="overflow-x-hidden" data-testid="stat-maintenance">
+        <div className="bg-white rounded-2xl shadow-sm p-5" data-testid="stat-maintenance">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-xl bg-rose-500/20 flex items-center justify-center">
               <Wrench className="w-5 h-5 text-rose-400" />
@@ -236,10 +236,10 @@ export default function ImmobilieDetail() {
       {/* Content Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Units Section */}
-        <div className="lg:col-span-2 bg-white rounded-2xl shadow-sm p-6" className="overflow-x-hidden" data-testid="units-section">
+        <div className="lg:col-span-2 bg-white rounded-2xl shadow-sm p-6" data-testid="units-section">
           <div className="flex items-center justify-between mb-6">
             <h2 className="text-lg font-semibold text-gray-900 font-['Manrope']">Einheiten</h2>
-            <Button size="sm" className="btn-secondary text-sm" className="overflow-x-hidden" data-testid="add-unit-btn">
+            <Button size="sm" className="btn-secondary text-sm" data-testid="add-unit-btn">
               + Einheit hinzufügen
             </Button>
           </div>
@@ -282,14 +282,14 @@ export default function ImmobilieDetail() {
 
         {/* Description & Details */}
         <div className="space-y-6">
-          <div className="bg-white rounded-2xl shadow-sm p-6" className="overflow-x-hidden" data-testid="description-section">
+          <div className="bg-white rounded-2xl shadow-sm p-6" data-testid="description-section">
             <h2 className="text-lg font-semibold text-gray-900 font-['Manrope'] mb-4">Beschreibung</h2>
             <p className="text-white/70 text-sm leading-relaxed">
               {property.description || "Keine Beschreibung vorhanden."}
             </p>
           </div>
 
-          <div className="bg-white rounded-2xl shadow-sm p-6" className="overflow-x-hidden" data-testid="details-section">
+          <div className="bg-white rounded-2xl shadow-sm p-6" data-testid="details-section">
             <h2 className="text-lg font-semibold text-gray-900 font-['Manrope'] mb-4">Details</h2>
             <div className="space-y-3">
               <div className="flex justify-between text-sm">
