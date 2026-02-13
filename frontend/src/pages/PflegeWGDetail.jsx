@@ -89,7 +89,7 @@ export default function PflegeWGDetail() {
   }
 
   return (
-    <div className="space-y-4 md:space-y-6 p-4 md:p-6" data-testid="wg-detail-page">
+    <div className="space-y-4 md:space-y-6 p-4 md:p-6" className="overflow-x-hidden" data-testid="wg-detail-page">
       {/* Header */}
       <div className="flex flex-col gap-3">
         <div className="flex items-center gap-3">
@@ -118,11 +118,11 @@ export default function PflegeWGDetail() {
       {/* Main Content with Tabs */}
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
         <TabsList className="bg-white border-gray-200 mb-6">
-          <TabsTrigger value="grundriss" className="data-[state=active]:bg-gray-50" data-testid="tab-grundriss">
+          <TabsTrigger value="grundriss" className="data-[state=active]:bg-gray-50" className="overflow-x-hidden" data-testid="tab-grundriss">
             <Bed className="w-4 h-4 mr-2" />
             Grundriss & Bewohner
           </TabsTrigger>
-          <TabsTrigger value="kosten" className="data-[state=active]:bg-gray-50" data-testid="tab-kosten">
+          <TabsTrigger value="kosten" className="data-[state=active]:bg-gray-50" className="overflow-x-hidden" data-testid="tab-kosten">
             <Euro className="w-4 h-4 mr-2" />
             Kostenübersicht
           </TabsTrigger>
