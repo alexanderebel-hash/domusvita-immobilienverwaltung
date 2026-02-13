@@ -351,10 +351,22 @@ export default function KlientDetail() {
             <Mail className="w-4 h-4 mr-1.5" />
             E-Mail
           </Button>
+          {klient.kontakt_telefon && (
+            <Button 
+              variant="outline"
+              size="sm"
+              className="border-emerald-300 text-emerald-600 hover:bg-emerald-50"
+              onClick={() => window.open(`https://wa.me/${klient.kontakt_telefon?.replace(/[^0-9+]/g, '').replace('+', '')}`, '_blank')}
+              data-testid="whatsapp-button"
+            >
+              <MessageSquare className="w-4 h-4 mr-1.5" />
+              WhatsApp
+            </Button>
+          )}
           <Button 
             size="sm"
             onClick={() => setShowNoteDialog(true)}
-            className="bg-purple-600 hover:bg-purple-700"
+            className="bg-purple-600 hover:bg-purple-700 text-white"
             data-testid="add-note-button"
           >
             <Plus className="w-4 h-4 mr-1.5" />
