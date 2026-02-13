@@ -285,77 +285,79 @@ export default function KlientDetail() {
   if (!klient) return null;
 
   return (
-    <div className="p-6 space-y-6" data-testid="klient-detail-page">
+    <div className="p-4 md:p-6 space-y-4 md:space-y-6" data-testid="klient-detail-page">
       {/* Header */}
-      <div className="flex items-start justify-between">
-        <div className="flex items-center gap-4">
+      <div className="flex flex-col gap-4">
+        <div className="flex items-center gap-3">
           <Button 
             variant="ghost" 
             onClick={() => navigate('/pflege-wgs/pipeline')}
-            className="text-white/60 hover:text-white"
+            className="text-white/60 hover:text-white p-2"
             data-testid="back-button"
           >
-            <ArrowLeft className="w-4 h-4 mr-2" />
-            Zurück
+            <ArrowLeft className="w-4 h-4" />
           </Button>
-          <div>
-            <div className="flex items-center gap-3">
-              <h1 className="text-3xl font-bold text-white">
+          <div className="flex-1 min-w-0">
+            <div className="flex items-center gap-2 flex-wrap">
+              <h1 className="text-xl md:text-3xl font-bold text-white truncate">
                 {klient.vorname} {klient.nachname}
               </h1>
               <Badge 
-                className={`${STATUS_COLORS[klient.status]} text-white cursor-pointer`}
+                className={`${STATUS_COLORS[klient.status]} text-white cursor-pointer text-xs`}
                 onClick={() => setShowStatusDialog(true)}
                 data-testid="status-badge"
               >
                 {STATUS_LABELS[klient.status]}
               </Badge>
               {klient.pflegegrad && klient.pflegegrad !== 'keiner' && (
-                <Badge className={`${PFLEGEGRAD_COLORS[klient.pflegegrad]} text-white`}>
-                  Pflegegrad {klient.pflegegrad}
+                <Badge className={`${PFLEGEGRAD_COLORS[klient.pflegegrad]} text-white text-xs`}>
+                  PG {klient.pflegegrad}
                 </Badge>
               )}
             </div>
             {klient.wg_name && (
-              <p className="text-white/60 mt-1 flex items-center gap-2">
-                <Home className="w-4 h-4" />
+              <p className="text-white/60 mt-1 flex items-center gap-2 text-sm">
+                <Home className="w-3.5 h-3.5" />
                 {klient.wg_name} - Zimmer {klient.zimmer_nummer}
               </p>
             )}
             {klient.alter && (
-              <p className="text-white/60">{klient.alter} Jahre</p>
+              <p className="text-white/60 text-sm">{klient.alter} Jahre</p>
             )}
           </div>
         </div>
 
         {/* Quick Actions */}
-        <div className="flex gap-2">
+        <div className="flex gap-2 flex-wrap">
           {klient.kontakt_telefon && (
             <Button 
               variant="outline" 
+              size="sm"
               className="border-green-500/50 text-green-400 hover:bg-green-500/20"
               onClick={() => window.location.href = `tel:${klient.kontakt_telefon}`}
               data-testid="call-button"
             >
-              <Phone className="w-4 h-4 mr-2" />
+              <Phone className="w-4 h-4 mr-1.5" />
               Anrufen
             </Button>
           )}
           <Button 
             variant="outline"
+            size="sm"
             className="border-blue-500/50 text-blue-400 hover:bg-blue-500/20"
             onClick={openEmailDialog}
             data-testid="email-button"
           >
-            <Mail className="w-4 h-4 mr-2" />
-            E-Mail senden
+            <Mail className="w-4 h-4 mr-1.5" />
+            E-Mail
           </Button>
           <Button 
+            size="sm"
             onClick={() => setShowNoteDialog(true)}
             className="bg-purple-600 hover:bg-purple-700"
             data-testid="add-note-button"
           >
-            <Plus className="w-4 h-4 mr-2" />
+            <Plus className="w-4 h-4 mr-1.5" />
             Eintrag
           </Button>
         </div>
