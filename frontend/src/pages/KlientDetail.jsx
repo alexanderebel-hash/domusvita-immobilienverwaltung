@@ -1,8 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { 
   ArrowLeft, User, Phone, Mail, MessageSquare, Calendar, FileText, 
-  Clock, Building2, Edit, Trash2, Plus, Send, History, Home
+  Clock, Building2, Plus, Send, History, Home, Upload, Download,
+  Trash2, Paperclip, Check, X, Euro
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
 import { Button } from '../components/ui/button';
@@ -70,9 +71,19 @@ const KOMMUNIKATION_LABELS = {
   besichtigung: 'Besichtigung'
 };
 
+const DOK_KATEGORIEN = [
+  { value: 'infomaterial', label: 'Infomaterial' },
+  { value: 'mietvertrag', label: 'Mietvertrag' },
+  { value: 'vollmacht', label: 'Vollmacht' },
+  { value: 'arztbrief', label: 'Arztbrief' },
+  { value: 'pflegegutachten', label: 'Pflegegutachten' },
+  { value: 'sonstiges', label: 'Sonstiges' },
+];
+
 export default function KlientDetail() {
   const { klientId } = useParams();
   const navigate = useNavigate();
+  const fileInputRef = useRef(null);
   const [klient, setKlient] = useState(null);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('uebersicht');
@@ -80,9 +91,16 @@ export default function KlientDetail() {
   const [newNote, setNewNote] = useState({ typ: 'notiz', betreff: '', inhalt: '' });
   const [showStatusDialog, setShowStatusDialog] = useState(false);
   const [newStatus, setNewStatus] = useState('');
+  const [showEmailDialog, setShowEmailDialog] = useState(false);
+  const [emailData, setEmailData] = useState({ betreff: '', inhalt: '', empfaenger: '', dokument_ids: [] });
+  const [uploading, setUploading] = useState(false);
+  const [uploadKategorie, setUploadKategorie] = useState('sonstiges');
+  const [dokumente, setDokumente] = useState([]);
+  const [sendingEmail, setSendingEmail] = useState(false);
 
   useEffect(() => {
     fetchKlient();
+    fetchDokumente();
   }, [klientId]);
 
   const fetchKlient = async () => {
@@ -98,6 +116,16 @@ export default function KlientDetail() {
     } finally {
       setLoading(false);
     }
+  };
+
+  const fetchDokumente = async () => {
+    try {
+      const res = await fetch(`${API_URL}/api/klienten/${klientId}/dokumente`);
+      if (res.ok) {
+        const data = await res.json();
+        setDokumente(data);
+      }
+    } catch (e) { /* ignore */ }
   };
 
   const handleStatusChange = async () => {
@@ -140,6 +168,90 @@ export default function KlientDetail() {
     }
   };
 
+  const handleFileUpload = async (e) => {
+    const files = e.target.files;
+    if (!files?.length) return;
+
+    setUploading(true);
+    try {
+      for (const file of files) {
+        const formData = new FormData();
+        formData.append('file', file);
+        const res = await fetch(
+          `${API_URL}/api/klienten/${klientId}/dokumente?kategorie=${uploadKategorie}`,
+          { method: 'POST', body: formData }
+        );
+        if (!res.ok) throw new Error('Upload fehlgeschlagen');
+      }
+      toast.success(`${files.length} Dokument(e) hochgeladen`);
+      fetchDokumente();
+      fetchKlient();
+    } catch (error) {
+      toast.error('Fehler beim Hochladen');
+    } finally {
+      setUploading(false);
+      if (fileInputRef.current) fileInputRef.current.value = '';
+    }
+  };
+
+  const handleDeleteDokument = async (dokId) => {
+    try {
+      await fetch(`${API_URL}/api/klienten/${klientId}/dokumente/${dokId}`, { method: 'DELETE' });
+      toast.success('Dokument gelöscht');
+      fetchDokumente();
+    } catch (error) {
+      toast.error('Fehler beim Löschen');
+    }
+  };
+
+  const handleSendEmail = async () => {
+    if (!emailData.inhalt.trim()) {
+      toast.error('Bitte geben Sie einen Text ein');
+      return;
+    }
+    setSendingEmail(true);
+    try {
+      const res = await fetch(`${API_URL}/api/klienten/${klientId}/email-senden`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(emailData)
+      });
+      const result = await res.json();
+      if (result.email_sent) {
+        toast.success('E-Mail gesendet');
+      } else {
+        toast.success('E-Mail als Kommunikationseintrag gespeichert');
+      }
+      setShowEmailDialog(false);
+      setEmailData({ betreff: '', inhalt: '', empfaenger: '', dokument_ids: [] });
+      fetchKlient();
+      fetchDokumente();
+    } catch (error) {
+      toast.error('Fehler beim Senden');
+    } finally {
+      setSendingEmail(false);
+    }
+  };
+
+  const toggleDokumentForEmail = (dokId) => {
+    setEmailData(prev => ({
+      ...prev,
+      dokument_ids: prev.dokument_ids.includes(dokId)
+        ? prev.dokument_ids.filter(id => id !== dokId)
+        : [...prev.dokument_ids, dokId]
+    }));
+  };
+
+  const openEmailDialog = () => {
+    setEmailData({
+      betreff: `Informationen zu Pflege-WG - ${klient?.vorname} ${klient?.nachname}`,
+      inhalt: `Sehr geehrte/r ${klient?.kontakt_name || 'Interessent/in'},\n\nanbei erhalten Sie die gewünschten Informationen zu unseren Pflege-Wohngemeinschaften.\n\nBei Fragen stehen wir Ihnen gerne zur Verfügung.\n\nMit freundlichen Grüßen\nDomusVita Gesundheit`,
+      empfaenger: klient?.kontakt_email || '',
+      dokument_ids: []
+    });
+    setShowEmailDialog(true);
+  };
+
   const formatDate = (dateStr) => {
     if (!dateStr) return '-';
     const date = new Date(dateStr);
@@ -153,6 +265,13 @@ export default function KlientDetail() {
       day: '2-digit', month: '2-digit', year: 'numeric',
       hour: '2-digit', minute: '2-digit'
     });
+  };
+
+  const formatFileSize = (bytes) => {
+    if (!bytes) return '-';
+    if (bytes < 1024) return `${bytes} B`;
+    if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
+    return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
   };
 
   if (loading) {
@@ -174,6 +293,7 @@ export default function KlientDetail() {
             variant="ghost" 
             onClick={() => navigate('/pflege-wgs/pipeline')}
             className="text-white/60 hover:text-white"
+            data-testid="back-button"
           >
             <ArrowLeft className="w-4 h-4 mr-2" />
             Zurück
@@ -186,6 +306,7 @@ export default function KlientDetail() {
               <Badge 
                 className={`${STATUS_COLORS[klient.status]} text-white cursor-pointer`}
                 onClick={() => setShowStatusDialog(true)}
+                data-testid="status-badge"
               >
                 {STATUS_LABELS[klient.status]}
               </Badge>
@@ -214,24 +335,25 @@ export default function KlientDetail() {
               variant="outline" 
               className="border-green-500/50 text-green-400 hover:bg-green-500/20"
               onClick={() => window.location.href = `tel:${klient.kontakt_telefon}`}
+              data-testid="call-button"
             >
               <Phone className="w-4 h-4 mr-2" />
               Anrufen
             </Button>
           )}
-          {klient.kontakt_email && (
-            <Button 
-              variant="outline"
-              className="border-blue-500/50 text-blue-400 hover:bg-blue-500/20"
-              onClick={() => window.location.href = `mailto:${klient.kontakt_email}`}
-            >
-              <Mail className="w-4 h-4 mr-2" />
-              E-Mail
-            </Button>
-          )}
+          <Button 
+            variant="outline"
+            className="border-blue-500/50 text-blue-400 hover:bg-blue-500/20"
+            onClick={openEmailDialog}
+            data-testid="email-button"
+          >
+            <Mail className="w-4 h-4 mr-2" />
+            E-Mail senden
+          </Button>
           <Button 
             onClick={() => setShowNoteDialog(true)}
             className="bg-purple-600 hover:bg-purple-700"
+            data-testid="add-note-button"
           >
             <Plus className="w-4 h-4 mr-2" />
             Eintrag
@@ -242,19 +364,25 @@ export default function KlientDetail() {
       {/* Tabs */}
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
         <TabsList className="bg-white/5 border-white/10">
-          <TabsTrigger value="uebersicht" className="data-[state=active]:bg-white/10">
+          <TabsTrigger value="uebersicht" className="data-[state=active]:bg-white/10" data-testid="tab-uebersicht">
             <User className="w-4 h-4 mr-2" />
             Übersicht
           </TabsTrigger>
-          <TabsTrigger value="kommunikation" className="data-[state=active]:bg-white/10">
+          <TabsTrigger value="kommunikation" className="data-[state=active]:bg-white/10" data-testid="tab-kommunikation">
             <MessageSquare className="w-4 h-4 mr-2" />
             Kommunikation
+            {klient.kommunikation?.length > 0 && (
+              <Badge className="ml-2 bg-blue-500/20 text-blue-400 border-0 text-xs">{klient.kommunikation.length}</Badge>
+            )}
           </TabsTrigger>
-          <TabsTrigger value="dokumente" className="data-[state=active]:bg-white/10">
+          <TabsTrigger value="dokumente" className="data-[state=active]:bg-white/10" data-testid="tab-dokumente">
             <FileText className="w-4 h-4 mr-2" />
             Dokumente
+            {dokumente.length > 0 && (
+              <Badge className="ml-2 bg-blue-500/20 text-blue-400 border-0 text-xs">{dokumente.length}</Badge>
+            )}
           </TabsTrigger>
-          <TabsTrigger value="verlauf" className="data-[state=active]:bg-white/10">
+          <TabsTrigger value="verlauf" className="data-[state=active]:bg-white/10" data-testid="tab-verlauf">
             <History className="w-4 h-4 mr-2" />
             Verlauf
           </TabsTrigger>
@@ -295,6 +423,13 @@ export default function KlientDetail() {
                   <div>
                     <p className="text-white/60 text-sm">Besonderheiten</p>
                     <p className="text-white bg-white/5 p-3 rounded-lg mt-1">{klient.besonderheiten}</p>
+                  </div>
+                )}
+                
+                {klient.diagnosen && (
+                  <div>
+                    <p className="text-white/60 text-sm">Diagnosen</p>
+                    <p className="text-white bg-white/5 p-3 rounded-lg mt-1">{klient.diagnosen}</p>
                   </div>
                 )}
               </CardContent>
@@ -406,7 +541,7 @@ export default function KlientDetail() {
                         <div className="flex flex-wrap gap-2">
                           {klient.bevorzugte_wgs.map(wgId => (
                             <Badge key={wgId} className="bg-blue-500/20 text-blue-400">
-                              {wgId.replace('wg-', '').replace('-', ' ')}
+                              {wgId.replace('wg-', '').replace(/-/g, ' ')}
                             </Badge>
                           ))}
                         </div>
@@ -424,10 +559,16 @@ export default function KlientDetail() {
           <Card className="bg-white/5 border-white/10">
             <CardHeader className="flex flex-row items-center justify-between">
               <CardTitle className="text-white">Kommunikationsverlauf</CardTitle>
-              <Button onClick={() => setShowNoteDialog(true)} size="sm">
-                <Plus className="w-4 h-4 mr-2" />
-                Neuer Eintrag
-              </Button>
+              <div className="flex gap-2">
+                <Button onClick={openEmailDialog} size="sm" variant="outline" className="border-blue-500/50 text-blue-400">
+                  <Send className="w-4 h-4 mr-2" />
+                  E-Mail senden
+                </Button>
+                <Button onClick={() => setShowNoteDialog(true)} size="sm" data-testid="new-entry-btn">
+                  <Plus className="w-4 h-4 mr-2" />
+                  Neuer Eintrag
+                </Button>
+              </div>
             </CardHeader>
             <CardContent>
               {klient.kommunikation?.length > 0 ? (
@@ -435,7 +576,7 @@ export default function KlientDetail() {
                   {klient.kommunikation.map((item, idx) => {
                     const Icon = KOMMUNIKATION_ICONS[item.typ] || FileText;
                     return (
-                      <div key={idx} className="p-4 bg-white/5 rounded-lg border border-white/10">
+                      <div key={idx} className="p-4 bg-white/5 rounded-lg border border-white/10" data-testid={`komm-entry-${idx}`}>
                         <div className="flex items-start gap-3">
                           <div className={`p-2 rounded-lg ${
                             item.typ.includes('ein') ? 'bg-green-500/20' : 'bg-blue-500/20'
@@ -454,9 +595,18 @@ export default function KlientDetail() {
                               </span>
                             </div>
                             {item.betreff && (
-                              <p className="text-white/80 text-sm mt-1">{item.betreff}</p>
+                              <p className="text-white/80 text-sm mt-1 font-medium">{item.betreff}</p>
                             )}
                             <p className="text-white/60 mt-2 whitespace-pre-wrap">{item.inhalt}</p>
+                            {item.anhaenge?.length > 0 && (
+                              <div className="flex flex-wrap gap-2 mt-2">
+                                {item.anhaenge.map((a, i) => (
+                                  <Badge key={i} className="bg-white/10 text-white/70 border-0">
+                                    <Paperclip className="w-3 h-3 mr-1" />{a}
+                                  </Badge>
+                                ))}
+                              </div>
+                            )}
                             {item.erstellt_von_name && (
                               <p className="text-white/40 text-xs mt-2">
                                 von {item.erstellt_von_name}
@@ -482,37 +632,88 @@ export default function KlientDetail() {
           <Card className="bg-white/5 border-white/10">
             <CardHeader className="flex flex-row items-center justify-between">
               <CardTitle className="text-white">Dokumente</CardTitle>
-              <Button size="sm" disabled>
-                <Plus className="w-4 h-4 mr-2" />
-                Hochladen
-              </Button>
+              <div className="flex items-center gap-3">
+                <Select value={uploadKategorie} onValueChange={setUploadKategorie}>
+                  <SelectTrigger className="w-40 bg-white/5 border-white/10 text-white text-sm">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent className="bg-gray-900 border-white/10">
+                    {DOK_KATEGORIEN.map(k => (
+                      <SelectItem key={k.value} value={k.value}>{k.label}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  className="hidden"
+                  accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
+                  multiple
+                  onChange={handleFileUpload}
+                />
+                <Button 
+                  size="sm" 
+                  onClick={() => fileInputRef.current?.click()}
+                  disabled={uploading}
+                  data-testid="upload-document-btn"
+                >
+                  <Upload className="w-4 h-4 mr-2" />
+                  {uploading ? 'Hochladen...' : 'Hochladen'}
+                </Button>
+              </div>
             </CardHeader>
             <CardContent>
-              {klient.dokumente?.length > 0 ? (
+              {dokumente.length > 0 ? (
                 <div className="space-y-3">
-                  {klient.dokumente.map((doc, idx) => (
-                    <div key={idx} className="flex items-center justify-between p-3 bg-white/5 rounded-lg">
-                      <div className="flex items-center gap-3">
-                        <FileText className="w-5 h-5 text-blue-400" />
-                        <div>
-                          <p className="text-white">{doc.name}</p>
-                          <p className="text-white/60 text-sm">{doc.typ}</p>
+                  {dokumente.map((doc) => (
+                    <div key={doc.id} className="flex items-center justify-between p-4 bg-white/5 rounded-lg border border-white/10 hover:bg-white/10 transition-colors" data-testid={`dokument-${doc.id}`}>
+                      <div className="flex items-center gap-3 flex-1">
+                        <div className="p-2 bg-blue-500/20 rounded-lg">
+                          <FileText className="w-5 h-5 text-blue-400" />
+                        </div>
+                        <div className="flex-1">
+                          <p className="text-white font-medium">{doc.name}</p>
+                          <div className="flex items-center gap-3 text-white/60 text-sm mt-1">
+                            <span className="capitalize">{DOK_KATEGORIEN.find(k => k.value === doc.kategorie)?.label || doc.kategorie}</span>
+                            <span>{formatFileSize(doc.file_size)}</span>
+                            <span>{formatDateTime(doc.erstellt_am)}</span>
+                          </div>
                         </div>
                       </div>
-                      <Badge className={
-                        doc.status === 'unterschrieben' ? 'bg-green-500' :
-                        doc.status === 'gesendet' ? 'bg-blue-500' :
-                        'bg-gray-500'
-                      }>
-                        {doc.status}
-                      </Badge>
+                      <div className="flex items-center gap-2">
+                        <Badge className={
+                          doc.status === 'gesendet' ? 'bg-green-500/20 text-green-400' :
+                          doc.status === 'hochgeladen' ? 'bg-blue-500/20 text-blue-400' :
+                          'bg-gray-500/20 text-gray-400'
+                        }>
+                          {doc.status === 'gesendet' ? 'Gesendet' : 'Hochgeladen'}
+                        </Badge>
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          className="text-white/60 hover:text-blue-400"
+                          onClick={() => window.open(`${API_URL}/api/klienten/${klientId}/dokumente/${doc.id}/download`, '_blank')}
+                        >
+                          <Download className="w-4 h-4" />
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          className="text-white/60 hover:text-red-400"
+                          onClick={() => handleDeleteDokument(doc.id)}
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </Button>
+                      </div>
                     </div>
                   ))}
                 </div>
               ) : (
-                <p className="text-white/40 text-center py-8">
-                  Noch keine Dokumente vorhanden
-                </p>
+                <div className="text-center py-12">
+                  <FileText className="w-12 h-12 text-white/20 mx-auto mb-3" />
+                  <p className="text-white/40">Noch keine Dokumente vorhanden</p>
+                  <p className="text-white/30 text-sm mt-1">Laden Sie PDFs, Verträge oder Infomaterial hoch</p>
+                </div>
               )}
             </CardContent>
           </Card>
@@ -526,23 +727,35 @@ export default function KlientDetail() {
             </CardHeader>
             <CardContent>
               {klient.aktivitaeten?.length > 0 ? (
-                <div className="space-y-3">
-                  {klient.aktivitaeten.map((item, idx) => (
-                    <div key={idx} className="flex items-center gap-4 p-3 bg-white/5 rounded-lg border-l-2 border-blue-500">
-                      <Clock className="w-4 h-4 text-white/40" />
-                      <div className="flex-1">
-                        <p className="text-white">{item.aktion}</p>
-                        {item.vorher_wert && item.nachher_wert && (
-                          <p className="text-white/60 text-sm">
-                            {item.vorher_wert} → {item.nachher_wert}
-                          </p>
-                        )}
+                <div className="relative">
+                  <div className="absolute left-6 top-0 bottom-0 w-px bg-white/10"></div>
+                  <div className="space-y-4">
+                    {klient.aktivitaeten.map((item, idx) => (
+                      <div key={idx} className="flex items-start gap-4 pl-3 relative" data-testid={`activity-${idx}`}>
+                        <div className="w-6 h-6 rounded-full bg-blue-500/20 border-2 border-blue-500/50 flex items-center justify-center z-10">
+                          <div className="w-2 h-2 rounded-full bg-blue-400"></div>
+                        </div>
+                        <div className="flex-1 p-3 bg-white/5 rounded-lg border border-white/10">
+                          <div className="flex items-center justify-between">
+                            <p className="text-white font-medium">{item.aktion}</p>
+                            <span className="text-white/40 text-sm">
+                              {formatDateTime(item.timestamp)}
+                            </span>
+                          </div>
+                          {item.vorher_wert && item.nachher_wert && (
+                            <p className="text-white/60 text-sm mt-1">
+                              <span className="text-red-400/70">{STATUS_LABELS[item.vorher_wert] || item.vorher_wert}</span>
+                              {' → '}
+                              <span className="text-green-400/70">{STATUS_LABELS[item.nachher_wert] || item.nachher_wert}</span>
+                            </p>
+                          )}
+                          {item.benutzer_name && (
+                            <p className="text-white/40 text-xs mt-1">von {item.benutzer_name}</p>
+                          )}
+                        </div>
                       </div>
-                      <span className="text-white/40 text-sm">
-                        {formatDateTime(item.timestamp)}
-                      </span>
-                    </div>
-                  ))}
+                    ))}
+                  </div>
                 </div>
               ) : (
                 <p className="text-white/40 text-center py-8">
@@ -601,7 +814,7 @@ export default function KlientDetail() {
             <Button variant="ghost" onClick={() => setShowNoteDialog(false)}>
               Abbrechen
             </Button>
-            <Button onClick={handleAddNote} className="bg-blue-600 hover:bg-blue-700">
+            <Button onClick={handleAddNote} className="bg-blue-600 hover:bg-blue-700" data-testid="save-note-btn">
               Speichern
             </Button>
           </DialogFooter>
@@ -630,8 +843,97 @@ export default function KlientDetail() {
             <Button variant="ghost" onClick={() => setShowStatusDialog(false)}>
               Abbrechen
             </Button>
-            <Button onClick={handleStatusChange} className="bg-blue-600 hover:bg-blue-700">
+            <Button onClick={handleStatusChange} className="bg-blue-600 hover:bg-blue-700" data-testid="save-status-btn">
               Speichern
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Email Dialog */}
+      <Dialog open={showEmailDialog} onOpenChange={setShowEmailDialog}>
+        <DialogContent className="bg-gray-900 border-white/10 text-white max-w-2xl">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Send className="w-5 h-5 text-blue-400" />
+              E-Mail senden
+            </DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div>
+              <label className="text-white/60 text-sm">Empfänger</label>
+              <Input
+                value={emailData.empfaenger}
+                onChange={(e) => setEmailData({...emailData, empfaenger: e.target.value})}
+                className="bg-white/5 border-white/10 text-white"
+                placeholder="E-Mail-Adresse"
+              />
+            </div>
+            <div>
+              <label className="text-white/60 text-sm">Betreff</label>
+              <Input
+                value={emailData.betreff}
+                onChange={(e) => setEmailData({...emailData, betreff: e.target.value})}
+                className="bg-white/5 border-white/10 text-white"
+              />
+            </div>
+            <div>
+              <label className="text-white/60 text-sm">Nachricht</label>
+              <Textarea
+                value={emailData.inhalt}
+                onChange={(e) => setEmailData({...emailData, inhalt: e.target.value})}
+                className="bg-white/5 border-white/10 text-white min-h-[160px]"
+              />
+            </div>
+            
+            {/* Document Attachments */}
+            {dokumente.length > 0 && (
+              <div>
+                <label className="text-white/60 text-sm mb-2 block">Dokumente anhängen</label>
+                <div className="space-y-2 max-h-40 overflow-y-auto">
+                  {dokumente.map(doc => (
+                    <div 
+                      key={doc.id}
+                      onClick={() => toggleDokumentForEmail(doc.id)}
+                      className={`flex items-center gap-3 p-3 rounded-lg border cursor-pointer transition-colors ${
+                        emailData.dokument_ids.includes(doc.id) 
+                          ? 'bg-blue-500/20 border-blue-500/50' 
+                          : 'bg-white/5 border-white/10 hover:bg-white/10'
+                      }`}
+                    >
+                      <div className={`w-5 h-5 rounded border-2 flex items-center justify-center ${
+                        emailData.dokument_ids.includes(doc.id) ? 'bg-blue-500 border-blue-500' : 'border-white/30'
+                      }`}>
+                        {emailData.dokument_ids.includes(doc.id) && <Check className="w-3 h-3 text-white" />}
+                      </div>
+                      <Paperclip className="w-4 h-4 text-white/60" />
+                      <span className="text-white text-sm flex-1">{doc.name}</span>
+                      <span className="text-white/40 text-xs">{formatFileSize(doc.file_size)}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            <div className="p-3 bg-yellow-500/10 border border-yellow-500/30 rounded-lg">
+              <p className="text-yellow-400 text-sm">
+                Der Kommunikationseintrag wird automatisch gespeichert. 
+                E-Mail-Versand wird aktiviert, wenn SMTP konfiguriert ist.
+              </p>
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="ghost" onClick={() => setShowEmailDialog(false)}>
+              Abbrechen
+            </Button>
+            <Button 
+              onClick={handleSendEmail} 
+              className="bg-blue-600 hover:bg-blue-700"
+              disabled={sendingEmail}
+              data-testid="send-email-btn"
+            >
+              <Send className="w-4 h-4 mr-2" />
+              {sendingEmail ? 'Wird gesendet...' : 'Senden'}
             </Button>
           </DialogFooter>
         </DialogContent>
