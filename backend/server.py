@@ -1,7 +1,8 @@
 from fastapi import FastAPI, APIRouter, HTTPException, Depends, UploadFile, File, BackgroundTasks
 from fastapi.middleware.cors import CORSMiddleware
 from dotenv import load_dotenv
-from motor.motor_asyncio import AsyncIOMotorClient
+from contextlib import asynccontextmanager
+from database import PgDatabase
 from datetime import datetime, timezone, timedelta
 from typing import List, Optional
 from pathlib import Path
@@ -37,23 +38,23 @@ from schemas import (
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
 
-# MongoDB connection (using MongoDB for now, can switch to PostgreSQL)
-mongo_url = os.environ.get('MONGO_URL', 'mongodb://localhost:27017')
-client = AsyncIOMotorClient(mongo_url)
-db = client[os.environ.get('DB_NAME', 'domusvita')]
+# Database (initialized in lifespan)
+db = None
 
-# LLM Configuration
-EMERGENT_LLM_KEY = os.environ.get('EMERGENT_LLM_KEY', '')
-
-# Azure Blob Storage (optional)
-AZURE_STORAGE_CONNECTION_STRING = os.environ.get('AZURE_STORAGE_CONNECTION_STRING', '')
-AZURE_STORAGE_CONTAINER = os.environ.get('AZURE_STORAGE_CONTAINER_NAME', 'documents')
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    global db
+    db = await PgDatabase.create()
+    logger.info(f"Database connected: {db}")
+    yield
+    await db.close()
 
 # App setup
 app = FastAPI(
     title="DomusVita API",
     description="Premium Property Management System for German Care Homes",
-    version="2.0.0"
+    version="2.0.0",
+    lifespan=lifespan
 )
 
 api_router = APIRouter(prefix="/api")
@@ -80,7 +81,17 @@ def from_iso(s: str) -> datetime:
 
 @api_router.get("/")
 async def root():
-    return {"message": "DomusVita API v2.0 - Ready for Azure", "status": "running"}
+    return {"message": "DomusVita API v2.0 - PostgreSQL JSONB", "status": "running"}
+
+@api_router.get("/health")
+async def health_check():
+    """Health check endpoint"""
+    try:
+        await db.command("ping")
+        return {"status": "healthy", "database": "connected"}
+    except Exception as e:
+        logger.error(f"Health check failed: {e}")
+        return {"status": "unhealthy", "database": str(e)}
 
 @api_router.get("/dashboard/stats", response_model=DashboardStats)
 async def get_dashboard_stats():
@@ -601,7 +612,7 @@ async def upload_document(
     file_size = len(file_content)
     
     # Mock URL - in production this would be Azure Blob Storage URL
-    mock_url = f"https://domusvitastorage.blob.core.windows.net/{AZURE_STORAGE_CONTAINER}/{property_id}/{file.filename}"
+    mock_url = f"https://domusvitastorage.blob.core.windows.net/documents/{property_id}/{file.filename}"
     
     doc = {
         "id": generate_id(),
@@ -624,44 +635,11 @@ async def upload_document(
 
 @api_router.post("/ai/query", response_model=AIQueryResponse)
 async def query_ai_assistant(request: AIQueryRequest):
-    """AI Assistant for natural language queries"""
-    try:
-        from emergentintegrations.llm.chat import LlmChat, UserMessage
-        
-        total_properties = await db.properties.count_documents({})
-        vacant_units = await db.units.count_documents({"is_vacant": True})
-        pending_tasks = await db.maintenance_tickets.count_documents({"status": {"$ne": "Erledigt"}})
-        total_contacts = await db.contacts.count_documents({})
-        active_contracts = await db.contracts.count_documents({"is_active": True})
-        
-        system_prompt = f"""Du bist der DomusVita KI-Assistent für Immobilienverwaltung.
-        
-Aktuelle Daten:
-- Gesamtzahl Immobilien: {total_properties}
-- Leerstehende Einheiten: {vacant_units}
-- Offene Wartungsaufgaben: {pending_tasks}
-- Kontakte: {total_contacts}
-- Aktive Verträge: {active_contracts}
-
-Antworte immer auf Deutsch, sei hilfreich und präzise."""
-
-        if request.context:
-            system_prompt += f"\n\nKontext: {request.context}"
-        
-        chat = LlmChat(
-            api_key=EMERGENT_LLM_KEY,
-            session_id=generate_id(),
-            system_message=system_prompt
-        )
-        
-        response = await chat.send_message(UserMessage(text=request.query))
-        return AIQueryResponse(response=response, success=True)
-    except Exception as e:
-        logger.error(f"AI query error: {str(e)}")
-        return AIQueryResponse(
-            response="Es tut mir leid, ich konnte Ihre Anfrage nicht verarbeiten. Bitte versuchen Sie es später erneut.",
-            success=False
-        )
+    """AI Assistant for natural language queries (placeholder - LLM integration pending)"""
+    return AIQueryResponse(
+        response="Der KI-Assistent wird derzeit überarbeitet. Bitte versuchen Sie es später erneut.",
+        success=False
+    )
 
 # ==================== HANDWERKER PORTAL ROUTES ====================
 
@@ -1429,10 +1407,12 @@ async def get_klienten(status: Optional[str] = None, wg_id: Optional[str] = None
     query = {}
     if status:
         query["status"] = status
-    if wg_id:
-        query["bevorzugte_wgs"] = wg_id
-    
+
     klienten = await db.klienten.find(query).sort("anfrage_am", -1).to_list(1000)
+
+    # Filter by WG (bevorzugte_wgs is an array, needs Python-side filtering for JSONB)
+    if wg_id:
+        klienten = [k for k in klienten if wg_id in (k.get("bevorzugte_wgs") or [])]
     
     # Enhance with age and room info
     for k in klienten:
@@ -2342,7 +2322,3 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
-@app.on_event("shutdown")
-async def shutdown_db_client():
-    client.close()
