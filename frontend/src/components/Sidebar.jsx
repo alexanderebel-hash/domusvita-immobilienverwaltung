@@ -8,6 +8,8 @@ import {
   FolderOpen,
   Heart,
   X,
+  BarChart3,
+  ExternalLink,
 } from "lucide-react";
 
 const navItems = [
@@ -117,6 +119,23 @@ export default function Sidebar({ isOpen, onClose }) {
               </NavLink>
             );
           })}
+        </div>
+
+        {/* Weitere Module */}
+        <div className="pt-4 mt-3 border-t border-slate-200">
+          <p className="px-3.5 py-1.5 text-[11px] font-semibold text-slate-400 uppercase tracking-wider">
+            Weitere Module
+          </p>
+          <a
+            href="https://controlling.domusvita-portal.de"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center gap-3 px-3.5 py-2.5 rounded-xl transition-all duration-200 text-slate-600 hover:text-slate-900 hover:bg-slate-50"
+          >
+            <BarChart3 className="w-[18px] h-[18px]" strokeWidth={1.5} />
+            <span className="text-[13.5px]">Controlling</span>
+            <ExternalLink className="w-3.5 h-3.5 ml-auto text-slate-400" strokeWidth={1.5} />
+          </a>
         </div>
       </nav>
     </aside>
