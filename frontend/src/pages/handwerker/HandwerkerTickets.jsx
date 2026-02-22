@@ -21,13 +21,13 @@ const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
 
 const statusColors = {
   Offen: "bg-amber-500/20 text-amber-400 border-amber-500/30",
-  "In Bearbeitung": "bg-blue-500/20 text-blue-400 border-blue-500/30",
+  "In Bearbeitung": "bg-cyan-500/20 text-cyan-400 border-cyan-500/30",
   Erledigt: "bg-emerald-500/20 text-emerald-400 border-emerald-500/30",
 };
 
 const priorityColors = {
-  Niedrig: "bg-gray-500/20 text-gray-400",
-  Normal: "bg-blue-500/20 text-blue-400",
+  Niedrig: "bg-slate-500/20 text-slate-400",
+  Normal: "bg-cyan-500/20 text-cyan-400",
   Hoch: "bg-amber-500/20 text-amber-400",
   Dringend: "bg-red-500/20 text-red-400",
 };
@@ -106,24 +106,24 @@ export default function HandwerkerTickets() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#050505] flex items-center justify-center">
-        <Loader2 className="w-8 h-8 text-blue-500 animate-spin" />
+      <div className="min-h-screen bg-white flex items-center justify-center">
+        <Loader2 className="w-8 h-8 text-cyan-500 animate-spin" />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-[#050505]" data-testid="handwerker-tickets">
+    <div className="min-h-screen bg-white" data-testid="handwerker-tickets">
       {/* Header */}
-      <header className="sticky top-0 z-50 bg-[#050505]/95 backdrop-blur-xl border-b border-white/10">
+      <header className="sticky top-0 z-50 bg-white/95 backdrop-blur-xl border-b border-slate-200">
         <div className="p-4 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 to-emerald-500 flex items-center justify-center">
+            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-cyan-500 to-emerald-500 flex items-center justify-center">
               <Wrench className="w-5 h-5 text-white" />
             </div>
             <div>
-              <p className="text-white font-semibold font-['Manrope']">{handwerkerName}</p>
-              <p className="text-white/50 text-xs">{tickets.length} Aufträge</p>
+              <p className="text-slate-900 font-semibold font-manrope">{handwerkerName}</p>
+              <p className="text-slate-400 text-xs">{tickets.length} Aufträge</p>
             </div>
           </div>
           <div className="flex items-center gap-2">
@@ -132,7 +132,7 @@ export default function HandwerkerTickets() {
               size="icon"
               onClick={handleRefresh}
               disabled={refreshing}
-              className="text-white/60 hover:text-white hover:bg-white/10"
+              className="text-slate-500 hover:text-slate-900 hover:bg-slate-100"
             >
               <RefreshCw className={`w-5 h-5 ${refreshing ? "animate-spin" : ""}`} />
             </Button>
@@ -140,7 +140,7 @@ export default function HandwerkerTickets() {
               variant="ghost"
               size="icon"
               onClick={handleLogout}
-              className="text-white/60 hover:text-white hover:bg-white/10"
+              className="text-slate-500 hover:text-slate-900 hover:bg-slate-100"
               data-testid="logout-button"
             >
               <LogOut className="w-5 h-5" />
@@ -154,9 +154,9 @@ export default function HandwerkerTickets() {
             <p className="text-2xl font-bold text-amber-400">{openCount}</p>
             <p className="text-xs text-amber-400/70">Offen</p>
           </div>
-          <div className="flex-1 p-3 rounded-xl bg-blue-500/10 border border-blue-500/20">
-            <p className="text-2xl font-bold text-blue-400">{inProgressCount}</p>
-            <p className="text-xs text-blue-400/70">In Arbeit</p>
+          <div className="flex-1 p-3 rounded-xl bg-cyan-500/10 border border-cyan-500/20">
+            <p className="text-2xl font-bold text-cyan-400">{inProgressCount}</p>
+            <p className="text-xs text-cyan-400/70">In Arbeit</p>
           </div>
           <div className="flex-1 p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/20">
             <p className="text-2xl font-bold text-emerald-400">
@@ -174,8 +174,8 @@ export default function HandwerkerTickets() {
               onClick={() => setActiveFilter(filter)}
               className={`px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-all ${
                 activeFilter === filter
-                  ? "bg-blue-500 text-white"
-                  : "bg-white/5 text-white/60 hover:bg-white/10"
+                  ? "bg-cyan-600 text-white"
+                  : "bg-slate-50 text-slate-500 hover:bg-slate-100"
               }`}
               data-testid={`filter-${filter}`}
             >
@@ -189,15 +189,15 @@ export default function HandwerkerTickets() {
       <main className="p-4 space-y-3 pb-20">
         {tickets.length === 0 ? (
           <div className="text-center py-12">
-            <Wrench className="w-12 h-12 text-white/20 mx-auto mb-4" />
-            <p className="text-white/50">Keine Aufträge gefunden</p>
+            <Wrench className="w-12 h-12 text-slate-300 mx-auto mb-4" />
+            <p className="text-slate-400">Keine Aufträge gefunden</p>
           </div>
         ) : (
           tickets.map((ticket) => (
             <div
               key={ticket.id}
               onClick={() => navigate(`/handwerker/ticket/${ticket.id}`)}
-              className="p-4 rounded-2xl bg-white/[0.03] border border-white/10 active:bg-white/10 transition-all cursor-pointer"
+              className="p-4 rounded-2xl bg-slate-50 border border-slate-200 active:bg-slate-100 transition-all cursor-pointer"
               data-testid={`ticket-card-${ticket.id}`}
             >
               <div className="flex items-start justify-between mb-3">
@@ -215,19 +215,19 @@ export default function HandwerkerTickets() {
                 )}
               </div>
 
-              <h3 className="text-white font-semibold mb-1">{ticket.title}</h3>
+              <h3 className="text-slate-900 font-semibold mb-1">{ticket.title}</h3>
               
-              <div className="space-y-1 text-sm text-white/60">
+              <div className="space-y-1 text-sm text-slate-500">
                 <div className="flex items-center gap-2">
                   <MapPin className="w-4 h-4" />
                   <span className="truncate">{ticket.property_name}</span>
                 </div>
-                <p className="text-white/40 truncate">{ticket.property_address}</p>
+                <p className="text-slate-400 truncate">{ticket.property_address}</p>
               </div>
 
               {ticket.tenant_phone && (
-                <div className="mt-3 pt-3 border-t border-white/10 flex items-center justify-between">
-                  <div className="flex items-center gap-2 text-sm text-white/60">
+                <div className="mt-3 pt-3 border-t border-slate-200 flex items-center justify-between">
+                  <div className="flex items-center gap-2 text-sm text-slate-500">
                     <Phone className="w-4 h-4" />
                     <span>{ticket.tenant_name || "Mieter"}</span>
                   </div>
@@ -249,17 +249,17 @@ export default function HandwerkerTickets() {
                         key={photo.id}
                         src={photo.thumbnail_url || photo.photo_url}
                         alt=""
-                        className="w-8 h-8 rounded-lg border-2 border-[#050505] object-cover"
+                        className="w-8 h-8 rounded-lg border-2 border-white object-cover"
                       />
                     ))}
                   </div>
                   {ticket.photos.length > 3 && (
-                    <span className="text-xs text-white/40">+{ticket.photos.length - 3}</span>
+                    <span className="text-xs text-slate-400">+{ticket.photos.length - 3}</span>
                   )}
                 </div>
               )}
 
-              <div className="mt-3 flex items-center justify-between text-xs text-white/40">
+              <div className="mt-3 flex items-center justify-between text-xs text-slate-400">
                 <span>{ticket.category || "Allgemein"}</span>
                 <ChevronRight className="w-4 h-4" />
               </div>

@@ -7,26 +7,26 @@
 
 @layer base {
     :root {
-        --background: 0 0% 2%;
-        --foreground: 0 0% 98%;
-        --card: 0 0% 5%;
-        --card-foreground: 0 0% 98%;
-        --popover: 0 0% 5%;
-        --popover-foreground: 0 0% 98%;
-        --primary: 217 91% 60%;
+        --background: 210 40% 98%;
+        --foreground: 215 25% 15%;
+        --card: 0 0% 100%;
+        --card-foreground: 215 25% 15%;
+        --popover: 0 0% 100%;
+        --popover-foreground: 215 25% 15%;
+        --primary: 189 94% 43%;
         --primary-foreground: 0 0% 100%;
-        --secondary: 0 0% 15%;
-        --secondary-foreground: 0 0% 98%;
-        --muted: 0 0% 15%;
-        --muted-foreground: 0 0% 55%;
+        --secondary: 210 40% 96%;
+        --secondary-foreground: 215 25% 25%;
+        --muted: 210 40% 96%;
+        --muted-foreground: 215 16% 47%;
         --accent: 160 84% 39%;
         --accent-foreground: 0 0% 100%;
         --destructive: 0 84% 60%;
         --destructive-foreground: 0 0% 98%;
-        --border: 0 0% 15%;
-        --input: 0 0% 15%;
-        --ring: 217 91% 60%;
-        --chart-1: 217 91% 60%;
+        --border: 214 32% 91%;
+        --input: 214 32% 91%;
+        --ring: 189 94% 43%;
+        --chart-1: 189 94% 43%;
         --chart-2: 160 84% 39%;
         --chart-3: 30 80% 55%;
         --chart-4: 280 65% 60%;
@@ -47,8 +47,8 @@ html {
 
 body {
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-    background-color: #050505;
-    color: #FAFAFA;
+    background-color: hsl(210, 40%, 98%);
+    color: hsl(215, 25%, 15%);
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     min-height: 100vh;
@@ -69,34 +69,34 @@ code {
     }
 }
 
-/* Glassmorphism utilities */
+/* Portal-style utilities */
 @layer utilities {
     .glass {
-        @apply bg-white/5 backdrop-blur-xl border border-white/10 shadow-2xl;
+        @apply bg-white/80 backdrop-blur-xl border border-slate-200 shadow-soft;
     }
-    
+
     .glass-hover {
-        @apply hover:bg-white/10 hover:border-white/20 transition-all duration-300;
+        @apply hover:bg-white hover:border-slate-300 transition-all duration-300;
     }
-    
+
     .glass-card {
-        @apply bg-white/[0.03] backdrop-blur-xl border border-white/[0.08] rounded-2xl;
+        @apply bg-white border border-slate-200 rounded-2xl shadow-soft;
     }
-    
+
     .glass-sidebar {
-        @apply bg-black/40 backdrop-blur-2xl border-r border-white/10;
+        @apply bg-white border-r border-slate-200;
     }
-    
+
     .text-gradient {
-        @apply bg-gradient-to-r from-blue-400 to-emerald-400 bg-clip-text text-transparent;
+        @apply bg-gradient-to-r from-cyan-500 to-emerald-500 bg-clip-text text-transparent;
     }
-    
+
     .btn-primary {
-        @apply bg-blue-500 text-white hover:bg-blue-600 rounded-full px-6 py-2 font-medium transition-all duration-300 active:scale-[0.98];
+        @apply bg-cyan-600 text-white hover:bg-cyan-700 rounded-full px-6 py-2 font-medium transition-all duration-300 active:scale-[0.98];
     }
-    
+
     .btn-secondary {
-        @apply bg-white/10 text-white hover:bg-white/20 rounded-full px-6 py-2 font-medium backdrop-blur-md border border-white/5 transition-all duration-300 active:scale-[0.98];
+        @apply bg-slate-100 text-slate-700 hover:bg-slate-200 rounded-full px-6 py-2 font-medium border border-slate-200 transition-all duration-300 active:scale-[0.98];
     }
 }
 
@@ -107,16 +107,16 @@ code {
 }
 
 ::-webkit-scrollbar-track {
-    background: rgba(255, 255, 255, 0.02);
+    background: hsl(210, 40%, 96%);
 }
 
 ::-webkit-scrollbar-thumb {
-    background: rgba(255, 255, 255, 0.1);
+    background: hsl(215, 16%, 80%);
     border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-    background: rgba(255, 255, 255, 0.2);
+    background: hsl(215, 16%, 65%);
 }
 
 /* Animations */
@@ -143,19 +143,19 @@ code {
 }
 
 .animate-fade-in {
-    animation: fadeIn 0.5s ease-out forwards;
+    animation: fadeIn 0.4s ease-out forwards;
 }
 
 .animate-slide-in {
-    animation: slideIn 0.4s ease-out forwards;
+    animation: slideIn 0.3s ease-out forwards;
 }
 
 /* Staggered animations */
-.stagger-1 { animation-delay: 0.1s; }
-.stagger-2 { animation-delay: 0.2s; }
-.stagger-3 { animation-delay: 0.3s; }
-.stagger-4 { animation-delay: 0.4s; }
-.stagger-5 { animation-delay: 0.5s; }
+.stagger-1 { animation-delay: 0.05s; }
+.stagger-2 { animation-delay: 0.1s; }
+.stagger-3 { animation-delay: 0.15s; }
+.stagger-4 { animation-delay: 0.2s; }
+.stagger-5 { animation-delay: 0.25s; }
 
 /* Debug wrapper */
 @layer base {

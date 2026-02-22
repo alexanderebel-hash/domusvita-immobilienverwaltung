@@ -90,22 +90,22 @@ export default function HandwerkerLogin() {
   };
 
   return (
-    <div className="min-h-screen bg-[#050505] flex flex-col" data-testid="handwerker-login">
+    <div className="min-h-screen bg-white flex flex-col" data-testid="handwerker-login">
       {/* Header */}
-      <div className="p-6 text-center border-b border-white/10">
-        <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-blue-500 to-emerald-500 mb-4">
+      <div className="p-6 text-center border-b border-slate-200">
+        <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-cyan-500 to-emerald-500 mb-4">
           <Wrench className="w-8 h-8 text-white" />
         </div>
-        <h1 className="text-2xl font-bold text-white font-['Manrope']">DomusVita</h1>
-        <p className="text-white/50 text-sm mt-1">Handwerker Portal</p>
+        <h1 className="text-2xl font-bold text-slate-900 font-manrope">DomusVita</h1>
+        <p className="text-slate-400 text-sm mt-1">Handwerker Portal</p>
       </div>
 
       {/* Login Form */}
       <div className="flex-1 flex items-center justify-center p-6">
         <div className="w-full max-w-sm space-y-6">
           <div className="text-center">
-            <h2 className="text-xl font-semibold text-white font-['Manrope']">Anmelden</h2>
-            <p className="text-white/50 text-sm mt-2">
+            <h2 className="text-xl font-semibold text-slate-900 font-manrope">Anmelden</h2>
+            <p className="text-slate-400 text-sm mt-2">
               Geben Sie Ihre Handwerker-ID ein oder scannen Sie den QR-Code
             </p>
           </div>
@@ -116,7 +116,7 @@ export default function HandwerkerLogin() {
                 value={handwerkerId}
                 onChange={(e) => setHandwerkerId(e.target.value)}
                 placeholder="Handwerker-ID eingeben"
-                className="h-14 text-center text-lg bg-white/5 border-white/20 text-white placeholder:text-white/40 rounded-xl"
+                className="h-14 text-center text-lg bg-slate-50 border-slate-200 text-slate-900 placeholder:text-slate-400 rounded-xl"
                 data-testid="handwerker-id-input"
               />
             </div>
@@ -131,7 +131,7 @@ export default function HandwerkerLogin() {
             <Button
               type="submit"
               disabled={loading}
-              className="w-full h-14 text-lg font-semibold rounded-xl bg-blue-500 hover:bg-blue-600 text-white transition-all active:scale-[0.98]"
+              className="w-full h-14 text-lg font-semibold rounded-xl bg-cyan-600 hover:bg-cyan-700 text-white transition-all active:scale-[0.98]"
               data-testid="login-button"
             >
               {loading ? (
@@ -147,16 +147,16 @@ export default function HandwerkerLogin() {
 
           <div className="relative">
             <div className="absolute inset-0 flex items-center">
-              <div className="w-full border-t border-white/10"></div>
+              <div className="w-full border-t border-slate-200"></div>
             </div>
             <div className="relative flex justify-center text-xs uppercase">
-              <span className="bg-[#050505] px-2 text-white/40">oder</span>
+              <span className="bg-white px-2 text-slate-400">oder</span>
             </div>
           </div>
 
           <Button
             variant="outline"
-            className="w-full h-14 text-lg rounded-xl bg-white/5 border-white/20 text-white hover:bg-white/10"
+            className="w-full h-14 text-lg rounded-xl bg-slate-50 border-slate-200 text-slate-700 hover:bg-slate-100"
             disabled
           >
             <QrCode className="w-5 h-5 mr-2" />
@@ -166,13 +166,13 @@ export default function HandwerkerLogin() {
           {/* Demo Quick Login */}
           {handwerkerList.length > 0 && (
             <div className="space-y-3 pt-4">
-              <p className="text-xs text-white/40 text-center uppercase">Demo: Schnellanmeldung</p>
+              <p className="text-xs text-slate-400 text-center uppercase">Demo: Schnellanmeldung</p>
               <div className="space-y-2">
                 {handwerkerList.slice(0, 3).map((h) => (
                   <button
                     key={h.id}
                     onClick={() => handleQuickLogin(h.id)}
-                    className="w-full p-3 rounded-xl bg-white/5 border border-white/10 text-left hover:bg-white/10 transition-all"
+                    className="w-full p-3 rounded-xl bg-slate-50 border border-slate-200 text-left hover:bg-slate-100 transition-all"
                     data-testid={`quick-login-${h.id}`}
                   >
                     <div className="flex items-center gap-3">
@@ -180,8 +180,8 @@ export default function HandwerkerLogin() {
                         {h.name?.charAt(0)}
                       </div>
                       <div>
-                        <p className="text-white font-medium">{h.name}</p>
-                        <p className="text-white/50 text-sm">{h.specialty || "Handwerker"}</p>
+                        <p className="text-slate-900 font-medium">{h.name}</p>
+                        <p className="text-slate-400 text-sm">{h.specialty || "Handwerker"}</p>
                       </div>
                     </div>
                   </button>
@@ -193,8 +193,8 @@ export default function HandwerkerLogin() {
       </div>
 
       {/* Footer */}
-      <div className="p-4 text-center border-t border-white/10">
-        <p className="text-xs text-white/30">
+      <div className="p-4 text-center border-t border-slate-200">
+        <p className="text-xs text-slate-300">
           © 2025 DomusVita • Handwerker Mobile Portal
         </p>
       </div>

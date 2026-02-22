@@ -54,7 +54,7 @@ const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
 
 const contractTypes = ["Mietvertrag", "Hauptmietvertrag", "Versicherung", "Wartungsvertrag"];
 const typeColors = {
-  Mietvertrag: "bg-blue-50 text-blue-500 border-blue-500/30",
+  Mietvertrag: "bg-cyan-50 text-cyan-500 border-blue-500/30",
   Hauptmietvertrag: "bg-emerald-50 text-emerald-500 border-emerald-500/30",
   Versicherung: "bg-purple-50 text-purple-500 border-purple-500/30",
   Wartungsvertrag: "bg-amber-50 text-amber-500 border-amber-500/30",
@@ -191,10 +191,10 @@ export default function Vertraege() {
   };
 
   const getExpiryStatus = (daysUntilExpiry) => {
-    if (daysUntilExpiry === null || daysUntilExpiry === undefined) return { icon: CheckCircle2, color: "text-gray-400", label: "Unbefristet" };
+    if (daysUntilExpiry === null || daysUntilExpiry === undefined) return { icon: CheckCircle2, color: "text-slate-400", label: "Unbefristet" };
     if (daysUntilExpiry < 0) return { icon: AlertTriangle, color: "text-red-500", label: "Abgelaufen" };
     if (daysUntilExpiry <= 30) return { icon: AlertTriangle, color: "text-amber-500", label: `${daysUntilExpiry} Tage` };
-    if (daysUntilExpiry <= 90) return { icon: Clock, color: "text-blue-500", label: `${daysUntilExpiry} Tage` };
+    if (daysUntilExpiry <= 90) return { icon: Clock, color: "text-cyan-500", label: `${daysUntilExpiry} Tage` };
     return { icon: CheckCircle2, color: "text-emerald-500", label: `${daysUntilExpiry} Tage` };
   };
 
@@ -203,7 +203,7 @@ export default function Vertraege() {
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[60vh]" data-testid="vertraege-loading">
-        <Loader2 className="w-8 h-8 text-blue-500 animate-spin" />
+        <Loader2 className="w-8 h-8 text-cyan-500 animate-spin" />
       </div>
     );
   }
@@ -213,8 +213,8 @@ export default function Vertraege() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900 font-['Manrope']">Verträge</h1>
-          <p className="text-gray-400 mt-1">{contracts.length} Verträge verwalten</p>
+          <h1 className="text-3xl font-bold text-slate-900 font-manrope">Verträge</h1>
+          <p className="text-slate-400 mt-1">{contracts.length} Verträge verwalten</p>
         </div>
         
         <Dialog open={isDialogOpen} onOpenChange={(open) => { setIsDialogOpen(open); if (!open) resetForm(); }}>
@@ -224,132 +224,132 @@ export default function Vertraege() {
               Neuer Vertrag
             </Button>
           </DialogTrigger>
-          <DialogContent className="bg-[#0A0A0A] border-gray-200 text-gray-900 max-w-lg max-h-[90vh] overflow-y-auto">
+          <DialogContent className="bg-white border-slate-200 text-slate-900 max-w-lg max-h-[90vh] overflow-y-auto">
             <DialogHeader>
-              <DialogTitle className="text-xl font-['Manrope']">
+              <DialogTitle className="text-xl font-manrope">
                 {editingContract ? "Vertrag bearbeiten" : "Neuer Vertrag"}
               </DialogTitle>
-              <DialogDescription className="text-gray-400">
+              <DialogDescription className="text-slate-400">
                 {editingContract ? "Aktualisieren Sie die Vertragsdaten." : "Erfassen Sie einen neuen Vertrag."}
               </DialogDescription>
             </DialogHeader>
             <form onSubmit={handleSubmit} className="space-y-4 mt-4">
               <div>
-                <Label className="text-white/70">Immobilie *</Label>
+                <Label className="text-slate-500">Immobilie *</Label>
                 <Select value={formData.property_id} onValueChange={(v) => setFormData({ ...formData, property_id: v })}>
-                  <SelectTrigger className="mt-1 bg-white border-gray-200 text-gray-900" data-testid="contract-property-select">
+                  <SelectTrigger className="mt-1 bg-white border-slate-200 text-slate-900" data-testid="contract-property-select">
                     <SelectValue placeholder="Immobilie wählen" />
                   </SelectTrigger>
-                  <SelectContent className="bg-[#1A1A1A] border-gray-200">
+                  <SelectContent className="bg-white border-slate-200">
                     {properties.map((p) => (
-                      <SelectItem key={p.id} value={p.id} className="text-gray-900 hover:bg-gray-50">{p.name}</SelectItem>
+                      <SelectItem key={p.id} value={p.id} className="text-slate-900 hover:bg-slate-50">{p.name}</SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <Label className="text-white/70">Vertragsart *</Label>
+                  <Label className="text-slate-500">Vertragsart *</Label>
                   <Select value={formData.contract_type} onValueChange={(v) => setFormData({ ...formData, contract_type: v })}>
-                    <SelectTrigger className="mt-1 bg-white border-gray-200 text-gray-900" data-testid="contract-type-select">
+                    <SelectTrigger className="mt-1 bg-white border-slate-200 text-slate-900" data-testid="contract-type-select">
                       <SelectValue />
                     </SelectTrigger>
-                    <SelectContent className="bg-[#1A1A1A] border-gray-200">
+                    <SelectContent className="bg-white border-slate-200">
                       {contractTypes.map((t) => (
-                        <SelectItem key={t} value={t} className="text-gray-900 hover:bg-gray-50">{t}</SelectItem>
+                        <SelectItem key={t} value={t} className="text-slate-900 hover:bg-slate-50">{t}</SelectItem>
                       ))}
                     </SelectContent>
                   </Select>
                 </div>
                 <div>
-                  <Label className="text-white/70">Vertragspartner</Label>
+                  <Label className="text-slate-500">Vertragspartner</Label>
                   <Select value={formData.contact_id} onValueChange={(v) => setFormData({ ...formData, contact_id: v })}>
-                    <SelectTrigger className="mt-1 bg-white border-gray-200 text-gray-900">
+                    <SelectTrigger className="mt-1 bg-white border-slate-200 text-slate-900">
                       <SelectValue placeholder="Optional" />
                     </SelectTrigger>
-                    <SelectContent className="bg-[#1A1A1A] border-gray-200">
-                      <SelectItem value="none" className="text-gray-900 hover:bg-gray-50">Keiner</SelectItem>
+                    <SelectContent className="bg-white border-slate-200">
+                      <SelectItem value="none" className="text-slate-900 hover:bg-slate-50">Keiner</SelectItem>
                       {contacts.map((c) => (
-                        <SelectItem key={c.id} value={c.id} className="text-gray-900 hover:bg-gray-50">{c.name}</SelectItem>
+                        <SelectItem key={c.id} value={c.id} className="text-slate-900 hover:bg-slate-50">{c.name}</SelectItem>
                       ))}
                     </SelectContent>
                   </Select>
                 </div>
               </div>
               <div>
-                <Label className="text-white/70">Titel *</Label>
+                <Label className="text-slate-500">Titel *</Label>
                 <Input
                   value={formData.title}
                   onChange={(e) => setFormData({ ...formData, title: e.target.value })}
                   placeholder="Vertragstitel"
-                  className="mt-1 bg-white border-gray-200 text-gray-900"
+                  className="mt-1 bg-white border-slate-200 text-slate-900"
                   data-testid="contract-title-input"
                 />
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <Label className="text-white/70">Beginn *</Label>
+                  <Label className="text-slate-500">Beginn *</Label>
                   <Input
                     type="date"
                     value={formData.start_date}
                     onChange={(e) => setFormData({ ...formData, start_date: e.target.value })}
-                    className="mt-1 bg-white border-gray-200 text-gray-900"
+                    className="mt-1 bg-white border-slate-200 text-slate-900"
                     data-testid="contract-start-date"
                   />
                 </div>
                 <div>
-                  <Label className="text-white/70">Ende</Label>
+                  <Label className="text-slate-500">Ende</Label>
                   <Input
                     type="date"
                     value={formData.end_date}
                     onChange={(e) => setFormData({ ...formData, end_date: e.target.value })}
-                    className="mt-1 bg-white border-gray-200 text-gray-900"
+                    className="mt-1 bg-white border-slate-200 text-slate-900"
                     data-testid="contract-end-date"
                   />
                 </div>
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <Label className="text-white/70">Monatlicher Betrag (€)</Label>
+                  <Label className="text-slate-500">Monatlicher Betrag (€)</Label>
                   <Input
                     type="number"
                     value={formData.monthly_amount}
                     onChange={(e) => setFormData({ ...formData, monthly_amount: parseFloat(e.target.value) || 0 })}
-                    className="mt-1 bg-white border-gray-200 text-gray-900"
+                    className="mt-1 bg-white border-slate-200 text-slate-900"
                   />
                 </div>
                 <div>
-                  <Label className="text-white/70">Kündigungsfrist (Tage)</Label>
+                  <Label className="text-slate-500">Kündigungsfrist (Tage)</Label>
                   <Input
                     type="number"
                     value={formData.notice_period_days}
                     onChange={(e) => setFormData({ ...formData, notice_period_days: parseInt(e.target.value) || 30 })}
-                    className="mt-1 bg-white border-gray-200 text-gray-900"
+                    className="mt-1 bg-white border-slate-200 text-slate-900"
                   />
                 </div>
               </div>
               <div>
-                <Label className="text-white/70">Beschreibung</Label>
+                <Label className="text-slate-500">Beschreibung</Label>
                 <Textarea
                   value={formData.description}
                   onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                   placeholder="Vertragsbeschreibung..."
-                  className="mt-1 bg-white border-gray-200 text-gray-900 resize-none"
+                  className="mt-1 bg-white border-slate-200 text-slate-900 resize-none"
                   rows={2}
                 />
               </div>
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
                   <Switch checked={formData.is_active} onCheckedChange={(v) => setFormData({ ...formData, is_active: v })} />
-                  <Label className="text-white/70">Aktiv</Label>
+                  <Label className="text-slate-500">Aktiv</Label>
                 </div>
                 <div className="flex items-center gap-3">
                   <Switch checked={formData.auto_renew} onCheckedChange={(v) => setFormData({ ...formData, auto_renew: v })} />
-                  <Label className="text-white/70">Auto-Verlängerung</Label>
+                  <Label className="text-slate-500">Auto-Verlängerung</Label>
                 </div>
               </div>
               <div className="flex justify-end gap-3 pt-4">
-                <Button type="button" variant="outline" onClick={() => { setIsDialogOpen(false); resetForm(); }} className="bg-white border-gray-200 text-gray-900 hover:bg-gray-50">
+                <Button type="button" variant="outline" onClick={() => { setIsDialogOpen(false); resetForm(); }} className="bg-white border-slate-200 text-slate-900 hover:bg-slate-50">
                   Abbrechen
                 </Button>
                 <Button type="submit" disabled={submitting} className="btn-primary" data-testid="submit-contract-btn">
@@ -366,8 +366,8 @@ export default function Vertraege() {
         <div className="bg-white rounded-2xl shadow-sm p-4 border-l-4 border-amber-500 flex items-center gap-4" data-testid="expiring-alert">
           <AlertTriangle className="w-6 h-6 text-amber-500" />
           <div className="flex-1">
-            <p className="text-gray-900 font-medium">{expiringCount} Verträge laufen in den nächsten 30 Tagen ab</p>
-            <p className="text-gray-400 text-sm">Überprüfen Sie diese Verträge und handeln Sie rechtzeitig.</p>
+            <p className="text-slate-900 font-medium">{expiringCount} Verträge laufen in den nächsten 30 Tagen ab</p>
+            <p className="text-slate-400 text-sm">Überprüfen Sie diese Verträge und handeln Sie rechtzeitig.</p>
           </div>
           <Button variant="outline" onClick={() => setExpiringFilter(true)} className="bg-amber-50 border-amber-500/30 text-amber-500 hover:bg-amber-500/30">
             Anzeigen
@@ -379,26 +379,26 @@ export default function Vertraege() {
       <div className="bg-white rounded-2xl shadow-sm p-4" data-testid="vertraege-filters">
         <div className="flex flex-col md:flex-row gap-4">
           <Select value={typeFilter} onValueChange={setTypeFilter}>
-            <SelectTrigger className="w-[200px] bg-white border-gray-200 text-gray-900" data-testid="filter-type">
-              <FileText className="w-4 h-4 mr-2 text-gray-400" />
+            <SelectTrigger className="w-[200px] bg-white border-slate-200 text-slate-900" data-testid="filter-type">
+              <FileText className="w-4 h-4 mr-2 text-slate-400" />
               <SelectValue placeholder="Alle Vertragsarten" />
             </SelectTrigger>
-            <SelectContent className="bg-[#1A1A1A] border-gray-200">
-              <SelectItem value="all" className="text-gray-900 hover:bg-gray-50">Alle Vertragsarten</SelectItem>
+            <SelectContent className="bg-white border-slate-200">
+              <SelectItem value="all" className="text-slate-900 hover:bg-slate-50">Alle Vertragsarten</SelectItem>
               {contractTypes.map((t) => (
-                <SelectItem key={t} value={t} className="text-gray-900 hover:bg-gray-50">{t}</SelectItem>
+                <SelectItem key={t} value={t} className="text-slate-900 hover:bg-slate-50">{t}</SelectItem>
               ))}
             </SelectContent>
           </Select>
           <Button
             variant={expiringFilter ? "default" : "outline"}
             onClick={() => setExpiringFilter(!expiringFilter)}
-            className={expiringFilter ? "bg-amber-500 hover:bg-amber-600" : "bg-white border-gray-200 text-gray-900 hover:bg-gray-50"}
+            className={expiringFilter ? "bg-amber-500 hover:bg-amber-600" : "bg-white border-slate-200 text-slate-900 hover:bg-slate-50"}
           >
             <AlertTriangle className="w-4 h-4 mr-2" /> Ablaufend
           </Button>
           {(typeFilter || expiringFilter) && (
-            <Button variant="ghost" onClick={() => { setTypeFilter(""); setExpiringFilter(false); }} className="text-gray-500 hover:text-gray-900">
+            <Button variant="ghost" onClick={() => { setTypeFilter(""); setExpiringFilter(false); }} className="text-slate-500 hover:text-slate-900">
               <X className="w-4 h-4 mr-1" /> Filter zurücksetzen
             </Button>
           )}
@@ -409,8 +409,8 @@ export default function Vertraege() {
       {contracts.length === 0 ? (
         <div className="bg-white rounded-2xl shadow-sm p-12 text-center" data-testid="no-contracts">
           <FileText className="w-12 h-12 text-white/20 mx-auto mb-4" />
-          <h3 className="text-lg font-medium text-gray-900 mb-2">Keine Verträge gefunden</h3>
-          <p className="text-gray-400 mb-4">Erfassen Sie Ihren ersten Vertrag</p>
+          <h3 className="text-lg font-medium text-slate-900 mb-2">Keine Verträge gefunden</h3>
+          <p className="text-slate-400 mb-4">Erfassen Sie Ihren ersten Vertrag</p>
           <Button onClick={() => setIsDialogOpen(true)} className="btn-primary">
             <Plus className="w-4 h-4 mr-2" /> Vertrag erstellen
           </Button>
@@ -424,7 +424,7 @@ export default function Vertraege() {
             return (
               <div
                 key={contract.id}
-                className="bg-white rounded-2xl shadow-sm p-5 hover:bg-gray-50 transition-all opacity-0 animate-fade-in"
+                className="bg-white rounded-2xl shadow-sm p-5 hover:bg-slate-50 transition-all opacity-0 animate-fade-in"
                 style={{ animationDelay: `${idx * 0.05}s` }}
                 data-testid={`contract-card-${contract.id}`}
               >
@@ -436,7 +436,7 @@ export default function Vertraege() {
                         {contract.contract_type}
                       </span>
                       {contract.auto_renew && (
-                        <span className="flex items-center gap-1 text-xs text-gray-400">
+                        <span className="flex items-center gap-1 text-xs text-slate-400">
                           <RefreshCw className="w-3 h-3" /> Auto
                         </span>
                       )}
@@ -444,8 +444,8 @@ export default function Vertraege() {
                         <span className="px-2 py-0.5 rounded text-xs bg-red-50 text-red-500">Inaktiv</span>
                       )}
                     </div>
-                    <h3 className="text-lg font-semibold text-gray-900 font-['Manrope']">{contract.title}</h3>
-                    <div className="flex items-center gap-4 mt-2 text-sm text-gray-500">
+                    <h3 className="text-lg font-semibold text-slate-900 font-manrope">{contract.title}</h3>
+                    <div className="flex items-center gap-4 mt-2 text-sm text-slate-500">
                       <div className="flex items-center gap-1">
                         <Building2 className="w-4 h-4" />
                         <span>{contract.property_name}</span>
@@ -462,26 +462,26 @@ export default function Vertraege() {
                   {/* Dates & Amount */}
                   <div className="flex items-center gap-6">
                     <div className="text-center">
-                      <p className="text-xs text-gray-400 uppercase">Beginn</p>
-                      <p className="text-gray-900 font-medium">
+                      <p className="text-xs text-slate-400 uppercase">Beginn</p>
+                      <p className="text-slate-900 font-medium">
                         {new Date(contract.start_date).toLocaleDateString("de-DE")}
                       </p>
                     </div>
                     <div className="text-center">
-                      <p className="text-xs text-gray-400 uppercase">Ende</p>
-                      <p className="text-gray-900 font-medium">
+                      <p className="text-xs text-slate-400 uppercase">Ende</p>
+                      <p className="text-slate-900 font-medium">
                         {contract.end_date ? new Date(contract.end_date).toLocaleDateString("de-DE") : "—"}
                       </p>
                     </div>
                     <div className="text-center">
-                      <p className="text-xs text-gray-400 uppercase">Monatlich</p>
-                      <p className="text-gray-900 font-medium flex items-center gap-1">
+                      <p className="text-xs text-slate-400 uppercase">Monatlich</p>
+                      <p className="text-slate-900 font-medium flex items-center gap-1">
                         <Euro className="w-4 h-4" />
                         {contract.monthly_amount?.toLocaleString("de-DE")}
                       </p>
                     </div>
                     <div className="text-center min-w-[100px]">
-                      <p className="text-xs text-gray-400 uppercase">Status</p>
+                      <p className="text-xs text-slate-400 uppercase">Status</p>
                       <div className={`flex items-center gap-1 justify-center ${expiry.color}`}>
                         <ExpiryIcon className="w-4 h-4" />
                         <span className="font-medium">{expiry.label}</span>
@@ -491,7 +491,7 @@ export default function Vertraege() {
                   
                   {/* Actions */}
                   <div className="flex gap-2">
-                    <Button size="sm" variant="ghost" onClick={() => handleEdit(contract)} className="text-gray-500 hover:text-gray-900 hover:bg-gray-50">
+                    <Button size="sm" variant="ghost" onClick={() => handleEdit(contract)} className="text-slate-500 hover:text-slate-900 hover:bg-slate-50">
                       <Edit2 className="w-4 h-4" />
                     </Button>
                     <AlertDialog>
@@ -500,16 +500,16 @@ export default function Vertraege() {
                           <Trash2 className="w-4 h-4" />
                         </Button>
                       </AlertDialogTrigger>
-                      <AlertDialogContent className="bg-[#0A0A0A] border-gray-200">
+                      <AlertDialogContent className="bg-white border-slate-200">
                         <AlertDialogHeader>
-                          <AlertDialogTitle className="text-gray-900">Vertrag löschen?</AlertDialogTitle>
-                          <AlertDialogDescription className="text-gray-500">
+                          <AlertDialogTitle className="text-slate-900">Vertrag löschen?</AlertDialogTitle>
+                          <AlertDialogDescription className="text-slate-500">
                             Möchten Sie "{contract.title}" wirklich löschen?
                           </AlertDialogDescription>
                         </AlertDialogHeader>
                         <AlertDialogFooter>
-                          <AlertDialogCancel className="bg-white border-gray-200 text-gray-900 hover:bg-gray-50">Abbrechen</AlertDialogCancel>
-                          <AlertDialogAction onClick={() => handleDelete(contract.id)} className="bg-red-500 hover:bg-red-600 text-gray-900">Löschen</AlertDialogAction>
+                          <AlertDialogCancel className="bg-white border-slate-200 text-slate-900 hover:bg-slate-50">Abbrechen</AlertDialogCancel>
+                          <AlertDialogAction onClick={() => handleDelete(contract.id)} className="bg-red-500 hover:bg-red-600 text-slate-900">Löschen</AlertDialogAction>
                         </AlertDialogFooter>
                       </AlertDialogContent>
                     </AlertDialog>

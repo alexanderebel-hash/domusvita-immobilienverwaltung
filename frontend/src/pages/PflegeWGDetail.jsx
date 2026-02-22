@@ -11,9 +11,9 @@ const API_URL = process.env.REACT_APP_BACKEND_URL || '';
 
 const STATUS_COLORS = {
   frei: { bg: 'bg-green-500', border: 'border-green-400', text: 'text-emerald-500', label: 'Frei' },
-  belegt: { bg: 'bg-blue-500', border: 'border-blue-400', text: 'text-blue-500', label: 'Belegt' },
+  belegt: { bg: 'bg-cyan-600', border: 'border-blue-400', text: 'text-cyan-500', label: 'Belegt' },
   reserviert: { bg: 'bg-orange-500', border: 'border-orange-400', text: 'text-orange-500', label: 'Reserviert' },
-  renovierung: { bg: 'bg-gray-500', border: 'border-gray-400', text: 'text-gray-400', label: 'Renovierung' }
+  renovierung: { bg: 'bg-gray-500', border: 'border-gray-400', text: 'text-slate-400', label: 'Renovierung' }
 };
 
 const PFLEGEGRAD_COLORS = {
@@ -75,7 +75,7 @@ export default function PflegeWGDetail() {
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-cyan-500"></div>
       </div>
     );
   }
@@ -83,7 +83,7 @@ export default function PflegeWGDetail() {
   if (!wg) {
     return (
       <div className="p-6">
-        <p className="text-gray-900">WG nicht gefunden</p>
+        <p className="text-slate-900">WG nicht gefunden</p>
       </div>
     );
   }
@@ -96,19 +96,19 @@ export default function PflegeWGDetail() {
           <Button 
             variant="ghost" 
             onClick={() => navigate('/pflege-wgs')}
-            className="text-gray-500 hover:text-gray-900 p-2"
+            className="text-slate-500 hover:text-slate-900 p-2"
           >
             <ArrowLeft className="w-4 h-4" />
           </Button>
           <div className="flex-1 min-w-0">
-            <h1 className="text-xl md:text-3xl font-bold text-gray-900 truncate">{wg.kurzname}</h1>
-            <p className="text-gray-500 text-sm truncate">{wg.property_address}</p>
+            <h1 className="text-xl md:text-3xl font-bold text-slate-900 truncate">{wg.kurzname}</h1>
+            <p className="text-slate-500 text-sm truncate">{wg.property_address}</p>
           </div>
           <div className="flex gap-1.5 flex-shrink-0">
-            <Badge className={`${STATUS_COLORS.frei.bg} text-gray-900 text-xs`}>
+            <Badge className={`${STATUS_COLORS.frei.bg} text-slate-900 text-xs`}>
               {wg.freie_zimmer} frei
             </Badge>
-            <Badge className={`${STATUS_COLORS.belegt.bg} text-gray-900 text-xs`}>
+            <Badge className={`${STATUS_COLORS.belegt.bg} text-slate-900 text-xs`}>
               {wg.belegte_zimmer} belegt
             </Badge>
           </div>
@@ -117,12 +117,12 @@ export default function PflegeWGDetail() {
 
       {/* Main Content with Tabs */}
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-        <TabsList className="bg-white border-gray-200 mb-6">
-          <TabsTrigger value="grundriss" className="data-[state=active]:bg-gray-50" data-testid="tab-grundriss">
+        <TabsList className="bg-white border-slate-200 mb-6">
+          <TabsTrigger value="grundriss" className="data-[state=active]:bg-slate-50" data-testid="tab-grundriss">
             <Bed className="w-4 h-4 mr-2" />
             Grundriss & Bewohner
           </TabsTrigger>
-          <TabsTrigger value="kosten" className="data-[state=active]:bg-gray-50" data-testid="tab-kosten">
+          <TabsTrigger value="kosten" className="data-[state=active]:bg-slate-50" data-testid="tab-kosten">
             <Euro className="w-4 h-4 mr-2" />
             Kostenübersicht
           </TabsTrigger>
@@ -131,9 +131,9 @@ export default function PflegeWGDetail() {
         <TabsContent value="grundriss">
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Grundriss */}
-        <Card className="lg:col-span-2 bg-white border-gray-200">
+        <Card className="lg:col-span-2 bg-white border-slate-200">
           <CardHeader>
-            <CardTitle className="text-gray-900 flex items-center gap-2">
+            <CardTitle className="text-slate-900 flex items-center gap-2">
               <Bed className="w-5 h-5" />
               Interaktiver Grundriss
             </CardTitle>
@@ -143,7 +143,7 @@ export default function PflegeWGDetail() {
               <div className="relative bg-white rounded-lg overflow-hidden">
                 {!imageLoaded && (
                   <div className="absolute inset-0 flex items-center justify-center">
-                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
+                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-cyan-500"></div>
                   </div>
                 )}
                 <img
@@ -170,7 +170,7 @@ export default function PflegeWGDetail() {
                     }}
                     data-testid={`zimmer-${zimmer.nummer}`}
                   >
-                    <span className="text-gray-900 font-bold text-sm drop-shadow-lg">
+                    <span className="text-slate-900 font-bold text-sm drop-shadow-lg">
                       {zimmer.nummer}
                     </span>
                     {zimmer.bewohner_name && (
@@ -192,19 +192,19 @@ export default function PflegeWGDetail() {
                       data-testid={`zimmer-${zimmer.nummer}`}
                     >
                       <div className="flex items-center justify-between mb-2">
-                        <span className="text-gray-900 font-bold">Zimmer {zimmer.nummer}</span>
-                        <Badge className={`${STATUS_COLORS[zimmer.status]?.bg} text-gray-900 text-xs`}>
+                        <span className="text-slate-900 font-bold">Zimmer {zimmer.nummer}</span>
+                        <Badge className={`${STATUS_COLORS[zimmer.status]?.bg} text-slate-900 text-xs`}>
                           {STATUS_COLORS[zimmer.status]?.label}
                         </Badge>
                       </div>
                       {zimmer.flaeche_qm && (
-                        <p className="text-gray-500 text-sm">{zimmer.flaeche_qm} m²</p>
+                        <p className="text-slate-500 text-sm">{zimmer.flaeche_qm} m²</p>
                       )}
                       {zimmer.bewohner_name && (
-                        <div className="mt-2 pt-2 border-t border-gray-200">
-                          <p className="text-gray-900 text-sm">{zimmer.bewohner_name}</p>
+                        <div className="mt-2 pt-2 border-t border-slate-200">
+                          <p className="text-slate-900 text-sm">{zimmer.bewohner_name}</p>
                           {zimmer.bewohner_alter && (
-                            <p className="text-gray-500 text-xs">{zimmer.bewohner_alter} Jahre</p>
+                            <p className="text-slate-500 text-xs">{zimmer.bewohner_alter} Jahre</p>
                           )}
                         </div>
                       )}
@@ -215,11 +215,11 @@ export default function PflegeWGDetail() {
             )}
 
             {/* Legend */}
-            <div className="flex gap-4 mt-4 pt-4 border-t border-gray-200">
+            <div className="flex gap-4 mt-4 pt-4 border-t border-slate-200">
               {Object.entries(STATUS_COLORS).map(([key, value]) => (
                 <div key={key} className="flex items-center gap-2">
                   <span className={`w-3 h-3 rounded-full ${value.bg}`}></span>
-                  <span className="text-gray-500 text-sm">{value.label}</span>
+                  <span className="text-slate-500 text-sm">{value.label}</span>
                 </div>
               ))}
             </div>
@@ -227,14 +227,14 @@ export default function PflegeWGDetail() {
         </Card>
 
         {/* Bewohnerliste */}
-        <Card className="bg-white border-gray-200">
+        <Card className="bg-white border-slate-200">
           <CardHeader>
-            <CardTitle className="text-gray-900 flex items-center justify-between">
+            <CardTitle className="text-slate-900 flex items-center justify-between">
               <span className="flex items-center gap-2">
                 <User className="w-5 h-5" />
                 Bewohner
               </span>
-              <Badge className="bg-gray-50 text-gray-900">
+              <Badge className="bg-slate-50 text-slate-900">
                 {wg.zimmer?.filter(z => z.status === 'belegt').length || 0}
               </Badge>
             </CardTitle>
@@ -244,19 +244,19 @@ export default function PflegeWGDetail() {
               <div
                 key={zimmer.id}
                 onClick={() => handleZimmerClick(zimmer)}
-                className="p-3 bg-white rounded-lg border border-gray-200 hover:bg-gray-50 cursor-pointer transition-all"
+                className="p-3 bg-white rounded-lg border border-slate-200 hover:bg-slate-50 cursor-pointer transition-all"
               >
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-gray-900 font-medium">{zimmer.bewohner_name}</p>
-                    <p className="text-gray-500 text-sm">Zimmer {zimmer.nummer}</p>
+                    <p className="text-slate-900 font-medium">{zimmer.bewohner_name}</p>
+                    <p className="text-slate-500 text-sm">Zimmer {zimmer.nummer}</p>
                   </div>
                   <div className="text-right">
                     {zimmer.bewohner_alter && (
-                      <p className="text-gray-700 text-sm">{zimmer.bewohner_alter} J.</p>
+                      <p className="text-slate-700 text-sm">{zimmer.bewohner_alter} J.</p>
                     )}
                     {zimmer.bewohner_pflegegrad && (
-                      <Badge className={`${PFLEGEGRAD_COLORS[zimmer.bewohner_pflegegrad] || 'bg-gray-500'} text-gray-900 text-xs`}>
+                      <Badge className={`${PFLEGEGRAD_COLORS[zimmer.bewohner_pflegegrad] || 'bg-gray-500'} text-slate-900 text-xs`}>
                         PG {zimmer.bewohner_pflegegrad}
                       </Badge>
                     )}
@@ -268,8 +268,8 @@ export default function PflegeWGDetail() {
             {/* Freie Zimmer */}
             {wg.zimmer?.filter(z => z.status === 'frei').length > 0 && (
               <>
-                <div className="pt-4 mt-4 border-t border-gray-200">
-                  <p className="text-gray-500 text-sm mb-2">Freie Zimmer</p>
+                <div className="pt-4 mt-4 border-t border-slate-200">
+                  <p className="text-slate-500 text-sm mb-2">Freie Zimmer</p>
                 </div>
                 {wg.zimmer?.filter(z => z.status === 'frei').map(zimmer => (
                   <div
@@ -279,9 +279,9 @@ export default function PflegeWGDetail() {
                   >
                     <div className="flex items-center justify-between">
                       <div>
-                        <p className="text-gray-900 font-medium">Zimmer {zimmer.nummer}</p>
+                        <p className="text-slate-900 font-medium">Zimmer {zimmer.nummer}</p>
                         {zimmer.flaeche_qm && (
-                          <p className="text-gray-500 text-sm">{zimmer.flaeche_qm} m²</p>
+                          <p className="text-slate-500 text-sm">{zimmer.flaeche_qm} m²</p>
                         )}
                       </div>
                       <Button 
@@ -310,23 +310,23 @@ export default function PflegeWGDetail() {
             <div className="space-y-6">
               {/* Summary Cards */}
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                <Card className="bg-white border-gray-200">
+                <Card className="bg-white border-slate-200">
                   <CardContent className="p-4">
-                    <p className="text-gray-500 text-sm">Auslastung</p>
-                    <p className="text-2xl font-bold text-gray-900">{kosten.auslastung_prozent}%</p>
-                    <p className="text-gray-400 text-xs">{kosten.belegte_zimmer}/{kosten.kapazitaet} Zimmer</p>
+                    <p className="text-slate-500 text-sm">Auslastung</p>
+                    <p className="text-2xl font-bold text-slate-900">{kosten.auslastung_prozent}%</p>
+                    <p className="text-slate-400 text-xs">{kosten.belegte_zimmer}/{kosten.kapazitaet} Zimmer</p>
                   </CardContent>
                 </Card>
-                <Card className="bg-white border-gray-200">
+                <Card className="bg-white border-slate-200">
                   <CardContent className="p-4">
-                    <p className="text-gray-500 text-sm">Monatlich gesamt</p>
+                    <p className="text-slate-500 text-sm">Monatlich gesamt</p>
                     <p className="text-2xl font-bold text-emerald-500">{kosten.gesamt_monatlich.toLocaleString('de-DE')} &euro;</p>
                   </CardContent>
                 </Card>
-                <Card className="bg-white border-gray-200">
+                <Card className="bg-white border-slate-200">
                   <CardContent className="p-4">
-                    <p className="text-gray-500 text-sm">Jährlich gesamt</p>
-                    <p className="text-2xl font-bold text-gray-900">{kosten.gesamt_jaehrlich.toLocaleString('de-DE')} &euro;</p>
+                    <p className="text-slate-500 text-sm">Jährlich gesamt</p>
+                    <p className="text-2xl font-bold text-slate-900">{kosten.gesamt_jaehrlich.toLocaleString('de-DE')} &euro;</p>
                   </CardContent>
                 </Card>
                 <Card className="bg-red-50 border-red-200">
@@ -339,9 +339,9 @@ export default function PflegeWGDetail() {
               </div>
 
               {/* Cost Breakdown */}
-              <Card className="bg-white border-gray-200">
+              <Card className="bg-white border-slate-200">
                 <CardHeader>
-                  <CardTitle className="text-gray-900 flex items-center gap-2">
+                  <CardTitle className="text-slate-900 flex items-center gap-2">
                     <Euro className="w-5 h-5" />
                     Kostenaufstellung pro Bewohner
                   </CardTitle>
@@ -358,10 +358,10 @@ export default function PflegeWGDetail() {
                       };
                       return (
                         <div key={key} className="flex items-center justify-between p-3 bg-white rounded-lg">
-                          <span className="text-gray-900">{labels[key] || key}</span>
+                          <span className="text-slate-900">{labels[key] || key}</span>
                           <div className="flex items-center gap-8">
-                            <span className="text-gray-500 text-sm">{val.pro_zimmer.toLocaleString('de-DE')} &euro;/Zimmer</span>
-                            <span className="text-gray-900 font-medium w-28 text-right">{val.gesamt.toLocaleString('de-DE')} &euro;</span>
+                            <span className="text-slate-500 text-sm">{val.pro_zimmer.toLocaleString('de-DE')} &euro;/Zimmer</span>
+                            <span className="text-slate-900 font-medium w-28 text-right">{val.gesamt.toLocaleString('de-DE')} &euro;</span>
                           </div>
                         </div>
                       );
@@ -382,7 +382,7 @@ export default function PflegeWGDetail() {
             </div>
           ) : (
             <div className="flex items-center justify-center py-12">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-cyan-500"></div>
             </div>
           )}
         </TabsContent>
@@ -390,7 +390,7 @@ export default function PflegeWGDetail() {
 
       {/* Zimmer Dialog */}
       <Dialog open={showZimmerDialog} onOpenChange={setShowZimmerDialog}>
-        <DialogContent className="bg-white border-gray-200 text-gray-900 max-w-md">
+        <DialogContent className="bg-white border-slate-200 text-slate-900 max-w-md">
           <DialogHeader>
             <DialogTitle className="text-xl">
               Zimmer {selectedZimmer?.nummer}
@@ -405,25 +405,25 @@ export default function PflegeWGDetail() {
             <div className="grid grid-cols-2 gap-4">
               {selectedZimmer?.flaeche_qm && (
                 <div className="p-3 bg-white rounded-lg">
-                  <p className="text-gray-500 text-sm">Fläche</p>
-                  <p className="text-gray-900 font-medium">{selectedZimmer.flaeche_qm} m²</p>
+                  <p className="text-slate-500 text-sm">Fläche</p>
+                  <p className="text-slate-900 font-medium">{selectedZimmer.flaeche_qm} m²</p>
                 </div>
               )}
               {selectedZimmer?.name && (
                 <div className="p-3 bg-white rounded-lg">
-                  <p className="text-gray-500 text-sm">Bezeichnung</p>
-                  <p className="text-gray-900 font-medium">{selectedZimmer.name}</p>
+                  <p className="text-slate-500 text-sm">Bezeichnung</p>
+                  <p className="text-slate-900 font-medium">{selectedZimmer.name}</p>
                 </div>
               )}
             </div>
 
             {/* Bewohner Info */}
             {selectedZimmer?.bewohner_name ? (
-              <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
+              <div className="p-4 bg-cyan-50 border border-blue-200 rounded-lg">
                 <div className="flex items-start justify-between">
                   <div>
-                    <p className="text-gray-900 font-medium text-lg">{selectedZimmer.bewohner_name}</p>
-                    <div className="flex items-center gap-3 mt-2 text-gray-500 text-sm">
+                    <p className="text-slate-900 font-medium text-lg">{selectedZimmer.bewohner_name}</p>
+                    <div className="flex items-center gap-3 mt-2 text-slate-500 text-sm">
                       {selectedZimmer.bewohner_alter && (
                         <span>{selectedZimmer.bewohner_alter} Jahre</span>
                       )}
@@ -439,7 +439,7 @@ export default function PflegeWGDetail() {
                 <div className="mt-4 pt-4 border-t border-blue-200 flex gap-2">
                   <Button 
                     size="sm" 
-                    className="bg-blue-600 hover:bg-blue-700"
+                    className="bg-blue-600 hover:bg-cyan-700"
                     onClick={() => {
                       setShowZimmerDialog(false);
                       navigate(`/pflege-wgs/klienten/${selectedZimmer.aktueller_bewohner_id}`);
@@ -450,7 +450,7 @@ export default function PflegeWGDetail() {
                   <Button 
                     size="sm" 
                     variant="outline"
-                    className="border-gray-200 text-gray-900 hover:bg-gray-50"
+                    className="border-slate-200 text-slate-900 hover:bg-slate-50"
                   >
                     <Phone className="w-4 h-4 mr-1" />
                     Anrufen
@@ -464,8 +464,8 @@ export default function PflegeWGDetail() {
                     <Bed className="w-5 h-5 text-emerald-500" />
                   </div>
                   <div>
-                    <p className="text-gray-900 font-medium">Zimmer ist frei</p>
-                    <p className="text-gray-500 text-sm">Klicken Sie unten, um einen Klienten zuzuweisen</p>
+                    <p className="text-slate-900 font-medium">Zimmer ist frei</p>
+                    <p className="text-slate-500 text-sm">Klicken Sie unten, um einen Klienten zuzuweisen</p>
                   </div>
                 </div>
                 

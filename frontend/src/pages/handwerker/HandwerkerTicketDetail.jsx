@@ -45,7 +45,7 @@ const statusOptions = ["Unterwegs", "Vor Ort", "In Arbeit", "Erledigt", "Materia
 const photoCategories = ["Vorher", "Während", "Nachher"];
 
 const statusColors = {
-  Unterwegs: "bg-blue-500",
+  Unterwegs: "bg-cyan-600",
   "Vor Ort": "bg-amber-500",
   "In Arbeit": "bg-purple-500",
   Erledigt: "bg-emerald-500",
@@ -208,8 +208,8 @@ export default function HandwerkerTicketDetail() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#050505] flex items-center justify-center">
-        <Loader2 className="w-8 h-8 text-blue-500 animate-spin" />
+      <div className="min-h-screen bg-white flex items-center justify-center">
+        <Loader2 className="w-8 h-8 text-cyan-500 animate-spin" />
       </div>
     );
   }
@@ -219,21 +219,21 @@ export default function HandwerkerTicketDetail() {
   const latestStatus = ticket.status_updates?.[0]?.status || ticket.status;
 
   return (
-    <div className="min-h-screen bg-[#050505] pb-32" data-testid="handwerker-ticket-detail">
+    <div className="min-h-screen bg-white pb-32" data-testid="handwerker-ticket-detail">
       {/* Header */}
-      <header className="sticky top-0 z-50 bg-[#050505]/95 backdrop-blur-xl border-b border-white/10">
+      <header className="sticky top-0 z-50 bg-white/95 backdrop-blur-xl border-b border-slate-200">
         <div className="p-4 flex items-center gap-3">
           <Button
             variant="ghost"
             size="icon"
             onClick={() => navigate("/handwerker/tickets")}
-            className="text-white/60 hover:text-white hover:bg-white/10"
+            className="text-slate-500 hover:text-slate-900 hover:bg-slate-100"
           >
             <ArrowLeft className="w-5 h-5" />
           </Button>
           <div className="flex-1">
-            <h1 className="text-white font-semibold font-['Manrope'] truncate">{ticket.title}</h1>
-            <p className="text-white/50 text-sm">{ticket.property_name}</p>
+            <h1 className="text-slate-900 font-semibold font-manrope truncate">{ticket.title}</h1>
+            <p className="text-slate-400 text-sm">{ticket.property_name}</p>
           </div>
           {ticket.priority === "Dringend" && (
             <AlertTriangle className="w-6 h-6 text-red-400 animate-pulse" />
@@ -243,8 +243,8 @@ export default function HandwerkerTicketDetail() {
 
       <main className="p-4 space-y-4">
         {/* Status Banner */}
-        <div className={`p-4 rounded-2xl ${statusColors[latestStatus] || "bg-gray-500"}`}>
-          <p className="text-white/80 text-xs uppercase tracking-wider mb-1">Aktueller Status</p>
+        <div className={`p-4 rounded-2xl ${statusColors[latestStatus] || "bg-slate-500"}`}>
+          <p className="text-white/90 text-xs uppercase tracking-wider mb-1">Aktueller Status</p>
           <p className="text-white text-xl font-bold">{latestStatus}</p>
           {ticket.status_updates?.[0]?.note && (
             <p className="text-white/70 text-sm mt-1">{ticket.status_updates[0].note}</p>
@@ -255,37 +255,37 @@ export default function HandwerkerTicketDetail() {
         <div className="grid grid-cols-3 gap-3">
           <button
             onClick={openMaps}
-            className="p-4 rounded-xl bg-white/5 border border-white/10 active:bg-white/10 transition-all"
+            className="p-4 rounded-xl bg-slate-50 border border-slate-200 active:bg-slate-100 transition-all"
           >
-            <Navigation className="w-6 h-6 text-blue-400 mx-auto mb-2" />
-            <p className="text-white/60 text-xs">Navigation</p>
+            <Navigation className="w-6 h-6 text-cyan-400 mx-auto mb-2" />
+            <p className="text-slate-500 text-xs">Navigation</p>
           </button>
           <button
             onClick={callTenant}
             disabled={!ticket.tenant_phone}
-            className="p-4 rounded-xl bg-white/5 border border-white/10 active:bg-white/10 transition-all disabled:opacity-50"
+            className="p-4 rounded-xl bg-slate-50 border border-slate-200 active:bg-slate-100 transition-all disabled:opacity-50"
           >
             <Phone className="w-6 h-6 text-emerald-400 mx-auto mb-2" />
-            <p className="text-white/60 text-xs">Anrufen</p>
+            <p className="text-slate-500 text-xs">Anrufen</p>
           </button>
           <button
             onClick={() => setShowPhotoDialog(true)}
-            className="p-4 rounded-xl bg-white/5 border border-white/10 active:bg-white/10 transition-all"
+            className="p-4 rounded-xl bg-slate-50 border border-slate-200 active:bg-slate-100 transition-all"
           >
             <Camera className="w-6 h-6 text-amber-400 mx-auto mb-2" />
-            <p className="text-white/60 text-xs">Foto</p>
+            <p className="text-slate-500 text-xs">Foto</p>
           </button>
         </div>
 
         {/* Address */}
-        <div className="p-4 rounded-2xl bg-white/[0.03] border border-white/10">
+        <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200">
           <div className="flex items-start gap-3">
-            <MapPin className="w-5 h-5 text-white/40 mt-0.5" />
+            <MapPin className="w-5 h-5 text-slate-400 mt-0.5" />
             <div>
-              <p className="text-white font-medium">{ticket.property_name}</p>
-              <p className="text-white/60 text-sm">{ticket.property_address}</p>
+              <p className="text-slate-900 font-medium">{ticket.property_name}</p>
+              <p className="text-slate-500 text-sm">{ticket.property_address}</p>
               {ticket.tenant_name && (
-                <p className="text-white/40 text-sm mt-2">
+                <p className="text-slate-400 text-sm mt-2">
                   Kontakt: {ticket.tenant_name} {ticket.tenant_phone && `• ${ticket.tenant_phone}`}
                 </p>
               )}
@@ -295,24 +295,24 @@ export default function HandwerkerTicketDetail() {
 
         {/* Description */}
         {ticket.description && (
-          <div className="p-4 rounded-2xl bg-white/[0.03] border border-white/10">
-            <h3 className="text-white font-medium mb-2">Beschreibung</h3>
-            <p className="text-white/70 text-sm">{ticket.description}</p>
+          <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200">
+            <h3 className="text-slate-900 font-medium mb-2">Beschreibung</h3>
+            <p className="text-slate-500 text-sm">{ticket.description}</p>
           </div>
         )}
 
         {/* Photos Section */}
-        <div className="p-4 rounded-2xl bg-white/[0.03] border border-white/10">
+        <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200">
           <div className="flex items-center justify-between mb-3">
-            <h3 className="text-white font-medium flex items-center gap-2">
-              <Image className="w-5 h-5 text-white/40" />
+            <h3 className="text-slate-900 font-medium flex items-center gap-2">
+              <Image className="w-5 h-5 text-slate-400" />
               Fotos ({ticket.photos?.length || 0})
             </h3>
             <Button
               size="sm"
               variant="ghost"
               onClick={() => setShowPhotoDialog(true)}
-              className="text-blue-400 hover:text-blue-300"
+              className="text-cyan-400 hover:text-cyan-300"
             >
               + Hinzufügen
             </Button>
@@ -341,24 +341,24 @@ export default function HandwerkerTicketDetail() {
               ))}
             </div>
           ) : (
-            <p className="text-white/40 text-sm text-center py-4">
+            <p className="text-slate-400 text-sm text-center py-4">
               Noch keine Fotos vorhanden
             </p>
           )}
         </div>
 
         {/* Work Report */}
-        <div className="p-4 rounded-2xl bg-white/[0.03] border border-white/10">
+        <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200">
           <div className="flex items-center justify-between mb-3">
-            <h3 className="text-white font-medium flex items-center gap-2">
-              <FileText className="w-5 h-5 text-white/40" />
+            <h3 className="text-slate-900 font-medium flex items-center gap-2">
+              <FileText className="w-5 h-5 text-slate-400" />
               Arbeitsbericht
             </h3>
             <Button
               size="sm"
               variant="ghost"
               onClick={() => setShowReportDialog(true)}
-              className="text-blue-400 hover:text-blue-300"
+              className="text-cyan-400 hover:text-cyan-300"
             >
               <Edit3 className="w-4 h-4 mr-1" />
               {ticket.work_report ? "Bearbeiten" : "Erstellen"}
@@ -367,19 +367,19 @@ export default function HandwerkerTicketDetail() {
           
           {ticket.work_report ? (
             <div className="space-y-2 text-sm">
-              <p className="text-white/70">{ticket.work_report.description}</p>
+              <p className="text-slate-500">{ticket.work_report.description}</p>
               {ticket.work_report.materials_used && (
-                <p className="text-white/50">Material: {ticket.work_report.materials_used}</p>
+                <p className="text-slate-400">Material: {ticket.work_report.materials_used}</p>
               )}
-              <div className="flex gap-4 pt-2 border-t border-white/10">
-                <span className="text-white/50">{ticket.work_report.work_hours}h Arbeit</span>
+              <div className="flex gap-4 pt-2 border-t border-slate-200">
+                <span className="text-slate-400">{ticket.work_report.work_hours}h Arbeit</span>
                 <span className="text-emerald-400 font-medium">
                   {ticket.work_report.total_cost?.toLocaleString("de-DE")} € Gesamt
                 </span>
               </div>
             </div>
           ) : (
-            <p className="text-white/40 text-sm text-center py-4">
+            <p className="text-slate-400 text-sm text-center py-4">
               Noch kein Arbeitsbericht erstellt
             </p>
           )}
@@ -387,19 +387,19 @@ export default function HandwerkerTicketDetail() {
 
         {/* Status History */}
         {ticket.status_updates?.length > 0 && (
-          <div className="p-4 rounded-2xl bg-white/[0.03] border border-white/10">
-            <h3 className="text-white font-medium mb-3 flex items-center gap-2">
-              <Clock className="w-5 h-5 text-white/40" />
+          <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200">
+            <h3 className="text-slate-900 font-medium mb-3 flex items-center gap-2">
+              <Clock className="w-5 h-5 text-slate-400" />
               Status-Verlauf
             </h3>
             <div className="space-y-3">
               {ticket.status_updates.slice(0, 5).map((update, idx) => (
                 <div key={update.id} className="flex items-start gap-3">
-                  <div className={`w-2 h-2 rounded-full mt-2 ${statusColors[update.status] || "bg-gray-500"}`} />
+                  <div className={`w-2 h-2 rounded-full mt-2 ${statusColors[update.status] || "bg-slate-500"}`} />
                   <div>
-                    <p className="text-white text-sm">{update.status}</p>
-                    {update.note && <p className="text-white/50 text-xs">{update.note}</p>}
-                    <p className="text-white/30 text-xs">
+                    <p className="text-slate-900 text-sm">{update.status}</p>
+                    {update.note && <p className="text-slate-400 text-xs">{update.note}</p>}
+                    <p className="text-slate-300 text-xs">
                       {new Date(update.timestamp).toLocaleString("de-DE")}
                     </p>
                   </div>
@@ -411,13 +411,13 @@ export default function HandwerkerTicketDetail() {
       </main>
 
       {/* Status Update Bar - Fixed Bottom */}
-      <div className="fixed bottom-0 left-0 right-0 p-4 bg-[#0A0A0A]/95 backdrop-blur-xl border-t border-white/10">
+      <div className="fixed bottom-0 left-0 right-0 p-4 bg-white/95 backdrop-blur-xl border-t border-slate-200">
         <div className="flex gap-2 mb-3">
           <Input
             value={statusNote}
             onChange={(e) => setStatusNote(e.target.value)}
             placeholder="Notiz hinzufügen (optional)"
-            className="flex-1 bg-white/5 border-white/10 text-white placeholder:text-white/30"
+            className="flex-1 bg-slate-50 border-slate-200 text-slate-900 placeholder:text-slate-300"
           />
         </div>
         <div className="flex gap-2 overflow-x-auto pb-2">
@@ -429,7 +429,7 @@ export default function HandwerkerTicketDetail() {
               className={`flex-shrink-0 rounded-full px-4 ${
                 latestStatus === status
                   ? `${statusColors[status]} text-white`
-                  : "bg-white/10 text-white hover:bg-white/20"
+                  : "bg-slate-100 text-slate-700 hover:bg-slate-200"
               }`}
               data-testid={`status-btn-${status.toLowerCase().replace(" ", "-")}`}
             >
@@ -441,23 +441,23 @@ export default function HandwerkerTicketDetail() {
 
       {/* Photo Upload Dialog */}
       <Dialog open={showPhotoDialog} onOpenChange={setShowPhotoDialog}>
-        <DialogContent className="bg-[#0A0A0A] border-white/10 text-white max-w-sm mx-4">
+        <DialogContent className="bg-white border-slate-200 text-slate-900 max-w-sm mx-4">
           <DialogHeader>
             <DialogTitle>Foto aufnehmen</DialogTitle>
-            <DialogDescription className="text-white/50">
+            <DialogDescription className="text-slate-400">
               Kategorisieren Sie das Foto für bessere Dokumentation
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-4">
             <div>
-              <Label className="text-white/70">Kategorie</Label>
+              <Label className="text-slate-500">Kategorie</Label>
               <Select value={photoCategory} onValueChange={setPhotoCategory}>
-                <SelectTrigger className="mt-1 bg-white/5 border-white/10 text-white">
+                <SelectTrigger className="mt-1 bg-slate-50 border-slate-200 text-slate-900">
                   <SelectValue />
                 </SelectTrigger>
-                <SelectContent className="bg-[#1A1A1A] border-white/10">
+                <SelectContent className="bg-white border-slate-200">
                   {photoCategories.map((cat) => (
-                    <SelectItem key={cat} value={cat} className="text-white hover:bg-white/10">
+                    <SelectItem key={cat} value={cat} className="text-slate-900 hover:bg-slate-100">
                       {cat}
                     </SelectItem>
                   ))}
@@ -465,12 +465,12 @@ export default function HandwerkerTicketDetail() {
               </Select>
             </div>
             <div>
-              <Label className="text-white/70">Beschreibung (optional)</Label>
+              <Label className="text-slate-500">Beschreibung (optional)</Label>
               <Input
                 value={photoDescription}
                 onChange={(e) => setPhotoDescription(e.target.value)}
                 placeholder="z.B. Wasserschaden an der Decke"
-                className="mt-1 bg-white/5 border-white/10 text-white"
+                className="mt-1 bg-slate-50 border-slate-200 text-slate-900"
               />
             </div>
             <input
@@ -485,7 +485,7 @@ export default function HandwerkerTicketDetail() {
               <Button
                 variant="outline"
                 onClick={() => setShowPhotoDialog(false)}
-                className="flex-1 bg-white/5 border-white/10 text-white hover:bg-white/10"
+                className="flex-1 bg-slate-50 border-slate-200 text-slate-700 hover:bg-slate-100"
                 data-testid="photo-dialog-cancel"
               >
                 Abbrechen
@@ -493,7 +493,7 @@ export default function HandwerkerTicketDetail() {
               <Button
                 onClick={() => fileInputRef.current?.click()}
                 disabled={uploadingPhoto}
-                className="flex-1 h-12 rounded-xl bg-blue-500 hover:bg-blue-600"
+                className="flex-1 h-12 rounded-xl bg-cyan-600 hover:bg-cyan-700"
                 data-testid="photo-dialog-capture"
               >
                 {uploadingPhoto ? (
@@ -538,61 +538,61 @@ export default function HandwerkerTicketDetail() {
 
       {/* Work Report Dialog */}
       <Dialog open={showReportDialog} onOpenChange={setShowReportDialog}>
-        <DialogContent className="bg-[#0A0A0A] border-white/10 text-white max-w-md mx-4 max-h-[90vh] overflow-y-auto">
+        <DialogContent className="bg-white border-slate-200 text-slate-900 max-w-md mx-4 max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>Arbeitsbericht</DialogTitle>
-            <DialogDescription className="text-white/50">
+            <DialogDescription className="text-slate-400">
               Dokumentieren Sie die durchgeführten Arbeiten
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-4">
             <div>
-              <Label className="text-white/70">Durchgeführte Arbeiten *</Label>
+              <Label className="text-slate-500">Durchgeführte Arbeiten *</Label>
               <Textarea
                 value={reportData.description}
                 onChange={(e) => setReportData({ ...reportData, description: e.target.value })}
                 placeholder="Beschreiben Sie die Arbeiten..."
-                className="mt-1 bg-white/5 border-white/10 text-white resize-none"
+                className="mt-1 bg-slate-50 border-slate-200 text-slate-900 resize-none"
                 rows={3}
               />
             </div>
             <div>
-              <Label className="text-white/70">Verwendete Materialien</Label>
+              <Label className="text-slate-500">Verwendete Materialien</Label>
               <Textarea
                 value={reportData.materials_used}
                 onChange={(e) => setReportData({ ...reportData, materials_used: e.target.value })}
                 placeholder="z.B. 2x Dichtung, 1x Rohr 50mm"
-                className="mt-1 bg-white/5 border-white/10 text-white resize-none"
+                className="mt-1 bg-slate-50 border-slate-200 text-slate-900 resize-none"
                 rows={2}
               />
             </div>
             <div className="grid grid-cols-3 gap-3">
               <div>
-                <Label className="text-white/70">Stunden</Label>
+                <Label className="text-slate-500">Stunden</Label>
                 <Input
                   type="number"
                   step="0.5"
                   value={reportData.work_hours}
                   onChange={(e) => setReportData({ ...reportData, work_hours: parseFloat(e.target.value) || 0 })}
-                  className="mt-1 bg-white/5 border-white/10 text-white"
+                  className="mt-1 bg-slate-50 border-slate-200 text-slate-900"
                 />
               </div>
               <div>
-                <Label className="text-white/70">Material €</Label>
+                <Label className="text-slate-500">Material €</Label>
                 <Input
                   type="number"
                   value={reportData.material_cost}
                   onChange={(e) => setReportData({ ...reportData, material_cost: parseFloat(e.target.value) || 0 })}
-                  className="mt-1 bg-white/5 border-white/10 text-white"
+                  className="mt-1 bg-slate-50 border-slate-200 text-slate-900"
                 />
               </div>
               <div>
-                <Label className="text-white/70">Arbeit €</Label>
+                <Label className="text-slate-500">Arbeit €</Label>
                 <Input
                   type="number"
                   value={reportData.labor_cost}
                   onChange={(e) => setReportData({ ...reportData, labor_cost: parseFloat(e.target.value) || 0 })}
-                  className="mt-1 bg-white/5 border-white/10 text-white"
+                  className="mt-1 bg-slate-50 border-slate-200 text-slate-900"
                 />
               </div>
             </div>
@@ -604,12 +604,12 @@ export default function HandwerkerTicketDetail() {
               </p>
             </div>
             <div>
-              <Label className="text-white/70">Zusätzliche Notizen</Label>
+              <Label className="text-slate-500">Zusätzliche Notizen</Label>
               <Textarea
                 value={reportData.notes}
                 onChange={(e) => setReportData({ ...reportData, notes: e.target.value })}
                 placeholder="Weitere Hinweise..."
-                className="mt-1 bg-white/5 border-white/10 text-white resize-none"
+                className="mt-1 bg-slate-50 border-slate-200 text-slate-900 resize-none"
                 rows={2}
               />
             </div>
@@ -617,14 +617,14 @@ export default function HandwerkerTicketDetail() {
               <Button
                 variant="outline"
                 onClick={() => setShowReportDialog(false)}
-                className="flex-1 bg-white/5 border-white/10 text-white hover:bg-white/10"
+                className="flex-1 bg-slate-50 border-slate-200 text-slate-700 hover:bg-slate-100"
               >
                 Abbrechen
               </Button>
               <Button
                 onClick={handleSaveReport}
                 disabled={updating}
-                className="flex-1 bg-blue-500 hover:bg-blue-600"
+                className="flex-1 bg-cyan-600 hover:bg-cyan-700"
               >
                 {updating ? <Loader2 className="w-4 h-4 animate-spin" /> : "Speichern"}
               </Button>

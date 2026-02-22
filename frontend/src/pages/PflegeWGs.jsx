@@ -38,7 +38,7 @@ export default function PflegeWGs() {
   );
 
   if (loading) {
-    return <div className="flex items-center justify-center min-h-[60vh]"><div className="animate-spin rounded-full h-10 w-10 border-b-2 border-blue-500"></div></div>;
+    return <div className="flex items-center justify-center min-h-[60vh]"><div className="animate-spin rounded-full h-10 w-10 border-b-2 border-cyan-500"></div></div>;
   }
 
   return (
@@ -46,14 +46,14 @@ export default function PflegeWGs() {
       {/* Header */}
       <div className="flex flex-col gap-3">
         <div>
-          <h1 className="text-xl md:text-3xl font-bold text-gray-900">Pflege-WGs</h1>
-          <p className="text-gray-500 mt-0.5 text-xs md:text-sm">Klientenmanagement für ambulant betreute WGs</p>
+          <h1 className="text-xl md:text-3xl font-bold text-slate-900">Pflege-WGs</h1>
+          <p className="text-slate-500 mt-0.5 text-xs md:text-sm">Klientenmanagement für ambulant betreute WGs</p>
         </div>
         <div className="flex gap-2 overflow-x-auto pb-1 -mx-1 px-1">
-          <Button onClick={() => navigate('/pflege-wgs/pipeline')} size="sm" className="bg-blue-500 hover:bg-blue-600 text-white rounded-xl text-xs flex-shrink-0" data-testid="pipeline-btn">
+          <Button onClick={() => navigate('/pflege-wgs/pipeline')} size="sm" className="bg-cyan-600 hover:bg-cyan-700 text-white rounded-xl text-xs flex-shrink-0" data-testid="pipeline-btn">
             <Users className="w-3.5 h-3.5 mr-1" /> Pipeline
           </Button>
-          <Button onClick={() => navigate('/pflege-wgs/besichtigungen')} size="sm" variant="outline" className="border-gray-200 text-gray-700 hover:bg-gray-50 rounded-xl text-xs flex-shrink-0" data-testid="besichtigungen-btn">
+          <Button onClick={() => navigate('/pflege-wgs/besichtigungen')} size="sm" variant="outline" className="border-slate-200 text-slate-700 hover:bg-slate-50 rounded-xl text-xs flex-shrink-0" data-testid="besichtigungen-btn">
             <Calendar className="w-3.5 h-3.5 mr-1" /> Besichtigungen
           </Button>
           <Button onClick={() => navigate('/pflege-wgs/klienten/neu')} size="sm" className="bg-emerald-500 hover:bg-emerald-600 text-white rounded-xl text-xs flex-shrink-0" data-testid="new-klient-btn">
@@ -77,8 +77,8 @@ export default function PflegeWGs() {
                   <s.icon className={`w-4 h-4 md:w-5 md:h-5 text-${s.color}-500`} />
                 </div>
                 <div className="min-w-0">
-                  <p className="text-xl md:text-2xl font-bold text-gray-900">{s.value}</p>
-                  <p className="text-xs text-gray-500">{s.label}</p>
+                  <p className="text-xl md:text-2xl font-bold text-slate-900">{s.value}</p>
+                  <p className="text-xs text-slate-500">{s.label}</p>
                 </div>
               </div>
             </div>
@@ -99,8 +99,8 @@ export default function PflegeWGs() {
                 item.prioritaet === 'hoch' ? 'text-red-500' : item.prioritaet === 'mittel' ? 'text-orange-500' : 'text-yellow-500'
               }`} />
               <div>
-                <p className="text-sm font-medium text-gray-900">{item.text}</p>
-                <p className="text-xs text-gray-500">{item.details}</p>
+                <p className="text-sm font-medium text-slate-900">{item.text}</p>
+                <p className="text-xs text-slate-500">{item.details}</p>
               </div>
             </div>
           ))}
@@ -109,9 +109,9 @@ export default function PflegeWGs() {
 
       {/* Search */}
       <div className="relative">
-        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
         <Input placeholder="WG suchen..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)}
-          className="pl-10 bg-white border-gray-200 text-gray-900 placeholder:text-gray-400 rounded-xl w-full" data-testid="search-input" />
+          className="pl-10 bg-white border-slate-200 text-slate-900 placeholder:text-slate-400 rounded-xl w-full" data-testid="search-input" />
       </div>
 
       {/* WG Cards */}
@@ -122,10 +122,10 @@ export default function PflegeWGs() {
             data-testid={`wg-card-${wg.id}`}>
             <div className="flex items-start justify-between mb-2">
               <div className="min-w-0 flex-1">
-                <h3 className="text-base md:text-lg font-semibold text-gray-900 group-hover:text-blue-600 transition-colors truncate">{wg.kurzname}</h3>
-                <p className="text-gray-500 text-xs md:text-sm truncate">{wg.property_address}</p>
+                <h3 className="text-base md:text-lg font-semibold text-slate-900 group-hover:text-cyan-600 transition-colors truncate">{wg.kurzname}</h3>
+                <p className="text-slate-500 text-xs md:text-sm truncate">{wg.property_address}</p>
               </div>
-              {wg.grundriss_url && <Badge className="bg-blue-50 text-blue-600 border-0 text-xs">Grundriss</Badge>}
+              {wg.grundriss_url && <Badge className="bg-cyan-50 text-cyan-600 border-0 text-xs">Grundriss</Badge>}
             </div>
             <div className="flex items-center gap-4 mb-3">
               <div className="relative w-14 h-14">
@@ -135,23 +135,23 @@ export default function PflegeWGs() {
                     strokeDasharray={`${(wg.belegte_zimmer / wg.kapazitaet) * 151} 151`} />
                 </svg>
                 <div className="absolute inset-0 flex items-center justify-center">
-                  <span className="text-gray-900 font-bold text-xs">{wg.belegte_zimmer}/{wg.kapazitaet}</span>
+                  <span className="text-slate-900 font-bold text-xs">{wg.belegte_zimmer}/{wg.kapazitaet}</span>
                 </div>
               </div>
               <div className="flex-1 space-y-1">
                 <div className="flex items-center gap-2 text-sm">
                   <span className="w-2.5 h-2.5 rounded-full bg-emerald-400"></span>
-                  <span className="text-gray-600">{wg.freie_zimmer} frei</span>
+                  <span className="text-slate-600">{wg.freie_zimmer} frei</span>
                 </div>
                 <div className="flex items-center gap-2 text-sm">
                   <span className="w-2.5 h-2.5 rounded-full bg-blue-400"></span>
-                  <span className="text-gray-600">{wg.belegte_zimmer} belegt</span>
+                  <span className="text-slate-600">{wg.belegte_zimmer} belegt</span>
                 </div>
               </div>
             </div>
-            <p className="text-gray-500 text-sm line-clamp-2 mb-3">{wg.beschreibung}</p>
+            <p className="text-slate-500 text-sm line-clamp-2 mb-3">{wg.beschreibung}</p>
             <div className="pt-3 border-t border-gray-100 flex justify-end">
-              <span className="text-blue-500 text-sm font-medium">Details ansehen →</span>
+              <span className="text-cyan-500 text-sm font-medium">Details ansehen →</span>
             </div>
           </div>
         ))}
@@ -160,22 +160,22 @@ export default function PflegeWGs() {
       {/* Kosten */}
       {gesamtKosten && (
         <div className="bg-white rounded-2xl shadow-sm p-6" data-testid="gesamt-kosten">
-          <h2 className="text-base font-semibold text-gray-900 flex items-center gap-2 mb-4">
-            <Euro className="w-5 h-5 text-gray-400" /> Finanzübersicht
+          <h2 className="text-base font-semibold text-slate-900 flex items-center gap-2 mb-4">
+            <Euro className="w-5 h-5 text-slate-400" /> Finanzübersicht
           </h2>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-4">
-            <div className="p-3 bg-gray-50 rounded-xl"><p className="text-xs text-gray-500">Auslastung</p><p className="text-xl font-bold text-gray-900">{gesamtKosten.gesamt_auslastung}%</p></div>
-            <div className="p-3 bg-gray-50 rounded-xl"><p className="text-xs text-gray-500">Monatlich</p><p className="text-xl font-bold text-emerald-600">{gesamtKosten.gesamt_monatlich.toLocaleString('de-DE')} &euro;</p></div>
-            <div className="p-3 bg-gray-50 rounded-xl"><p className="text-xs text-gray-500">Jährlich</p><p className="text-xl font-bold text-gray-900">{gesamtKosten.gesamt_jaehrlich.toLocaleString('de-DE')} &euro;</p></div>
+            <div className="p-3 bg-slate-50 rounded-xl"><p className="text-xs text-slate-500">Auslastung</p><p className="text-xl font-bold text-slate-900">{gesamtKosten.gesamt_auslastung}%</p></div>
+            <div className="p-3 bg-slate-50 rounded-xl"><p className="text-xs text-slate-500">Monatlich</p><p className="text-xl font-bold text-emerald-600">{gesamtKosten.gesamt_monatlich.toLocaleString('de-DE')} &euro;</p></div>
+            <div className="p-3 bg-slate-50 rounded-xl"><p className="text-xs text-slate-500">Jährlich</p><p className="text-xl font-bold text-slate-900">{gesamtKosten.gesamt_jaehrlich.toLocaleString('de-DE')} &euro;</p></div>
             <div className="p-3 bg-red-50 rounded-xl"><p className="text-xs text-red-500">Entgangen</p><p className="text-xl font-bold text-red-500">{gesamtKosten.gesamt_entgangen.toLocaleString('de-DE')} &euro;</p></div>
           </div>
           <div className="space-y-2">
             {gesamtKosten.wgs.map(wg => (
               <div key={wg.wg_id} onClick={() => navigate(`/pflege-wgs/${wg.wg_id}`)}
-                className="flex items-center gap-3 p-3 bg-gray-50 rounded-xl hover:bg-gray-100 transition-colors cursor-pointer">
-                <span className="text-sm font-medium text-gray-900 w-36">{wg.wg_name}</span>
-                <div className="flex-1"><div className="w-full bg-gray-200 rounded-full h-1.5"><div className="h-1.5 rounded-full bg-blue-500" style={{width: `${wg.auslastung}%`}}></div></div></div>
-                <span className="text-xs text-gray-500 w-12 text-right">{wg.auslastung}%</span>
+                className="flex items-center gap-3 p-3 bg-slate-50 rounded-xl hover:bg-slate-100 transition-colors cursor-pointer">
+                <span className="text-sm font-medium text-slate-900 w-36">{wg.wg_name}</span>
+                <div className="flex-1"><div className="w-full bg-gray-200 rounded-full h-1.5"><div className="h-1.5 rounded-full bg-cyan-600" style={{width: `${wg.auslastung}%`}}></div></div></div>
+                <span className="text-xs text-slate-500 w-12 text-right">{wg.auslastung}%</span>
                 <span className="text-sm font-medium text-emerald-600 w-24 text-right">{wg.monatlich.toLocaleString('de-DE')} &euro;</span>
               </div>
             ))}
@@ -186,21 +186,21 @@ export default function PflegeWGs() {
       {/* Pipeline Preview */}
       {dashboard?.pipeline && (
         <div className="bg-white rounded-2xl shadow-sm p-6">
-          <h2 className="text-base font-semibold text-gray-900 flex items-center gap-2 mb-4">
-            <Users className="w-5 h-5 text-gray-400" /> Anfragen-Pipeline
+          <h2 className="text-base font-semibold text-slate-900 flex items-center gap-2 mb-4">
+            <Users className="w-5 h-5 text-slate-400" /> Anfragen-Pipeline
           </h2>
           <div className="flex gap-3 overflow-x-auto pb-2">
             {dashboard.pipeline.map(stage => (
-              <div key={stage.status} className="min-w-[140px] p-4 bg-gray-50 rounded-xl">
+              <div key={stage.status} className="min-w-[140px] p-4 bg-slate-50 rounded-xl">
                 <div className="flex items-center justify-between mb-1.5">
-                  <span className="text-gray-600 text-xs font-medium">{stage.label}</span>
+                  <span className="text-slate-600 text-xs font-medium">{stage.label}</span>
                   {stage.dringend > 0 && <Badge className="bg-red-50 text-red-500 border-0 text-[10px]">{stage.dringend}</Badge>}
                 </div>
-                <p className="text-2xl font-bold text-gray-900">{stage.anzahl}</p>
+                <p className="text-2xl font-bold text-slate-900">{stage.anzahl}</p>
               </div>
             ))}
           </div>
-          <Button onClick={() => navigate('/pflege-wgs/pipeline')} variant="ghost" className="mt-2 text-blue-500 hover:text-blue-600 text-sm p-0">
+          <Button onClick={() => navigate('/pflege-wgs/pipeline')} variant="ghost" className="mt-2 text-cyan-500 hover:text-cyan-600 text-sm p-0">
             Zur vollständigen Pipeline →
           </Button>
         </div>

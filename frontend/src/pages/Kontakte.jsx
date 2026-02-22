@@ -60,7 +60,7 @@ const roleIcons = {
   Behörde: Building,
 };
 const roleColors = {
-  Mieter: "bg-blue-50 text-blue-500 border-blue-500/30",
+  Mieter: "bg-cyan-50 text-cyan-500 border-blue-500/30",
   Eigentümer: "bg-emerald-50 text-emerald-500 border-emerald-500/30",
   Handwerker: "bg-amber-50 text-amber-500 border-amber-500/30",
   Versorger: "bg-purple-50 text-purple-500 border-purple-500/30",
@@ -188,7 +188,7 @@ export default function Kontakte() {
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[60vh]" data-testid="kontakte-loading">
-        <Loader2 className="w-8 h-8 text-blue-500 animate-spin" />
+        <Loader2 className="w-8 h-8 text-cyan-500 animate-spin" />
       </div>
     );
   }
@@ -198,8 +198,8 @@ export default function Kontakte() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900 font-['Manrope']">Kontakte</h1>
-          <p className="text-gray-400 mt-1">{contacts.length} Kontakte verwalten</p>
+          <h1 className="text-3xl font-bold text-slate-900 font-manrope">Kontakte</h1>
+          <p className="text-slate-400 mt-1">{contacts.length} Kontakte verwalten</p>
         </div>
         
         <Dialog open={isDialogOpen} onOpenChange={(open) => { setIsDialogOpen(open); if (!open) resetForm(); }}>
@@ -209,117 +209,117 @@ export default function Kontakte() {
               Neuer Kontakt
             </Button>
           </DialogTrigger>
-          <DialogContent className="bg-[#0A0A0A] border-gray-200 text-gray-900 max-w-lg max-h-[90vh] overflow-y-auto">
+          <DialogContent className="bg-white border-slate-200 text-slate-900 max-w-lg max-h-[90vh] overflow-y-auto">
             <DialogHeader>
-              <DialogTitle className="text-xl font-['Manrope']">
+              <DialogTitle className="text-xl font-manrope">
                 {editingContact ? "Kontakt bearbeiten" : "Neuer Kontakt"}
               </DialogTitle>
-              <DialogDescription className="text-gray-400">
+              <DialogDescription className="text-slate-400">
                 {editingContact ? "Aktualisieren Sie die Kontaktdaten." : "Fügen Sie einen neuen Kontakt hinzu."}
               </DialogDescription>
             </DialogHeader>
             <form onSubmit={handleSubmit} className="space-y-4 mt-4">
               <div>
-                <Label className="text-white/70">Name *</Label>
+                <Label className="text-slate-500">Name *</Label>
                 <Input
                   value={formData.name}
                   onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                   placeholder="Vollständiger Name"
-                  className="mt-1 bg-white border-gray-200 text-gray-900"
+                  className="mt-1 bg-white border-slate-200 text-slate-900"
                   data-testid="contact-name-input"
                 />
               </div>
               <div>
-                <Label className="text-white/70">Rolle</Label>
+                <Label className="text-slate-500">Rolle</Label>
                 <Select value={formData.role} onValueChange={(v) => setFormData({ ...formData, role: v })}>
-                  <SelectTrigger className="mt-1 bg-white border-gray-200 text-gray-900" data-testid="contact-role-select">
+                  <SelectTrigger className="mt-1 bg-white border-slate-200 text-slate-900" data-testid="contact-role-select">
                     <SelectValue />
                   </SelectTrigger>
-                  <SelectContent className="bg-[#1A1A1A] border-gray-200">
+                  <SelectContent className="bg-white border-slate-200">
                     {roleOptions.map((role) => (
-                      <SelectItem key={role} value={role} className="text-gray-900 hover:bg-gray-50">{role}</SelectItem>
+                      <SelectItem key={role} value={role} className="text-slate-900 hover:bg-slate-50">{role}</SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <Label className="text-white/70">E-Mail</Label>
+                  <Label className="text-slate-500">E-Mail</Label>
                   <Input
                     type="email"
                     value={formData.email}
                     onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                     placeholder="email@beispiel.de"
-                    className="mt-1 bg-white border-gray-200 text-gray-900"
+                    className="mt-1 bg-white border-slate-200 text-slate-900"
                     data-testid="contact-email-input"
                   />
                 </div>
                 <div>
-                  <Label className="text-white/70">Telefon</Label>
+                  <Label className="text-slate-500">Telefon</Label>
                   <Input
                     value={formData.phone}
                     onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                     placeholder="+49 30 12345678"
-                    className="mt-1 bg-white border-gray-200 text-gray-900"
+                    className="mt-1 bg-white border-slate-200 text-slate-900"
                     data-testid="contact-phone-input"
                   />
                 </div>
               </div>
               <div>
-                <Label className="text-white/70">Firma / Organisation</Label>
+                <Label className="text-slate-500">Firma / Organisation</Label>
                 <Input
                   value={formData.company}
                   onChange={(e) => setFormData({ ...formData, company: e.target.value })}
                   placeholder="Firmenname"
-                  className="mt-1 bg-white border-gray-200 text-gray-900"
+                  className="mt-1 bg-white border-slate-200 text-slate-900"
                 />
               </div>
               {formData.role === "Handwerker" && (
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <Label className="text-white/70">Fachgebiet</Label>
+                    <Label className="text-slate-500">Fachgebiet</Label>
                     <Input
                       value={formData.specialty}
                       onChange={(e) => setFormData({ ...formData, specialty: e.target.value })}
                       placeholder="z.B. Elektrik"
-                      className="mt-1 bg-white border-gray-200 text-gray-900"
+                      className="mt-1 bg-white border-slate-200 text-slate-900"
                     />
                   </div>
                   <div>
-                    <Label className="text-white/70">Bewertung (1-5)</Label>
+                    <Label className="text-slate-500">Bewertung (1-5)</Label>
                     <Input
                       type="number"
                       min="1"
                       max="5"
                       value={formData.rating}
                       onChange={(e) => setFormData({ ...formData, rating: parseInt(e.target.value) || 0 })}
-                      className="mt-1 bg-white border-gray-200 text-gray-900"
+                      className="mt-1 bg-white border-slate-200 text-slate-900"
                     />
                   </div>
                 </div>
               )}
               <div>
-                <Label className="text-white/70">Adresse</Label>
+                <Label className="text-slate-500">Adresse</Label>
                 <Textarea
                   value={formData.address}
                   onChange={(e) => setFormData({ ...formData, address: e.target.value })}
                   placeholder="Straße, PLZ, Stadt"
-                  className="mt-1 bg-white border-gray-200 text-gray-900 resize-none"
+                  className="mt-1 bg-white border-slate-200 text-slate-900 resize-none"
                   rows={2}
                 />
               </div>
               <div>
-                <Label className="text-white/70">Notizen</Label>
+                <Label className="text-slate-500">Notizen</Label>
                 <Textarea
                   value={formData.notes}
                   onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
                   placeholder="Zusätzliche Informationen..."
-                  className="mt-1 bg-white border-gray-200 text-gray-900 resize-none"
+                  className="mt-1 bg-white border-slate-200 text-slate-900 resize-none"
                   rows={2}
                 />
               </div>
               <div className="flex justify-end gap-3 pt-4">
-                <Button type="button" variant="outline" onClick={() => { setIsDialogOpen(false); resetForm(); }} className="bg-white border-gray-200 text-gray-900 hover:bg-gray-50">
+                <Button type="button" variant="outline" onClick={() => { setIsDialogOpen(false); resetForm(); }} className="bg-white border-slate-200 text-slate-900 hover:bg-slate-50">
                   Abbrechen
                 </Button>
                 <Button type="submit" disabled={submitting} className="btn-primary" data-testid="submit-contact-btn">
@@ -335,29 +335,29 @@ export default function Kontakte() {
       <div className="bg-white rounded-2xl shadow-sm p-4" data-testid="kontakte-filters">
         <div className="flex flex-col md:flex-row gap-4">
           <div className="relative flex-1">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
             <Input
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               placeholder="Suchen nach Name, E-Mail oder Firma..."
-              className="pl-10 bg-white border-gray-200 text-gray-900 placeholder:text-gray-300"
+              className="pl-10 bg-white border-slate-200 text-slate-900 placeholder:text-slate-300"
               data-testid="search-contacts-input"
             />
           </div>
           <Select value={roleFilter} onValueChange={setRoleFilter}>
-            <SelectTrigger className="w-[180px] bg-white border-gray-200 text-gray-900" data-testid="filter-role">
-              <Users className="w-4 h-4 mr-2 text-gray-400" />
+            <SelectTrigger className="w-[180px] bg-white border-slate-200 text-slate-900" data-testid="filter-role">
+              <Users className="w-4 h-4 mr-2 text-slate-400" />
               <SelectValue placeholder="Alle Rollen" />
             </SelectTrigger>
-            <SelectContent className="bg-[#1A1A1A] border-gray-200">
-              <SelectItem value="all" className="text-gray-900 hover:bg-gray-50">Alle Rollen</SelectItem>
+            <SelectContent className="bg-white border-slate-200">
+              <SelectItem value="all" className="text-slate-900 hover:bg-slate-50">Alle Rollen</SelectItem>
               {roleOptions.map((role) => (
-                <SelectItem key={role} value={role} className="text-gray-900 hover:bg-gray-50">{role}</SelectItem>
+                <SelectItem key={role} value={role} className="text-slate-900 hover:bg-slate-50">{role}</SelectItem>
               ))}
             </SelectContent>
           </Select>
           {(roleFilter || searchTerm) && (
-            <Button variant="ghost" onClick={() => { setRoleFilter(""); setSearchTerm(""); }} className="text-gray-500 hover:text-gray-900">
+            <Button variant="ghost" onClick={() => { setRoleFilter(""); setSearchTerm(""); }} className="text-slate-500 hover:text-slate-900">
               <X className="w-4 h-4 mr-1" /> Filter zurücksetzen
             </Button>
           )}
@@ -368,8 +368,8 @@ export default function Kontakte() {
       {filteredContacts.length === 0 ? (
         <div className="bg-white rounded-2xl shadow-sm p-12 text-center" data-testid="no-contacts">
           <Users className="w-12 h-12 text-white/20 mx-auto mb-4" />
-          <h3 className="text-lg font-medium text-gray-900 mb-2">Keine Kontakte gefunden</h3>
-          <p className="text-gray-400 mb-4">Fügen Sie Ihren ersten Kontakt hinzu</p>
+          <h3 className="text-lg font-medium text-slate-900 mb-2">Keine Kontakte gefunden</h3>
+          <p className="text-slate-400 mb-4">Fügen Sie Ihren ersten Kontakt hinzu</p>
           <Button onClick={() => setIsDialogOpen(true)} className="btn-primary">
             <Plus className="w-4 h-4 mr-2" /> Kontakt hinzufügen
           </Button>
@@ -389,26 +389,26 @@ export default function Kontakte() {
                   <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${roleColors[role].split(" ")[0]}`}>
                     <RoleIcon className={`w-4 h-4 ${roleColors[role].split(" ")[1]}`} />
                   </div>
-                  <h2 className="text-lg font-semibold text-gray-900 font-['Manrope']">{role}</h2>
-                  <span className="text-sm text-gray-400">({roleContacts.length})</span>
+                  <h2 className="text-lg font-semibold text-slate-900 font-manrope">{role}</h2>
+                  <span className="text-sm text-slate-400">({roleContacts.length})</span>
                 </div>
                 
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                   {roleContacts.map((contact, idx) => (
                     <div
                       key={contact.id}
-                      className="bg-white rounded-2xl shadow-sm p-5 hover:bg-gray-50 transition-all opacity-0 animate-fade-in"
+                      className="bg-white rounded-2xl shadow-sm p-5 hover:bg-slate-50 transition-all opacity-0 animate-fade-in"
                       style={{ animationDelay: `${idx * 0.05}s` }}
                       data-testid={`contact-card-${contact.id}`}
                     >
                       <div className="flex items-start justify-between mb-3">
                         <div className="flex items-center gap-3">
-                          <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-emerald-500 flex items-center justify-center text-gray-900 font-semibold">
+                          <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-emerald-500 flex items-center justify-center text-slate-900 font-semibold">
                             {contact.name?.charAt(0).toUpperCase()}
                           </div>
                           <div>
-                            <h3 className="text-gray-900 font-medium">{contact.name}</h3>
-                            {contact.company && <p className="text-gray-400 text-sm">{contact.company}</p>}
+                            <h3 className="text-slate-900 font-medium">{contact.name}</h3>
+                            {contact.company && <p className="text-slate-400 text-sm">{contact.company}</p>}
                           </div>
                         </div>
                         <span className={`px-2 py-1 rounded-full text-xs border ${roleColors[contact.role]}`}>
@@ -418,19 +418,19 @@ export default function Kontakte() {
                       
                       <div className="space-y-2 text-sm">
                         {contact.email && (
-                          <div className="flex items-center gap-2 text-gray-500">
+                          <div className="flex items-center gap-2 text-slate-500">
                             <Mail className="w-4 h-4" />
                             <span className="truncate">{contact.email}</span>
                           </div>
                         )}
                         {contact.phone && (
-                          <div className="flex items-center gap-2 text-gray-500">
+                          <div className="flex items-center gap-2 text-slate-500">
                             <Phone className="w-4 h-4" />
                             <span>{contact.phone}</span>
                           </div>
                         )}
                         {contact.address && (
-                          <div className="flex items-center gap-2 text-gray-500">
+                          <div className="flex items-center gap-2 text-slate-500">
                             <MapPin className="w-4 h-4" />
                             <span className="truncate">{contact.address}</span>
                           </div>
@@ -440,13 +440,13 @@ export default function Kontakte() {
                             {[...Array(5)].map((_, i) => (
                               <Star key={i} className={`w-4 h-4 ${i < contact.rating ? "text-amber-500 fill-amber-400" : "text-white/20"}`} />
                             ))}
-                            {contact.specialty && <span className="ml-2 text-gray-400">• {contact.specialty}</span>}
+                            {contact.specialty && <span className="ml-2 text-slate-400">• {contact.specialty}</span>}
                           </div>
                         )}
                       </div>
                       
-                      <div className="flex gap-2 mt-4 pt-3 border-t border-gray-200">
-                        <Button size="sm" variant="ghost" onClick={() => handleEdit(contact)} className="flex-1 text-gray-500 hover:text-gray-900 hover:bg-gray-50">
+                      <div className="flex gap-2 mt-4 pt-3 border-t border-slate-200">
+                        <Button size="sm" variant="ghost" onClick={() => handleEdit(contact)} className="flex-1 text-slate-500 hover:text-slate-900 hover:bg-slate-50">
                           <Edit2 className="w-4 h-4 mr-1" /> Bearbeiten
                         </Button>
                         <AlertDialog>
@@ -455,16 +455,16 @@ export default function Kontakte() {
                               <Trash2 className="w-4 h-4" />
                             </Button>
                           </AlertDialogTrigger>
-                          <AlertDialogContent className="bg-[#0A0A0A] border-gray-200">
+                          <AlertDialogContent className="bg-white border-slate-200">
                             <AlertDialogHeader>
-                              <AlertDialogTitle className="text-gray-900">Kontakt löschen?</AlertDialogTitle>
-                              <AlertDialogDescription className="text-gray-500">
+                              <AlertDialogTitle className="text-slate-900">Kontakt löschen?</AlertDialogTitle>
+                              <AlertDialogDescription className="text-slate-500">
                                 Möchten Sie "{contact.name}" wirklich löschen?
                               </AlertDialogDescription>
                             </AlertDialogHeader>
                             <AlertDialogFooter>
-                              <AlertDialogCancel className="bg-white border-gray-200 text-gray-900 hover:bg-gray-50">Abbrechen</AlertDialogCancel>
-                              <AlertDialogAction onClick={() => handleDelete(contact.id)} className="bg-red-500 hover:bg-red-600 text-gray-900">Löschen</AlertDialogAction>
+                              <AlertDialogCancel className="bg-white border-slate-200 text-slate-900 hover:bg-slate-50">Abbrechen</AlertDialogCancel>
+                              <AlertDialogAction onClick={() => handleDelete(contact.id)} className="bg-red-500 hover:bg-red-600 text-slate-900">Löschen</AlertDialogAction>
                             </AlertDialogFooter>
                           </AlertDialogContent>
                         </AlertDialog>

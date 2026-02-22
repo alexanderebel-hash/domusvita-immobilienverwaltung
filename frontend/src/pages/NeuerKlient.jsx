@@ -109,63 +109,63 @@ export default function NeuerKlient() {
         <Button 
           variant="ghost" 
           onClick={() => navigate(-1)}
-          className="text-gray-500 hover:text-gray-900"
+          className="text-slate-500 hover:text-slate-900"
         >
           <ArrowLeft className="w-4 h-4 mr-2" />
           Zurück
         </Button>
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Neue Anfrage erfassen</h1>
-          <p className="text-gray-500">Interessent für Pflege-Wohngemeinschaft</p>
+          <h1 className="text-2xl font-bold text-slate-900">Neue Anfrage erfassen</h1>
+          <p className="text-slate-500">Interessent für Pflege-Wohngemeinschaft</p>
         </div>
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-6">
         {/* Bewohner-Daten */}
-        <Card className="bg-white border-gray-200">
+        <Card className="bg-white border-slate-200">
           <CardHeader>
-            <CardTitle className="text-gray-900 flex items-center gap-2">
+            <CardTitle className="text-slate-900 flex items-center gap-2">
               <User className="w-5 h-5" />
               Daten der/des Bewohnerin/Bewohners
             </CardTitle>
           </CardHeader>
           <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <Label className="text-gray-700">Vorname *</Label>
+              <Label className="text-slate-700">Vorname *</Label>
               <Input
                 value={formData.vorname}
                 onChange={(e) => handleChange('vorname', e.target.value)}
-                className="bg-white border-gray-200 text-gray-900"
+                className="bg-white border-slate-200 text-slate-900"
                 placeholder="Vorname"
                 required
               />
             </div>
             <div>
-              <Label className="text-gray-700">Nachname *</Label>
+              <Label className="text-slate-700">Nachname *</Label>
               <Input
                 value={formData.nachname}
                 onChange={(e) => handleChange('nachname', e.target.value)}
-                className="bg-white border-gray-200 text-gray-900"
+                className="bg-white border-slate-200 text-slate-900"
                 placeholder="Nachname"
                 required
               />
             </div>
             <div>
-              <Label className="text-gray-700">Geburtsdatum</Label>
+              <Label className="text-slate-700">Geburtsdatum</Label>
               <Input
                 type="date"
                 value={formData.geburtsdatum}
                 onChange={(e) => handleChange('geburtsdatum', e.target.value)}
-                className="bg-white border-gray-200 text-gray-900"
+                className="bg-white border-slate-200 text-slate-900"
               />
             </div>
             <div>
-              <Label className="text-gray-700">Geschlecht</Label>
+              <Label className="text-slate-700">Geschlecht</Label>
               <Select value={formData.geschlecht} onValueChange={(v) => handleChange('geschlecht', v)}>
-                <SelectTrigger className="bg-white border-gray-200 text-gray-900">
+                <SelectTrigger className="bg-white border-slate-200 text-slate-900">
                   <SelectValue placeholder="Auswählen..." />
                 </SelectTrigger>
-                <SelectContent className="bg-white border-gray-200">
+                <SelectContent className="bg-white border-slate-200">
                   <SelectItem value="weiblich">Weiblich</SelectItem>
                   <SelectItem value="männlich">Männlich</SelectItem>
                   <SelectItem value="divers">Divers</SelectItem>
@@ -173,12 +173,12 @@ export default function NeuerKlient() {
               </Select>
             </div>
             <div>
-              <Label className="text-gray-700">Pflegegrad</Label>
+              <Label className="text-slate-700">Pflegegrad</Label>
               <Select value={formData.pflegegrad} onValueChange={(v) => handleChange('pflegegrad', v)}>
-                <SelectTrigger className="bg-white border-gray-200 text-gray-900">
+                <SelectTrigger className="bg-white border-slate-200 text-slate-900">
                   <SelectValue />
                 </SelectTrigger>
-                <SelectContent className="bg-white border-gray-200">
+                <SelectContent className="bg-white border-slate-200">
                   <SelectItem value="keiner">Kein Pflegegrad</SelectItem>
                   <SelectItem value="beantragt">Beantragt</SelectItem>
                   <SelectItem value="1">Pflegegrad 1</SelectItem>
@@ -190,11 +190,11 @@ export default function NeuerKlient() {
               </Select>
             </div>
             <div className="md:col-span-2">
-              <Label className="text-gray-700">Besonderheiten / Pflegebedarf</Label>
+              <Label className="text-slate-700">Besonderheiten / Pflegebedarf</Label>
               <Textarea
                 value={formData.besonderheiten}
                 onChange={(e) => handleChange('besonderheiten', e.target.value)}
-                className="bg-white border-gray-200 text-gray-900"
+                className="bg-white border-slate-200 text-slate-900"
                 placeholder="z.B. Demenz, Rollator, Sturzgefahr, Diabetes..."
                 rows={3}
               />
@@ -203,30 +203,30 @@ export default function NeuerKlient() {
         </Card>
 
         {/* Kontaktperson */}
-        <Card className="bg-white border-gray-200">
+        <Card className="bg-white border-slate-200">
           <CardHeader>
-            <CardTitle className="text-gray-900 flex items-center gap-2">
+            <CardTitle className="text-slate-900 flex items-center gap-2">
               <Phone className="w-5 h-5" />
               Kontaktperson (Angehörige)
             </CardTitle>
           </CardHeader>
           <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <Label className="text-gray-700">Name</Label>
+              <Label className="text-slate-700">Name</Label>
               <Input
                 value={formData.kontakt_name}
                 onChange={(e) => handleChange('kontakt_name', e.target.value)}
-                className="bg-white border-gray-200 text-gray-900"
+                className="bg-white border-slate-200 text-slate-900"
                 placeholder="Name der Kontaktperson"
               />
             </div>
             <div>
-              <Label className="text-gray-700">Beziehung</Label>
+              <Label className="text-slate-700">Beziehung</Label>
               <Select value={formData.kontakt_beziehung} onValueChange={(v) => handleChange('kontakt_beziehung', v)}>
-                <SelectTrigger className="bg-white border-gray-200 text-gray-900">
+                <SelectTrigger className="bg-white border-slate-200 text-slate-900">
                   <SelectValue placeholder="Auswählen..." />
                 </SelectTrigger>
-                <SelectContent className="bg-white border-gray-200">
+                <SelectContent className="bg-white border-slate-200">
                   <SelectItem value="Sohn">Sohn</SelectItem>
                   <SelectItem value="Tochter">Tochter</SelectItem>
                   <SelectItem value="Ehepartner">Ehepartner/in</SelectItem>
@@ -238,22 +238,22 @@ export default function NeuerKlient() {
               </Select>
             </div>
             <div>
-              <Label className="text-gray-700">Telefon</Label>
+              <Label className="text-slate-700">Telefon</Label>
               <Input
                 type="tel"
                 value={formData.kontakt_telefon}
                 onChange={(e) => handleChange('kontakt_telefon', e.target.value)}
-                className="bg-white border-gray-200 text-gray-900"
+                className="bg-white border-slate-200 text-slate-900"
                 placeholder="+49 30 123456"
               />
             </div>
             <div>
-              <Label className="text-gray-700">E-Mail</Label>
+              <Label className="text-slate-700">E-Mail</Label>
               <Input
                 type="email"
                 value={formData.kontakt_email}
                 onChange={(e) => handleChange('kontakt_email', e.target.value)}
-                className="bg-white border-gray-200 text-gray-900"
+                className="bg-white border-slate-200 text-slate-900"
                 placeholder="email@beispiel.de"
               />
             </div>
@@ -261,21 +261,21 @@ export default function NeuerKlient() {
         </Card>
 
         {/* Anfrage-Details */}
-        <Card className="bg-white border-gray-200">
+        <Card className="bg-white border-slate-200">
           <CardHeader>
-            <CardTitle className="text-gray-900 flex items-center gap-2">
+            <CardTitle className="text-slate-900 flex items-center gap-2">
               <Calendar className="w-5 h-5" />
               Anfrage-Details
             </CardTitle>
           </CardHeader>
           <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <Label className="text-gray-700">Anfrage-Quelle</Label>
+              <Label className="text-slate-700">Anfrage-Quelle</Label>
               <Select value={formData.anfrage_quelle} onValueChange={(v) => handleChange('anfrage_quelle', v)}>
-                <SelectTrigger className="bg-white border-gray-200 text-gray-900">
+                <SelectTrigger className="bg-white border-slate-200 text-slate-900">
                   <SelectValue />
                 </SelectTrigger>
-                <SelectContent className="bg-white border-gray-200">
+                <SelectContent className="bg-white border-slate-200">
                   <SelectItem value="email">E-Mail</SelectItem>
                   <SelectItem value="telefon">Telefon</SelectItem>
                   <SelectItem value="vermittlung">Vermittlung (Klinik etc.)</SelectItem>
@@ -286,12 +286,12 @@ export default function NeuerKlient() {
               </Select>
             </div>
             <div>
-              <Label className="text-gray-700">Dringlichkeit</Label>
+              <Label className="text-slate-700">Dringlichkeit</Label>
               <Select value={formData.dringlichkeit} onValueChange={(v) => handleChange('dringlichkeit', v)}>
-                <SelectTrigger className="bg-white border-gray-200 text-gray-900">
+                <SelectTrigger className="bg-white border-slate-200 text-slate-900">
                   <SelectValue />
                 </SelectTrigger>
-                <SelectContent className="bg-white border-gray-200">
+                <SelectContent className="bg-white border-slate-200">
                   <SelectItem value="sofort">🔴 Sofort</SelectItem>
                   <SelectItem value="4_wochen">🟠 Innerhalb 4 Wochen</SelectItem>
                   <SelectItem value="3_monate">🟡 Innerhalb 3 Monate</SelectItem>
@@ -301,11 +301,11 @@ export default function NeuerKlient() {
             </div>
             {formData.anfrage_quelle === 'vermittlung' && (
               <div className="md:col-span-2">
-                <Label className="text-gray-700">Vermittler / Klinik</Label>
+                <Label className="text-slate-700">Vermittler / Klinik</Label>
                 <Input
                   value={formData.vermittler}
                   onChange={(e) => handleChange('vermittler', e.target.value)}
-                  className="bg-white border-gray-200 text-gray-900"
+                  className="bg-white border-slate-200 text-slate-900"
                   placeholder="z.B. Vivantes Klinikum Neukölln"
                 />
               </div>
@@ -314,9 +314,9 @@ export default function NeuerKlient() {
         </Card>
 
         {/* Bevorzugte WGs */}
-        <Card className="bg-white border-gray-200">
+        <Card className="bg-white border-slate-200">
           <CardHeader>
-            <CardTitle className="text-gray-900 flex items-center gap-2">
+            <CardTitle className="text-slate-900 flex items-center gap-2">
               <Building2 className="w-5 h-5" />
               Bevorzugte Wohngemeinschaften
             </CardTitle>
@@ -328,8 +328,8 @@ export default function NeuerKlient() {
                   key={wg.id}
                   className={`flex items-center gap-3 p-3 rounded-lg border cursor-pointer transition-all ${
                     formData.bevorzugte_wgs.includes(wg.id)
-                      ? 'bg-blue-50 border-blue-500'
-                      : 'bg-white border-gray-200 hover:border-white/30'
+                      ? 'bg-cyan-50 border-cyan-500'
+                      : 'bg-white border-slate-200 hover:border-white/30'
                   }`}
                 >
                   <Checkbox
@@ -337,8 +337,8 @@ export default function NeuerKlient() {
                     onCheckedChange={() => handleWGToggle(wg.id)}
                   />
                   <div>
-                    <p className="text-gray-900 font-medium">{wg.kurzname}</p>
-                    <p className="text-gray-500 text-sm">
+                    <p className="text-slate-900 font-medium">{wg.kurzname}</p>
+                    <p className="text-slate-500 text-sm">
                       {wg.freie_zimmer} von {wg.gesamt_zimmer} frei
                     </p>
                   </div>
@@ -354,7 +354,7 @@ export default function NeuerKlient() {
             type="button" 
             variant="ghost" 
             onClick={() => navigate(-1)}
-            className="text-gray-500"
+            className="text-slate-500"
           >
             Abbrechen
           </Button>
