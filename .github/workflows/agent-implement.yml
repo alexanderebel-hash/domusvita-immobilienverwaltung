@@ -1,0 +1,164 @@
+name: Agent Implementation
+
+on:
+  issues:
+    types: [labeled]
+
+concurrency:
+  group: agent-implement-${{ github.event.issue.number }}
+  cancel-in-progress: false
+
+jobs:
+  implement:
+    if: github.event.label.name == 'agent-team'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: write
+      pull-requests: write
+      issues: write
+
+    steps:
+      - name: Comment on issue - Starting
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh issue comment ${{ github.event.issue.number }} \
+            --repo ${{ github.repository }} \
+            --body "**Agent-Implementierung gestartet**
+
+          Claude Code arbeitet an diesem Issue. Eine PR wird erstellt sobald die Implementierung abgeschlossen ist.
+
+          _Workflow Run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}_"
+
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Create implementation branch
+        run: |
+          BRANCH="agent/issue-${{ github.event.issue.number }}"
+          git checkout -b "$BRANCH"
+          echo "BRANCH=$BRANCH" >> $GITHUB_ENV
+
+      - name: Write agent prompt
+        env:
+          ISSUE_TITLE: ${{ github.event.issue.title }}
+          ISSUE_BODY: ${{ github.event.issue.body }}
+          ISSUE_NUMBER: ${{ github.event.issue.number }}
+        run: |
+          python3 -c "
+          import os
+          title = os.environ['ISSUE_TITLE']
+          body = os.environ['ISSUE_BODY']
+          number = os.environ['ISSUE_NUMBER']
+          prompt = f'''Du bist der DomusVita Implementierungs-Agent. Implementiere das folgende GitHub Issue.
+
+          Lies zuerst CLAUDE.md und die Memory Bank in docs/memory-bank/ um den Projektkontext zu verstehen.
+
+          ## Issue #{number}: {title}
+
+          {body}
+
+          ## Regeln
+          - Lies zuerst CLAUDE.md und relevante Dateien in docs/memory-bank/
+          - Lies dann die betroffenen Code-Dateien bevor du Aenderungen machst
+          - Implementiere die Aenderungen inkrementell
+          - Halte dich an bestehende Code-Konventionen (siehe docs/memory-bank/conventions.md)
+          - Backend: Python/FastAPI + asyncpg, Frontend: React + shadcn/ui + Tailwind CSS
+          - Erstelle KEINE neuen Dateien wenn nicht unbedingt noetig
+          - Schreibe KEINE Secrets oder API-Keys in den Code
+          - Sprache: Code auf Englisch, UI-Labels auf Deutsch
+          - Nutze den Axios-Client aus src/lib/api.js, NICHT raw fetch()
+          - Auth: Depends(get_current_user) auf alle geschuetzten Endpoints
+          '''
+          with open('/tmp/agent-prompt.txt', 'w') as f:
+              f.write(prompt)
+          "
+
+      - name: Run Claude Code
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: |
+          PROMPT=$(cat /tmp/agent-prompt.txt)
+          npx -y @anthropic-ai/claude-code -p "$PROMPT" \
+            --dangerously-skip-permissions
+
+      - name: Check for changes
+        id: changes
+        run: |
+          if git diff --quiet && [ -z "$(git ls-files --others --exclude-standard)" ]; then
+            echo "has_changes=false" >> $GITHUB_OUTPUT
+          else
+            echo "has_changes=true" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Commit, push and create PR
+        if: steps.changes.outputs.has_changes == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          git config user.name "DomusVita Agent"
+          git config user.email "agent@domusvita-portal.de"
+          git add -A
+          git commit -m "$(cat <<'EOF'
+          feat: Implement #${{ github.event.issue.number }} - ${{ github.event.issue.title }}
+
+          Co-Authored-By: Claude Code <noreply@anthropic.com>
+          EOF
+          )"
+          git push -u origin "$BRANCH"
+
+          DIFF_STAT=$(git diff --stat HEAD~1)
+          PR_URL=$(gh pr create \
+            --title "Agent: ${{ github.event.issue.title }}" \
+            --body "$(cat <<'EOF'
+          ## Automatische Implementierung
+
+          Implementiert #${{ github.event.issue.number }}
+
+          ### Geaenderte Dateien
+          ```
+          $DIFF_STAT
+          ```
+
+          ---
+          *Automatisch erstellt vom DomusVita Agenten-Team via Claude Code*
+          EOF
+          )")
+
+          gh issue comment ${{ github.event.issue.number }} \
+            --repo ${{ github.repository }} \
+            --body "**PR erstellt:** $PR_URL
+
+          Bitte reviewen und mergen."
+
+      - name: Comment on issue - No changes
+        if: steps.changes.outputs.has_changes == 'false'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh issue comment ${{ github.event.issue.number }} \
+            --repo ${{ github.repository }} \
+            --body "**Keine Code-Aenderungen**
+
+          Claude Code hat keine Aenderungen fuer dieses Issue vorgenommen. Moeglicherweise erfordert das Issue manuelle Implementierung."
+
+      - name: Comment on issue - Failed
+        if: failure()
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh issue comment ${{ github.event.issue.number }} \
+            --repo ${{ github.repository }} \
+            --body "**Implementierung fehlgeschlagen**
+
+          Der Agent konnte dieses Issue nicht implementieren. Bitte manuell pruefen.
+
+          _Workflow Run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}_"
