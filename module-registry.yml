@@ -1,0 +1,62 @@
+module:
+  name: DomusVita Immobilienverwaltung
+  slug: immobilienverwaltung
+  tier: 1
+  description: Immobilien, Kontakte, Vertraege, Instandhaltung, Klientenmanagement, Handwerker-Portal
+
+hosting:
+  type: container-apps
+  resource_group: domusvita-rg
+  backend:
+    app_name: immo-backend-prod
+    url: https://immo-api.domusvita-portal.de
+  frontend:
+    app_name: immo-frontend-prod
+    url: https://immobilien.domusvita-portal.de
+
+registry:
+  acr_name: domusvitacontrollingprodacr
+  backend_image: immo-backend
+  frontend_image: immo-frontend
+
+database:
+  type: postgresql
+  version: "16"
+  host: domusvita-portal.postgres.database.azure.com
+  database_name: domusvita
+  orm: asyncpg-jsonb
+  schema: jsonb-collections
+
+tech_stack:
+  backend:
+    framework: fastapi
+    language: python
+    version: "3.11"
+    test_path: backend/tests/
+    dockerfile: backend/Dockerfile
+  frontend:
+    framework: react
+    language: javascript
+    version: "19"
+    build_tool: craco
+    package_manager: npm
+    npm_flags: "--legacy-peer-deps"
+    dockerfile: frontend/Dockerfile
+
+dependencies:
+  shared_db: true
+  depends_on:
+    - slug: portal-landing
+      type: shared-database
+  depended_by: []
+
+auth:
+  provider: entra-id
+  app_registration: DomusVita Immobilienverwaltung
+  client_id: f0a5d295-e398-4eac-b180-3382e58b3a43
+
+ci:
+  required_checks:
+    - backend-lint
+    - backend-test
+    - frontend-build

@@ -1,120 +1,85 @@
-name: Deploy DomusVita to Azure
+name: Deploy to Azure
 
 on:
   push:
     branches: [main]
-  pull_request:
-    branches: [main]
-  workflow_dispatch:
 
 env:
-  AZURE_RESOURCE_GROUP: domusvita-rg
-  BACKEND_IMAGE: domusvita-api
-  FRONTEND_IMAGE: domusvita-web
-  ACR_NAME: domusvitaacr
+  RESOURCE_GROUP: domusvita-controlling-prod
+  ACR_NAME: domusvitacontrollingprodacr
+  BACKEND_APP: immo-backend-prod
+  FRONTEND_APP: immo-frontend-prod
+  BACKEND_URL: https://immo-api.domusvita-portal.de
 
 jobs:
-  test:
+  deploy-backend:
+    name: Deploy Backend
     runs-on: ubuntu-latest
+    environment: production
     steps:
       - uses: actions/checkout@v4
-      
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.11'
-          
-      - name: Install backend dependencies
-        working-directory: ./backend
-        run: |
-          pip install -r requirements.txt
-          pip install pytest pytest-asyncio httpx
-          
-      - name: Run backend tests
-        working-directory: ./backend
-        run: pytest tests/ -v || true
-        
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '18'
-          
-      - name: Install frontend dependencies
-        working-directory: ./frontend
-        run: yarn install
-        
-      - name: Run frontend tests
-        working-directory: ./frontend
-        run: yarn test --passWithNoTests || true
-        
-      - name: Build frontend
-        working-directory: ./frontend
-        run: yarn build
-        env:
-          REACT_APP_BACKEND_URL: ${{ secrets.BACKEND_URL }}
 
-  build-and-push:
-    needs: test
-    runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/main'
-    
-    steps:
-      - uses: actions/checkout@v4
-      
-      - name: Login to Azure
-        uses: azure/login@v1
+      - name: Azure Login
+        uses: azure/login@v2
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
-          
-      - name: Login to Azure Container Registry
-        uses: azure/docker-login@v1
-        with:
-          login-server: ${{ env.ACR_NAME }}.azurecr.io
-          username: ${{ secrets.ACR_USERNAME }}
-          password: ${{ secrets.ACR_PASSWORD }}
-          
-      - name: Build and push backend image
-        working-directory: ./backend
-        run: |
-          docker build -t ${{ env.ACR_NAME }}.azurecr.io/${{ env.BACKEND_IMAGE }}:${{ github.sha }} .
-          docker build -t ${{ env.ACR_NAME }}.azurecr.io/${{ env.BACKEND_IMAGE }}:latest .
-          docker push ${{ env.ACR_NAME }}.azurecr.io/${{ env.BACKEND_IMAGE }}:${{ github.sha }}
-          docker push ${{ env.ACR_NAME }}.azurecr.io/${{ env.BACKEND_IMAGE }}:latest
-          
-      - name: Build and push frontend image
-        working-directory: ./frontend
-        run: |
-          docker build -t ${{ env.ACR_NAME }}.azurecr.io/${{ env.FRONTEND_IMAGE }}:${{ github.sha }} \
-            --build-arg REACT_APP_BACKEND_URL=${{ secrets.BACKEND_URL }} .
-          docker build -t ${{ env.ACR_NAME }}.azurecr.io/${{ env.FRONTEND_IMAGE }}:latest \
-            --build-arg REACT_APP_BACKEND_URL=${{ secrets.BACKEND_URL }} .
-          docker push ${{ env.ACR_NAME }}.azurecr.io/${{ env.FRONTEND_IMAGE }}:${{ github.sha }}
-          docker push ${{ env.ACR_NAME }}.azurecr.io/${{ env.FRONTEND_IMAGE }}:latest
 
-  deploy:
-    needs: build-and-push
+      - name: ACR Login
+        run: az acr login --name ${{ env.ACR_NAME }}
+
+      - name: Build & Push Backend
+        run: |
+          cd backend
+          docker build \
+            -t ${{ env.ACR_NAME }}.azurecr.io/immo-backend:${{ github.sha }} \
+            -t ${{ env.ACR_NAME }}.azurecr.io/immo-backend:latest .
+          docker push ${{ env.ACR_NAME }}.azurecr.io/immo-backend:${{ github.sha }}
+          docker push ${{ env.ACR_NAME }}.azurecr.io/immo-backend:latest
+
+      - name: Deploy Backend
+        run: |
+          az containerapp update \
+            --name ${{ env.BACKEND_APP }} \
+            --resource-group ${{ env.RESOURCE_GROUP }} \
+            --image ${{ env.ACR_NAME }}.azurecr.io/immo-backend:${{ github.sha }}
+
+  deploy-frontend:
+    name: Deploy Frontend
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/main'
-    
+    needs: deploy-backend
+    environment: production
     steps:
       - uses: actions/checkout@v4
-      
-      - name: Login to Azure
-        uses: azure/login@v1
+
+      - name: Azure Login
+        uses: azure/login@v2
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
-          
-      - name: Deploy Backend to Azure App Service
-        uses: azure/webapps-deploy@v2
-        with:
-          app-name: domusvita-api
-          images: ${{ env.ACR_NAME }}.azurecr.io/${{ env.BACKEND_IMAGE }}:${{ github.sha }}
-          
-      - name: Deploy Frontend to Azure App Service
-        uses: azure/webapps-deploy@v2
-        with:
-          app-name: domusvita-web
-          images: ${{ env.ACR_NAME }}.azurecr.io/${{ env.FRONTEND_IMAGE }}:${{ github.sha }}
-          
-      - name: Azure logout
-        run: az logout
+
+      - name: ACR Login
+        run: az acr login --name ${{ env.ACR_NAME }}
+
+      - name: Build & Push Frontend
+        run: |
+          DEPLOY_TS=$(TZ='Europe/Berlin' date '+%d.%m.%Y %H:%M')
+          cd frontend
+          docker build \
+            --build-arg REACT_APP_BACKEND_URL=${{ env.BACKEND_URL }} \
+            --build-arg REACT_APP_BUILD_TIMESTAMP="$DEPLOY_TS" \
+            -t ${{ env.ACR_NAME }}.azurecr.io/immo-frontend:${{ github.sha }} \
+            -t ${{ env.ACR_NAME }}.azurecr.io/immo-frontend:latest .
+          docker push ${{ env.ACR_NAME }}.azurecr.io/immo-frontend:${{ github.sha }}
+          docker push ${{ env.ACR_NAME }}.azurecr.io/immo-frontend:latest
+
+      - name: Deploy Frontend
+        run: |
+          az containerapp update \
+            --name ${{ env.FRONTEND_APP }} \
+            --resource-group ${{ env.RESOURCE_GROUP }} \
+            --image ${{ env.ACR_NAME }}.azurecr.io/immo-frontend:${{ github.sha }}
+
+      - name: Verify
+        run: |
+          sleep 15
+          echo "Frontend: https://immobilien.domusvita-portal.de"
+          echo "Backend:  https://immo-api.domusvita-portal.de"
