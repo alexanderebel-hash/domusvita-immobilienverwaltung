@@ -4,7 +4,7 @@ from dotenv import load_dotenv
 from contextlib import asynccontextmanager
 from database import PgDatabase
 from datetime import datetime, timezone, timedelta
-from typing import List, Optional
+from typing import List, Optional, Dict
 from pathlib import Path
 import os
 import logging
@@ -12,6 +12,8 @@ import uuid
 import base64
 import io
 from PIL import Image
+
+from auth import get_current_user, get_current_user_optional, DEV_MODE, AZURE_AD_TENANT_ID, AZURE_AD_CLIENT_ID
 
 from schemas import (
     PropertyCreate, PropertyUpdate, PropertyResponse,
@@ -88,13 +90,40 @@ async def health_check():
     """Health check endpoint"""
     try:
         await db.command("ping")
-        return {"status": "healthy", "database": "connected"}
+        return {"status": "healthy", "database": "connected", "dev_mode": DEV_MODE}
     except Exception as e:
         logger.error(f"Health check failed: {e}")
         return {"status": "unhealthy", "database": str(e)}
 
+# ==================== AUTH ROUTES ====================
+
+@api_router.get("/auth/config")
+async def get_auth_config():
+    """Public endpoint - returns MSAL configuration for frontend"""
+    return {
+        "clientId": AZURE_AD_CLIENT_ID or "",
+        "tenantId": AZURE_AD_TENANT_ID or "",
+        "authority": f"https://login.microsoftonline.com/{AZURE_AD_TENANT_ID}" if AZURE_AD_TENANT_ID else "",
+        "devMode": DEV_MODE,
+    }
+
+@api_router.get("/auth/dev-login")
+async def dev_login():
+    """Dev mode only - returns mock user"""
+    if not DEV_MODE:
+        raise HTTPException(status_code=403, detail="Dev mode is disabled")
+    from auth import MOCK_USER
+    return MOCK_USER
+
+@api_router.post("/auth/profile")
+async def get_user_profile(current_user: Dict = Depends(get_current_user)):
+    """Protected endpoint - returns user claims from token"""
+    return current_user
+
+# ==================== DASHBOARD ROUTES ====================
+
 @api_router.get("/dashboard/stats", response_model=DashboardStats)
-async def get_dashboard_stats():
+async def get_dashboard_stats(current_user: Dict = Depends(get_current_user)):
     """Get comprehensive dashboard statistics"""
     total_properties = await db.properties.count_documents({})
     total_units = await db.units.count_documents({})
@@ -122,7 +151,7 @@ async def get_dashboard_stats():
     )
 
 @api_router.get("/dashboard/insights", response_model=List[AIInsight])
-async def get_ai_insights():
+async def get_ai_insights(current_user: Dict = Depends(get_current_user)):
     """Generate AI insights for dashboard"""
     insights = []
     
@@ -159,7 +188,7 @@ async def get_ai_insights():
 # ==================== PROPERTIES ROUTES ====================
 
 @api_router.post("/properties", response_model=PropertyResponse)
-async def create_property(data: PropertyCreate):
+async def create_property(data: PropertyCreate, current_user: Dict = Depends(get_current_user)):
     doc = {
         "id": generate_id(),
         **data.model_dump(),
@@ -172,7 +201,7 @@ async def create_property(data: PropertyCreate):
     return doc
 
 @api_router.get("/properties", response_model=List[PropertyResponse])
-async def get_properties(property_type: Optional[str] = None, city: Optional[str] = None, status: Optional[str] = None):
+async def get_properties(property_type: Optional[str] = None, city: Optional[str] = None, status: Optional[str] = None, current_user: Dict = Depends(get_current_user)):
     query = {}
     if property_type: query["property_type"] = property_type
     if city: query["city"] = city
@@ -185,20 +214,20 @@ async def get_properties(property_type: Optional[str] = None, city: Optional[str
     return docs
 
 @api_router.get("/properties/cities/list")
-async def get_cities():
+async def get_cities(current_user: Dict = Depends(get_current_user)):
     cities = await db.properties.distinct("city")
     return {"cities": cities}
 
 @api_router.get("/properties/types/list")
-async def get_property_types():
+async def get_property_types(current_user: Dict = Depends(get_current_user)):
     return {"types": ["Wohnung", "Gewerbe", "Pflegewohngemeinschaft", "Mehrfamilienhaus"]}
 
 @api_router.get("/properties/statuses/list")
-async def get_statuses():
+async def get_statuses(current_user: Dict = Depends(get_current_user)):
     return {"statuses": ["Eigentum", "Gemietet", "Untervermietet"]}
 
 @api_router.get("/properties/{property_id}", response_model=PropertyResponse)
-async def get_property(property_id: str):
+async def get_property(property_id: str, current_user: Dict = Depends(get_current_user)):
     doc = await db.properties.find_one({"id": property_id}, {"_id": 0})
     if not doc: raise HTTPException(404, "Immobilie nicht gefunden")
     doc["created_at"] = from_iso(doc.get("created_at"))
@@ -206,7 +235,7 @@ async def get_property(property_id: str):
     return doc
 
 @api_router.put("/properties/{property_id}", response_model=PropertyResponse)
-async def update_property(property_id: str, data: PropertyUpdate):
+async def update_property(property_id: str, data: PropertyUpdate, current_user: Dict = Depends(get_current_user)):
     update_data = {k: v for k, v in data.model_dump().items() if v is not None}
     update_data["updated_at"] = to_iso(now())
     result = await db.properties.update_one({"id": property_id}, {"$set": update_data})
@@ -214,7 +243,7 @@ async def update_property(property_id: str, data: PropertyUpdate):
     return await get_property(property_id)
 
 @api_router.delete("/properties/{property_id}")
-async def delete_property(property_id: str):
+async def delete_property(property_id: str, current_user: Dict = Depends(get_current_user)):
     result = await db.properties.delete_one({"id": property_id})
     if result.deleted_count == 0: raise HTTPException(404, "Immobilie nicht gefunden")
     await db.units.delete_many({"property_id": property_id})
@@ -226,7 +255,7 @@ async def delete_property(property_id: str):
 # ==================== UNITS ROUTES ====================
 
 @api_router.post("/units", response_model=UnitResponse)
-async def create_unit(data: UnitCreate):
+async def create_unit(data: UnitCreate, current_user: Dict = Depends(get_current_user)):
     prop = await db.properties.find_one({"id": data.property_id})
     if not prop: raise HTTPException(404, "Immobilie nicht gefunden")
     
@@ -241,7 +270,7 @@ async def create_unit(data: UnitCreate):
     return doc
 
 @api_router.get("/units", response_model=List[UnitResponse])
-async def get_units(property_id: Optional[str] = None):
+async def get_units(property_id: Optional[str] = None, current_user: Dict = Depends(get_current_user)):
     query = {"property_id": property_id} if property_id else {}
     docs = await db.units.find(query, {"_id": 0}).to_list(1000)
     for d in docs:
@@ -252,14 +281,14 @@ async def get_units(property_id: Optional[str] = None):
     return docs
 
 @api_router.put("/units/{unit_id}")
-async def update_unit(unit_id: str, is_vacant: bool, tenant_id: Optional[str] = None):
+async def update_unit(unit_id: str, is_vacant: bool, tenant_id: Optional[str] = None, current_user: Dict = Depends(get_current_user)):
     update = {"is_vacant": is_vacant, "tenant_id": tenant_id}
     result = await db.units.update_one({"id": unit_id}, {"$set": update})
     if result.matched_count == 0: raise HTTPException(404, "Einheit nicht gefunden")
     return {"message": "Einheit aktualisiert"}
 
 @api_router.delete("/units/{unit_id}")
-async def delete_unit(unit_id: str):
+async def delete_unit(unit_id: str, current_user: Dict = Depends(get_current_user)):
     unit = await db.units.find_one({"id": unit_id})
     if not unit: raise HTTPException(404, "Einheit nicht gefunden")
     await db.units.delete_one({"id": unit_id})
@@ -269,7 +298,7 @@ async def delete_unit(unit_id: str):
 # ==================== CONTACTS ROUTES ====================
 
 @api_router.post("/contacts", response_model=ContactResponse)
-async def create_contact(data: ContactCreate):
+async def create_contact(data: ContactCreate, current_user: Dict = Depends(get_current_user)):
     doc = {"id": generate_id(), **data.model_dump(), "created_at": to_iso(now()), "updated_at": to_iso(now())}
     await db.contacts.insert_one(doc)
     doc["created_at"] = from_iso(doc["created_at"])
@@ -277,7 +306,7 @@ async def create_contact(data: ContactCreate):
     return doc
 
 @api_router.get("/contacts", response_model=List[ContactResponse])
-async def get_contacts(role: Optional[str] = None, search: Optional[str] = None):
+async def get_contacts(role: Optional[str] = None, search: Optional[str] = None, current_user: Dict = Depends(get_current_user)):
     query = {}
     if role: query["role"] = role
     if search:
@@ -294,11 +323,11 @@ async def get_contacts(role: Optional[str] = None, search: Optional[str] = None)
     return docs
 
 @api_router.get("/contacts/roles/list")
-async def get_contact_roles():
+async def get_contact_roles(current_user: Dict = Depends(get_current_user)):
     return {"roles": ["Mieter", "Eigentümer", "Handwerker", "Versorger", "Behörde"]}
 
 @api_router.get("/contacts/{contact_id}", response_model=ContactResponse)
-async def get_contact(contact_id: str):
+async def get_contact(contact_id: str, current_user: Dict = Depends(get_current_user)):
     doc = await db.contacts.find_one({"id": contact_id}, {"_id": 0})
     if not doc: raise HTTPException(404, "Kontakt nicht gefunden")
     doc["created_at"] = from_iso(doc.get("created_at"))
@@ -306,7 +335,7 @@ async def get_contact(contact_id: str):
     return doc
 
 @api_router.put("/contacts/{contact_id}", response_model=ContactResponse)
-async def update_contact(contact_id: str, data: ContactUpdate):
+async def update_contact(contact_id: str, data: ContactUpdate, current_user: Dict = Depends(get_current_user)):
     update_data = {k: v for k, v in data.model_dump().items() if v is not None}
     update_data["updated_at"] = to_iso(now())
     result = await db.contacts.update_one({"id": contact_id}, {"$set": update_data})
@@ -314,7 +343,7 @@ async def update_contact(contact_id: str, data: ContactUpdate):
     return await get_contact(contact_id)
 
 @api_router.delete("/contacts/{contact_id}")
-async def delete_contact(contact_id: str):
+async def delete_contact(contact_id: str, current_user: Dict = Depends(get_current_user)):
     result = await db.contacts.delete_one({"id": contact_id})
     if result.deleted_count == 0: raise HTTPException(404, "Kontakt nicht gefunden")
     return {"message": "Kontakt gelöscht", "id": contact_id}
@@ -322,7 +351,7 @@ async def delete_contact(contact_id: str):
 # ==================== CONTRACTS ROUTES ====================
 
 @api_router.post("/contracts", response_model=ContractResponse)
-async def create_contract(data: ContractCreate):
+async def create_contract(data: ContractCreate, current_user: Dict = Depends(get_current_user)):
     prop = await db.properties.find_one({"id": data.property_id})
     if not prop: raise HTTPException(404, "Immobilie nicht gefunden")
     
@@ -356,7 +385,8 @@ async def get_contracts(
     property_id: Optional[str] = None,
     contract_type: Optional[str] = None,
     is_active: Optional[bool] = None,
-    expiring_soon: Optional[bool] = None
+    expiring_soon: Optional[bool] = None,
+    current_user: Dict = Depends(get_current_user)
 ):
     query = {}
     if property_id: query["property_id"] = property_id
@@ -390,11 +420,11 @@ async def get_contracts(
     return results
 
 @api_router.get("/contracts/types/list")
-async def get_contract_types():
+async def get_contract_types(current_user: Dict = Depends(get_current_user)):
     return {"types": ["Mietvertrag", "Hauptmietvertrag", "Versicherung", "Wartungsvertrag"]}
 
 @api_router.get("/contracts/{contract_id}", response_model=ContractResponse)
-async def get_contract(contract_id: str):
+async def get_contract(contract_id: str, current_user: Dict = Depends(get_current_user)):
     doc = await db.contracts.find_one({"id": contract_id}, {"_id": 0})
     if not doc: raise HTTPException(404, "Vertrag nicht gefunden")
     
@@ -416,7 +446,7 @@ async def get_contract(contract_id: str):
     return doc
 
 @api_router.put("/contracts/{contract_id}", response_model=ContractResponse)
-async def update_contract(contract_id: str, data: ContractUpdate):
+async def update_contract(contract_id: str, data: ContractUpdate, current_user: Dict = Depends(get_current_user)):
     update_data = {k: v for k, v in data.model_dump().items() if v is not None}
     if "start_date" in update_data: update_data["start_date"] = to_iso(update_data["start_date"])
     if "end_date" in update_data: update_data["end_date"] = to_iso(update_data["end_date"])
@@ -427,7 +457,7 @@ async def update_contract(contract_id: str, data: ContractUpdate):
     return await get_contract(contract_id)
 
 @api_router.delete("/contracts/{contract_id}")
-async def delete_contract(contract_id: str):
+async def delete_contract(contract_id: str, current_user: Dict = Depends(get_current_user)):
     result = await db.contracts.delete_one({"id": contract_id})
     if result.deleted_count == 0: raise HTTPException(404, "Vertrag nicht gefunden")
     return {"message": "Vertrag gelöscht", "id": contract_id}
@@ -435,7 +465,7 @@ async def delete_contract(contract_id: str):
 # ==================== MAINTENANCE ROUTES ====================
 
 @api_router.post("/maintenance", response_model=MaintenanceTicketResponse)
-async def create_maintenance_ticket(data: MaintenanceTicketCreate):
+async def create_maintenance_ticket(data: MaintenanceTicketCreate, current_user: Dict = Depends(get_current_user)):
     prop = await db.properties.find_one({"id": data.property_id})
     if not prop: raise HTTPException(404, "Immobilie nicht gefunden")
     
@@ -465,7 +495,8 @@ async def get_maintenance_tickets(
     property_id: Optional[str] = None,
     status: Optional[str] = None,
     priority: Optional[str] = None,
-    assigned_to_id: Optional[str] = None
+    assigned_to_id: Optional[str] = None,
+    current_user: Dict = Depends(get_current_user)
 ):
     query = {}
     if property_id: query["property_id"] = property_id
@@ -493,19 +524,19 @@ async def get_maintenance_tickets(
     return results
 
 @api_router.get("/maintenance/categories/list")
-async def get_maintenance_categories():
+async def get_maintenance_categories(current_user: Dict = Depends(get_current_user)):
     return {"categories": ["Heizung", "Sanitär", "Elektrik", "Dach", "Fassade", "Garten", "Reinigung", "Sonstiges"]}
 
 @api_router.get("/maintenance/statuses/list")
-async def get_maintenance_statuses():
+async def get_maintenance_statuses(current_user: Dict = Depends(get_current_user)):
     return {"statuses": ["Offen", "In Bearbeitung", "Erledigt"]}
 
 @api_router.get("/maintenance/priorities/list")
-async def get_maintenance_priorities():
+async def get_maintenance_priorities(current_user: Dict = Depends(get_current_user)):
     return {"priorities": ["Niedrig", "Normal", "Hoch", "Dringend"]}
 
 @api_router.get("/maintenance/{ticket_id}", response_model=MaintenanceTicketResponse)
-async def get_maintenance_ticket(ticket_id: str):
+async def get_maintenance_ticket(ticket_id: str, current_user: Dict = Depends(get_current_user)):
     doc = await db.maintenance_tickets.find_one({"id": ticket_id}, {"_id": 0})
     if not doc: raise HTTPException(404, "Ticket nicht gefunden")
     
@@ -524,7 +555,7 @@ async def get_maintenance_ticket(ticket_id: str):
     return doc
 
 @api_router.put("/maintenance/{ticket_id}", response_model=MaintenanceTicketResponse)
-async def update_maintenance_ticket(ticket_id: str, data: MaintenanceTicketUpdate):
+async def update_maintenance_ticket(ticket_id: str, data: MaintenanceTicketUpdate, current_user: Dict = Depends(get_current_user)):
     update_data = {k: v for k, v in data.model_dump().items() if v is not None}
     if "scheduled_date" in update_data: update_data["scheduled_date"] = to_iso(update_data["scheduled_date"])
     if "completed_date" in update_data: update_data["completed_date"] = to_iso(update_data["completed_date"])
@@ -535,7 +566,7 @@ async def update_maintenance_ticket(ticket_id: str, data: MaintenanceTicketUpdat
     return await get_maintenance_ticket(ticket_id)
 
 @api_router.put("/maintenance/{ticket_id}/status")
-async def update_ticket_status(ticket_id: str, status: str):
+async def update_ticket_status(ticket_id: str, status: str, current_user: Dict = Depends(get_current_user)):
     update = {"status": status, "updated_at": to_iso(now())}
     if status == "Erledigt":
         update["completed_date"] = to_iso(now())
@@ -544,7 +575,7 @@ async def update_ticket_status(ticket_id: str, status: str):
     return {"message": "Status aktualisiert", "status": status}
 
 @api_router.delete("/maintenance/{ticket_id}")
-async def delete_maintenance_ticket(ticket_id: str):
+async def delete_maintenance_ticket(ticket_id: str, current_user: Dict = Depends(get_current_user)):
     result = await db.maintenance_tickets.delete_one({"id": ticket_id})
     if result.deleted_count == 0: raise HTTPException(404, "Ticket nicht gefunden")
     return {"message": "Ticket gelöscht", "id": ticket_id}
@@ -552,7 +583,7 @@ async def delete_maintenance_ticket(ticket_id: str):
 # ==================== DOCUMENTS ROUTES ====================
 
 @api_router.post("/documents", response_model=DocumentResponse)
-async def create_document(data: DocumentCreate):
+async def create_document(data: DocumentCreate, current_user: Dict = Depends(get_current_user)):
     prop = await db.properties.find_one({"id": data.property_id})
     if not prop: raise HTTPException(404, "Immobilie nicht gefunden")
     
@@ -564,7 +595,7 @@ async def create_document(data: DocumentCreate):
     return doc
 
 @api_router.get("/documents", response_model=List[DocumentResponse])
-async def get_documents(property_id: Optional[str] = None, category: Optional[str] = None):
+async def get_documents(property_id: Optional[str] = None, category: Optional[str] = None, current_user: Dict = Depends(get_current_user)):
     query = {}
     if property_id: query["property_id"] = property_id
     if category: query["category"] = category
@@ -579,11 +610,11 @@ async def get_documents(property_id: Optional[str] = None, category: Optional[st
     return results
 
 @api_router.get("/documents/categories/list")
-async def get_document_categories():
+async def get_document_categories(current_user: Dict = Depends(get_current_user)):
     return {"categories": ["Vertrag", "Protokoll", "Rechnung", "Grundriss", "Sonstiges"]}
 
 @api_router.get("/documents/{document_id}", response_model=DocumentResponse)
-async def get_document(document_id: str):
+async def get_document(document_id: str, current_user: Dict = Depends(get_current_user)):
     doc = await db.documents.find_one({"id": document_id}, {"_id": 0})
     if not doc: raise HTTPException(404, "Dokument nicht gefunden")
     doc["created_at"] = from_iso(doc.get("created_at"))
@@ -592,7 +623,7 @@ async def get_document(document_id: str):
     return doc
 
 @api_router.delete("/documents/{document_id}")
-async def delete_document(document_id: str):
+async def delete_document(document_id: str, current_user: Dict = Depends(get_current_user)):
     result = await db.documents.delete_one({"id": document_id})
     if result.deleted_count == 0: raise HTTPException(404, "Dokument nicht gefunden")
     return {"message": "Dokument gelöscht", "id": document_id}
@@ -602,7 +633,8 @@ async def delete_document(document_id: str):
 async def upload_document(
     property_id: str,
     category: str,
-    file: UploadFile = File(...)
+    file: UploadFile = File(...),
+    current_user: Dict = Depends(get_current_user)
 ):
     prop = await db.properties.find_one({"id": property_id})
     if not prop: raise HTTPException(404, "Immobilie nicht gefunden")
@@ -634,7 +666,7 @@ async def upload_document(
 # ==================== AI ASSISTANT ====================
 
 @api_router.post("/ai/query", response_model=AIQueryResponse)
-async def query_ai_assistant(request: AIQueryRequest):
+async def query_ai_assistant(request: AIQueryRequest, current_user: Dict = Depends(get_current_user)):
     """AI Assistant for natural language queries (placeholder - LLM integration pending)"""
     return AIQueryResponse(
         response="Der KI-Assistent wird derzeit überarbeitet. Bitte versuchen Sie es später erneut.",
@@ -1016,7 +1048,9 @@ async def get_handwerker_status_options():
 
 @api_router.post("/seed")
 async def seed_database():
-    """Seed database with comprehensive sample data"""
+    """Seed database with comprehensive sample data (DEV_MODE only)"""
+    if not DEV_MODE:
+        raise HTTPException(status_code=403, detail="Seed only available in DEV_MODE")
     existing = await db.properties.count_documents({})
     if existing > 0:
         return {"message": "Datenbank bereits befüllt", "properties_count": existing}
@@ -1133,7 +1167,9 @@ async def seed_database():
 
 @api_router.post("/seed-database-reset")
 async def seed_database_reset():
-    """Reset and re-seed database with real DomusVita data"""
+    """Reset and re-seed database with real DomusVita data (DEV_MODE only)"""
+    if not DEV_MODE:
+        raise HTTPException(status_code=403, detail="Seed only available in DEV_MODE")
     # Drop all collections
     await db.properties.delete_many({})
     await db.units.delete_many({})
@@ -1249,7 +1285,7 @@ ECHTE_BEWOHNER_DATA = {
 }
 
 @api_router.get("/pflege-wgs")
-async def get_pflege_wgs():
+async def get_pflege_wgs(current_user: Dict = Depends(get_current_user)):
     """Get all Pflege-Wohngemeinschaften with room statistics"""
     wgs = []
     for wg_data in PFLEGE_WGS_DATA:
@@ -1264,7 +1300,7 @@ async def get_pflege_wgs():
     return wgs
 
 @api_router.get("/pflege-wgs/{wg_id}")
-async def get_pflege_wg(wg_id: str):
+async def get_pflege_wg(wg_id: str, current_user: Dict = Depends(get_current_user)):
     """Get single Pflege-WG with rooms"""
     wg_data = next((w for w in PFLEGE_WGS_DATA if w["id"] == wg_id), None)
     if not wg_data:
@@ -1297,7 +1333,7 @@ async def get_pflege_wg(wg_id: str):
     return wg
 
 @api_router.post("/pflege-wgs/{wg_id}/zimmer")
-async def create_zimmer(wg_id: str, zimmer: ZimmerCreate):
+async def create_zimmer(wg_id: str, zimmer: ZimmerCreate, current_user: Dict = Depends(get_current_user)):
     """Create a new room in a Pflege-WG"""
     zimmer_dict = zimmer.model_dump()
     zimmer_dict["id"] = generate_id()
@@ -1309,7 +1345,7 @@ async def create_zimmer(wg_id: str, zimmer: ZimmerCreate):
     return zimmer_dict
 
 @api_router.put("/pflege-wgs/zimmer/{zimmer_id}")
-async def update_zimmer(zimmer_id: str, zimmer: ZimmerUpdate):
+async def update_zimmer(zimmer_id: str, zimmer: ZimmerUpdate, current_user: Dict = Depends(get_current_user)):
     """Update a room"""
     update_data = {k: v for k, v in zimmer.model_dump().items() if v is not None}
     update_data["updated_at"] = to_iso(now())
@@ -1334,7 +1370,7 @@ PIPELINE_LABELS = {
 }
 
 @api_router.get("/klienten/dashboard")
-async def get_klienten_dashboard():
+async def get_klienten_dashboard(current_user: Dict = Depends(get_current_user)):
     """Get Klientenmanagement dashboard statistics"""
     # Count all clients
     alle_klienten = await db.klienten.find({}).to_list(1000)
@@ -1402,7 +1438,7 @@ async def get_klienten_dashboard():
     }
 
 @api_router.get("/klienten")
-async def get_klienten(status: Optional[str] = None, wg_id: Optional[str] = None):
+async def get_klienten(status: Optional[str] = None, wg_id: Optional[str] = None, current_user: Dict = Depends(get_current_user)):
     """Get all clients, optionally filtered by status or WG"""
     query = {}
     if status:
@@ -1440,7 +1476,7 @@ async def get_klienten(status: Optional[str] = None, wg_id: Optional[str] = None
     return klienten
 
 @api_router.get("/klienten/{klient_id}")
-async def get_klient(klient_id: str):
+async def get_klient(klient_id: str, current_user: Dict = Depends(get_current_user)):
     """Get single client with all details"""
     klient = await db.klienten.find_one({"id": klient_id})
     if not klient:
@@ -1482,7 +1518,7 @@ async def get_klient(klient_id: str):
     return klient
 
 @api_router.post("/klienten")
-async def create_klient(klient: KlientCreate):
+async def create_klient(klient: KlientCreate, current_user: Dict = Depends(get_current_user)):
     """Create a new client"""
     klient_dict = klient.model_dump()
     klient_dict["id"] = generate_id()
@@ -1505,7 +1541,7 @@ async def create_klient(klient: KlientCreate):
     return klient_dict
 
 @api_router.put("/klienten/{klient_id}")
-async def update_klient(klient_id: str, klient: KlientUpdate):
+async def update_klient(klient_id: str, klient: KlientUpdate, current_user: Dict = Depends(get_current_user)):
     """Update a client"""
     existing = await db.klienten.find_one({"id": klient_id})
     if not existing:
@@ -1540,7 +1576,7 @@ async def update_klient(klient_id: str, klient: KlientUpdate):
     return updated
 
 @api_router.delete("/klienten/{klient_id}")
-async def delete_klient(klient_id: str):
+async def delete_klient(klient_id: str, current_user: Dict = Depends(get_current_user)):
     """Delete a client"""
     # Free up room if occupied
     klient = await db.klienten.find_one({"id": klient_id})
@@ -1559,7 +1595,7 @@ async def delete_klient(klient_id: str):
 
 # Kommunikation
 @api_router.post("/klienten/{klient_id}/kommunikation")
-async def create_kommunikation(klient_id: str, komm: KommunikationCreate):
+async def create_kommunikation(klient_id: str, komm: KommunikationCreate, current_user: Dict = Depends(get_current_user)):
     """Add communication entry for a client"""
     komm_dict = komm.model_dump()
     komm_dict["id"] = generate_id()
@@ -1590,7 +1626,7 @@ async def create_kommunikation(klient_id: str, komm: KommunikationCreate):
     return komm_dict
 
 @api_router.get("/klienten/{klient_id}/kommunikation")
-async def get_kommunikation(klient_id: str):
+async def get_kommunikation(klient_id: str, current_user: Dict = Depends(get_current_user)):
     """Get all communication for a client"""
     kommunikation = await db.klient_kommunikation.find({"klient_id": klient_id}).sort("erstellt_am", -1).to_list(100)
     for k in kommunikation:
@@ -1601,7 +1637,7 @@ async def get_kommunikation(klient_id: str):
 
 # Klienten Pipeline Drag & Drop
 @api_router.post("/klienten/{klient_id}/status")
-async def update_klient_status(klient_id: str, status: str):
+async def update_klient_status(klient_id: str, status: str, current_user: Dict = Depends(get_current_user)):
     """Quick status update for pipeline drag & drop"""
     existing = await db.klienten.find_one({"id": klient_id})
     if not existing:
@@ -1628,7 +1664,7 @@ async def update_klient_status(klient_id: str, status: str):
 
 # Zimmer Zuordnung
 @api_router.post("/klienten/{klient_id}/zimmer/{zimmer_id}")
-async def assign_klient_to_zimmer(klient_id: str, zimmer_id: str):
+async def assign_klient_to_zimmer(klient_id: str, zimmer_id: str, current_user: Dict = Depends(get_current_user)):
     """Assign a client to a room"""
     klient = await db.klienten.find_one({"id": klient_id})
     if not klient:
@@ -1684,7 +1720,8 @@ async def upload_klient_dokument(
     klient_id: str,
     kategorie: str = "sonstiges",
     beschreibung: Optional[str] = None,
-    file: UploadFile = File(...)
+    file: UploadFile = File(...),
+    current_user: Dict = Depends(get_current_user)
 ):
     """Upload a document for a client (PDF, images, etc.)"""
     klient = await db.klienten.find_one({"id": klient_id})
@@ -1726,7 +1763,7 @@ async def upload_klient_dokument(
     return doc
 
 @api_router.get("/klienten/{klient_id}/dokumente")
-async def get_klient_dokumente(klient_id: str):
+async def get_klient_dokumente(klient_id: str, current_user: Dict = Depends(get_current_user)):
     """Get all documents for a client (without file data)"""
     docs = await db.klient_dokumente.find(
         {"klient_id": klient_id}, 
@@ -1735,7 +1772,7 @@ async def get_klient_dokumente(klient_id: str):
     return docs
 
 @api_router.get("/klienten/{klient_id}/dokumente/{dok_id}/download")
-async def download_klient_dokument(klient_id: str, dok_id: str):
+async def download_klient_dokument(klient_id: str, dok_id: str, current_user: Dict = Depends(get_current_user)):
     """Download a client document"""
     from fastapi.responses import Response
     doc = await db.klient_dokumente.find_one({"id": dok_id, "klient_id": klient_id})
@@ -1750,7 +1787,7 @@ async def download_klient_dokument(klient_id: str, dok_id: str):
     )
 
 @api_router.delete("/klienten/{klient_id}/dokumente/{dok_id}")
-async def delete_klient_dokument(klient_id: str, dok_id: str):
+async def delete_klient_dokument(klient_id: str, dok_id: str, current_user: Dict = Depends(get_current_user)):
     """Delete a client document"""
     result = await db.klient_dokumente.delete_one({"id": dok_id, "klient_id": klient_id})
     if result.deleted_count == 0:
@@ -1760,7 +1797,7 @@ async def delete_klient_dokument(klient_id: str, dok_id: str):
 # ==================== E-MAIL VERSAND ====================
 
 @api_router.post("/klienten/{klient_id}/email-senden")
-async def send_klient_email(klient_id: str, data: dict):
+async def send_klient_email(klient_id: str, data: dict, current_user: Dict = Depends(get_current_user)):
     """Send email to client's contact person with optional document attachments.
     Currently MOCKED - stores as communication entry. Configure SMTP for real sending."""
     klient = await db.klienten.find_one({"id": klient_id})
@@ -1831,7 +1868,7 @@ async def send_klient_email(klient_id: str, data: dict):
 # ==================== KOSTENÜBERSICHT ====================
 
 @api_router.get("/pflege-wgs/{wg_id}/kosten")
-async def get_wg_kosten(wg_id: str):
+async def get_wg_kosten(wg_id: str, current_user: Dict = Depends(get_current_user)):
     """Get cost overview for a WG"""
     wg = next((w for w in PFLEGE_WGS_DATA if w["id"] == wg_id), None)
     if not wg:
@@ -1894,7 +1931,7 @@ async def get_wg_kosten(wg_id: str):
     }
 
 @api_router.put("/pflege-wgs/{wg_id}/kosten")
-async def update_wg_kosten(wg_id: str, data: dict):
+async def update_wg_kosten(wg_id: str, data: dict, current_user: Dict = Depends(get_current_user)):
     """Update cost configuration for a WG"""
     wg = next((w for w in PFLEGE_WGS_DATA if w["id"] == wg_id), None)
     if not wg:
@@ -1910,7 +1947,7 @@ async def update_wg_kosten(wg_id: str, data: dict):
 # ==================== GESAMTKOSTENÜBERSICHT ====================
 
 @api_router.get("/pflege-wgs/kosten/gesamt")
-async def get_gesamt_kosten():
+async def get_gesamt_kosten(current_user: Dict = Depends(get_current_user)):
     """Get total cost overview across all WGs"""
     ergebnisse = []
     gesamt_monatlich = 0
@@ -1975,7 +2012,7 @@ async def get_gesamt_kosten():
 # ==================== WHATSAPP BUSINESS ====================
 
 @api_router.post("/whatsapp/webhook")
-async def whatsapp_webhook(data: dict):
+async def whatsapp_webhook(data: dict, current_user: Dict = Depends(get_current_user)):
     """Receive WhatsApp messages via Twilio webhook.
     Configure Twilio WhatsApp sandbox/API to POST here.
     Requires TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN, TWILIO_WHATSAPP_NUMBER in .env"""
@@ -2029,7 +2066,7 @@ async def whatsapp_webhook(data: dict):
     return {"status": "received"}
 
 @api_router.post("/whatsapp/senden")
-async def send_whatsapp(data: dict):
+async def send_whatsapp(data: dict, current_user: Dict = Depends(get_current_user)):
     """Send WhatsApp message to a client's contact.
     Currently MOCKED - logs as communication entry. Configure Twilio for real sending."""
     klient_id = data.get("klient_id")
@@ -2077,14 +2114,14 @@ async def send_whatsapp(data: dict):
     }
 
 @api_router.get("/whatsapp/nachrichten")
-async def get_whatsapp_nachrichten():
+async def get_whatsapp_nachrichten(current_user: Dict = Depends(get_current_user)):
     """Get all unmatched WhatsApp messages"""
     nachrichten = await db.whatsapp_nachrichten.find({}, {"_id": 0}).sort("erstellt_am", -1).to_list(100)
     return nachrichten
 
 # Besichtigungen Endpoints
 @api_router.get("/besichtigungen")
-async def get_besichtigungen():
+async def get_besichtigungen(current_user: Dict = Depends(get_current_user)):
     """Get all scheduled viewings"""
     besichtigungen = await db.besichtigungen.find({}).sort("termin", 1).to_list(100)
     for b in besichtigungen:
@@ -2094,7 +2131,7 @@ async def get_besichtigungen():
     return besichtigungen
 
 @api_router.post("/besichtigungen")
-async def create_besichtigung(data: dict):
+async def create_besichtigung(data: dict, current_user: Dict = Depends(get_current_user)):
     """Create a new viewing appointment"""
     besichtigung = {
         "id": generate_id(),
@@ -2125,14 +2162,14 @@ async def create_besichtigung(data: dict):
     return besichtigung
 
 @api_router.put("/besichtigungen/{besichtigung_id}")
-async def update_besichtigung(besichtigung_id: str, data: dict):
+async def update_besichtigung(besichtigung_id: str, data: dict, current_user: Dict = Depends(get_current_user)):
     """Update a viewing"""
     update_data = {k: v for k, v in data.items() if v is not None}
     await db.besichtigungen.update_one({"id": besichtigung_id}, {"$set": update_data})
     return {"message": "Besichtigung aktualisiert"}
 
 @api_router.delete("/besichtigungen/{besichtigung_id}")
-async def delete_besichtigung(besichtigung_id: str):
+async def delete_besichtigung(besichtigung_id: str, current_user: Dict = Depends(get_current_user)):
     """Delete a viewing"""
     await db.besichtigungen.delete_one({"id": besichtigung_id})
     return {"message": "Besichtigung gelöscht"}
@@ -2140,7 +2177,9 @@ async def delete_besichtigung(besichtigung_id: str):
 # Seed Klientenmanagement Data
 @api_router.post("/seed-klienten")
 async def seed_klienten_data():
-    """Seed Klientenmanagement with sample data"""
+    """Seed Klientenmanagement with sample data (DEV_MODE only)"""
+    if not DEV_MODE:
+        raise HTTPException(status_code=403, detail="Seed only available in DEV_MODE")
     # Check if already seeded
     existing = await db.wg_zimmer.count_documents({})
     if existing > 0:
@@ -2301,7 +2340,9 @@ async def seed_klienten_data():
 
 @api_router.post("/seed-klienten-reset")
 async def reset_klienten_data():
-    """Reset and re-seed Klientenmanagement data"""
+    """Reset and re-seed Klientenmanagement data (DEV_MODE only)"""
+    if not DEV_MODE:
+        raise HTTPException(status_code=403, detail="Seed only available in DEV_MODE")
     await db.wg_zimmer.delete_many({})
     await db.klienten.delete_many({})
     await db.klient_kommunikation.delete_many({})
@@ -2318,7 +2359,7 @@ app.include_router(api_router)
 app.add_middleware(
     CORSMiddleware,
     allow_credentials=True,
-    allow_origins=os.environ.get('CORS_ORIGINS', '*').split(','),
-    allow_methods=["*"],
-    allow_headers=["*"],
+    allow_origins=os.environ.get('CORS_ORIGINS', 'http://localhost:3001').split(','),
+    allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allow_headers=["Authorization", "Content-Type", "Accept"],
 )

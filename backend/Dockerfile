@@ -14,6 +14,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY database.py .
 COPY schemas.py .
 COPY server.py .
+COPY auth.py .
 
 RUN date -u '+%d.%m.%Y %H:%M' > /app/.build_timestamp
 

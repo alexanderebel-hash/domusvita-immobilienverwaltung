@@ -10,7 +10,9 @@ import {
   X,
   BarChart3,
   ExternalLink,
+  LogOut,
 } from "lucide-react";
+import { useAuth } from "../lib/auth/AuthProvider";
 
 const navItems = [
   { name: "Dashboard", path: "/", icon: LayoutDashboard },
@@ -27,6 +29,7 @@ const pflegeItems = [
 
 export default function Sidebar({ isOpen, onClose }) {
   const location = useLocation();
+  const { user, logout } = useAuth();
 
   return (
     <aside
@@ -138,6 +141,26 @@ export default function Sidebar({ isOpen, onClose }) {
           </a>
         </div>
       </nav>
+
+      {/* User + Logout */}
+      <div className="p-3 border-t border-slate-200">
+        <div className="flex items-center gap-3 px-3.5 py-2.5">
+          <div className="w-8 h-8 rounded-full bg-gradient-to-br from-cyan-500 to-cyan-600 flex items-center justify-center text-white text-xs font-medium flex-shrink-0">
+            {user?.name ? user.name.split(" ").map(n => n[0]).join("").slice(0, 2).toUpperCase() : "?"}
+          </div>
+          <div className="flex-1 min-w-0">
+            <p className="text-sm font-medium text-slate-700 truncate">{user?.name || "Benutzer"}</p>
+            <p className="text-[11px] text-slate-400 truncate">{user?.email || ""}</p>
+          </div>
+          <button
+            onClick={logout}
+            className="p-1.5 text-slate-400 hover:text-red-600 rounded-lg hover:bg-red-50 transition-colors flex-shrink-0"
+            title="Abmelden"
+          >
+            <LogOut className="w-4 h-4" strokeWidth={1.5} />
+          </button>
+        </div>
+      </div>
     </aside>
   );
 }
