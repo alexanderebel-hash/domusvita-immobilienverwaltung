@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
+import axios from 'axios';
 import { ArrowLeft, Phone, Mail, MessageSquare, Calendar, FileText, Clock, ChevronRight, User, Building2, Plus } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
 import { Button } from '../components/ui/button';
@@ -51,20 +52,17 @@ export default function KlientenPipeline() {
   const fetchData = async () => {
     try {
       const [klientenRes, wgsRes] = await Promise.all([
-        fetch(`${API_URL}/api/klienten`),
-        fetch(`${API_URL}/api/pflege-wgs`)
+        axios.get(`${API_URL}/api/klienten`),
+        axios.get(`${API_URL}/api/pflege-wgs`)
       ]);
-      
-      const klientenData = await klientenRes.json();
-      const wgsData = await wgsRes.json();
-      
+
       // Filter out bewohner, ausgezogen, verstorben
-      const pipelineKlienten = klientenData.filter(k => 
+      const pipelineKlienten = klientenRes.data.filter(k =>
         !['bewohner', 'ausgezogen', 'verstorben'].includes(k.status)
       );
-      
+
       setKlienten(pipelineKlienten);
-      setWgs(wgsData);
+      setWgs(wgsRes.data);
     } catch (error) {
       console.error('Error:', error);
     } finally {
@@ -90,9 +88,7 @@ export default function KlientenPipeline() {
     }
 
     try {
-      await fetch(`${API_URL}/api/klienten/${draggedKlient.id}/status?status=${newStatus}`, {
-        method: 'POST'
-      });
+      await axios.post(`${API_URL}/api/klienten/${draggedKlient.id}/status?status=${newStatus}`);
       
       // Update local state
       setKlienten(prev => prev.map(k => 

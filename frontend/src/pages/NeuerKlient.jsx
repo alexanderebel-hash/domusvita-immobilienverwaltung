@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
+import axios from 'axios';
 import { ArrowLeft, User, Phone, Mail, Calendar, Building2, AlertCircle, Save } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
 import { Button } from '../components/ui/button';
@@ -44,8 +45,7 @@ export default function NeuerKlient() {
 
   const fetchWGs = async () => {
     try {
-      const res = await fetch(`${API_URL}/api/pflege-wgs`);
-      const data = await res.json();
+      const { data } = await axios.get(`${API_URL}/api/pflege-wgs`);
       setWgs(data);
     } catch (error) {
       console.error('Error:', error);
@@ -75,22 +75,12 @@ export default function NeuerKlient() {
 
     setLoading(true);
     try {
-      const res = await fetch(`${API_URL}/api/klienten`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData)
-      });
-      
-      if (!res.ok) throw new Error('Fehler beim Speichern');
-      
-      const newKlient = await res.json();
+      const { data: newKlient } = await axios.post(`${API_URL}/api/klienten`, formData);
       toast.success('Klient erfolgreich angelegt');
-      
+
       // If we have a zimmer to assign, do it now
       if (assignZimmer) {
-        await fetch(`${API_URL}/api/klienten/${newKlient.id}/zimmer/${assignZimmer}`, {
-          method: 'POST'
-        });
+        await axios.post(`${API_URL}/api/klienten/${newKlient.id}/zimmer/${assignZimmer}`);
         toast.success('Zimmer zugewiesen');
       }
       

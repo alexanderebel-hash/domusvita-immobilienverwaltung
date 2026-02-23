@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import axios from 'axios';
 import { ArrowLeft, Bed, User, Phone, Calendar, Plus, Euro, TrendingUp } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
 import { Button } from '../components/ui/button';
@@ -43,8 +44,7 @@ export default function PflegeWGDetail() {
 
   const fetchWG = async () => {
     try {
-      const res = await fetch(`${API_URL}/api/pflege-wgs/${wgId}`);
-      const data = await res.json();
+      const { data } = await axios.get(`${API_URL}/api/pflege-wgs/${wgId}`);
       setWg(data);
     } catch (error) {
       console.error('Error fetching WG:', error);
@@ -55,11 +55,8 @@ export default function PflegeWGDetail() {
 
   const fetchKosten = async () => {
     try {
-      const res = await fetch(`${API_URL}/api/pflege-wgs/${wgId}/kosten`);
-      if (res.ok) {
-        const data = await res.json();
-        setKosten(data);
-      }
+      const { data } = await axios.get(`${API_URL}/api/pflege-wgs/${wgId}/kosten`);
+      setKosten(data);
     } catch (e) { /* ignore */ }
   };
 

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 import { Building2, Users, Bed, AlertCircle, Clock, Plus, Search, Calendar, Euro } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
 import { Button } from '../components/ui/button';
@@ -20,14 +21,16 @@ export default function PflegeWGs() {
 
   const fetchData = async () => {
     try {
-      const [wgsRes, dashRes, kostenRes] = await Promise.all([
-        fetch(`${API_URL}/api/pflege-wgs`),
-        fetch(`${API_URL}/api/klienten/dashboard`),
-        fetch(`${API_URL}/api/pflege-wgs/kosten/gesamt`)
+      const [wgsRes, dashRes] = await Promise.all([
+        axios.get(`${API_URL}/api/pflege-wgs`),
+        axios.get(`${API_URL}/api/klienten/dashboard`)
       ]);
-      setWgs(await wgsRes.json());
-      setDashboard(await dashRes.json());
-      if (kostenRes.ok) setGesamtKosten(await kostenRes.json());
+      setWgs(wgsRes.data);
+      setDashboard(dashRes.data);
+      try {
+        const kostenRes = await axios.get(`${API_URL}/api/pflege-wgs/kosten/gesamt`);
+        setGesamtKosten(kostenRes.data);
+      } catch (e) { /* kosten endpoint may not exist yet */ }
     } catch (error) { console.error('Error:', error); }
     finally { setLoading(false); }
   };

@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { 
-  ArrowLeft, User, Phone, Mail, MessageSquare, Calendar, FileText, 
+import axios from 'axios';
+import {
+  ArrowLeft, User, Phone, Mail, MessageSquare, Calendar, FileText,
   Clock, Building2, Plus, Send, History, Home, Upload, Download,
   Trash2, Paperclip, Check, X, Euro
 } from 'lucide-react';
@@ -105,9 +106,7 @@ export default function KlientDetail() {
 
   const fetchKlient = async () => {
     try {
-      const res = await fetch(`${API_URL}/api/klienten/${klientId}`);
-      if (!res.ok) throw new Error('Klient nicht gefunden');
-      const data = await res.json();
+      const { data } = await axios.get(`${API_URL}/api/klienten/${klientId}`);
       setKlient(data);
       setNewStatus(data.status);
     } catch (error) {
@@ -120,19 +119,14 @@ export default function KlientDetail() {
 
   const fetchDokumente = async () => {
     try {
-      const res = await fetch(`${API_URL}/api/klienten/${klientId}/dokumente`);
-      if (res.ok) {
-        const data = await res.json();
-        setDokumente(data);
-      }
+      const { data } = await axios.get(`${API_URL}/api/klienten/${klientId}/dokumente`);
+      setDokumente(data);
     } catch (e) { /* ignore */ }
   };
 
   const handleStatusChange = async () => {
     try {
-      await fetch(`${API_URL}/api/klienten/${klientId}/status?status=${newStatus}`, {
-        method: 'POST'
-      });
+      await axios.post(`${API_URL}/api/klienten/${klientId}/status?status=${newStatus}`);
       toast.success('Status aktualisiert');
       fetchKlient();
       setShowStatusDialog(false);
@@ -148,16 +142,12 @@ export default function KlientDetail() {
     }
 
     try {
-      await fetch(`${API_URL}/api/klienten/${klientId}/kommunikation`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          klient_id: klientId,
-          typ: newNote.typ,
-          betreff: newNote.betreff || null,
-          inhalt: newNote.inhalt,
-          anhaenge: []
-        })
+      await axios.post(`${API_URL}/api/klienten/${klientId}/kommunikation`, {
+        klient_id: klientId,
+        typ: newNote.typ,
+        betreff: newNote.betreff || null,
+        inhalt: newNote.inhalt,
+        anhaenge: []
       });
       toast.success('Eintrag hinzugefügt');
       setNewNote({ typ: 'notiz', betreff: '', inhalt: '' });
@@ -177,11 +167,10 @@ export default function KlientDetail() {
       for (const file of files) {
         const formData = new FormData();
         formData.append('file', file);
-        const res = await fetch(
+        await axios.post(
           `${API_URL}/api/klienten/${klientId}/dokumente?kategorie=${uploadKategorie}`,
-          { method: 'POST', body: formData }
+          formData
         );
-        if (!res.ok) throw new Error('Upload fehlgeschlagen');
       }
       toast.success(`${files.length} Dokument(e) hochgeladen`);
       fetchDokumente();
@@ -196,7 +185,7 @@ export default function KlientDetail() {
 
   const handleDeleteDokument = async (dokId) => {
     try {
-      await fetch(`${API_URL}/api/klienten/${klientId}/dokumente/${dokId}`, { method: 'DELETE' });
+      await axios.delete(`${API_URL}/api/klienten/${klientId}/dokumente/${dokId}`);
       toast.success('Dokument gelöscht');
       fetchDokumente();
     } catch (error) {
@@ -211,12 +200,7 @@ export default function KlientDetail() {
     }
     setSendingEmail(true);
     try {
-      const res = await fetch(`${API_URL}/api/klienten/${klientId}/email-senden`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(emailData)
-      });
-      const result = await res.json();
+      const { data: result } = await axios.post(`${API_URL}/api/klienten/${klientId}/email-senden`, emailData);
       if (result.email_sent) {
         toast.success('E-Mail gesendet');
       } else {

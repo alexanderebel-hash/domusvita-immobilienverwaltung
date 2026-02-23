@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 import { ArrowLeft, Calendar, Clock, MapPin, User, Plus, ChevronLeft, ChevronRight } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
 import { Button } from '../components/ui/button';
@@ -38,23 +39,14 @@ export default function Besichtigungen() {
   const fetchData = async () => {
     try {
       const [besRes, klientenRes, wgsRes] = await Promise.all([
-        fetch(`${API_URL}/api/besichtigungen`),
-        fetch(`${API_URL}/api/klienten`),
-        fetch(`${API_URL}/api/pflege-wgs`)
+        axios.get(`${API_URL}/api/besichtigungen`).catch(() => ({ data: [] })),
+        axios.get(`${API_URL}/api/klienten`),
+        axios.get(`${API_URL}/api/pflege-wgs`)
       ]);
-      
-      // Besichtigungen might not exist yet
-      let besData = [];
-      if (besRes.ok) {
-        besData = await besRes.json();
-      }
-      
-      const klientenData = await klientenRes.json();
-      const wgsData = await wgsRes.json();
-      
-      setBesichtigungen(besData);
-      setKlienten(klientenData.filter(k => k.status !== 'bewohner' && k.status !== 'ausgezogen'));
-      setWgs(wgsData);
+
+      setBesichtigungen(besRes.data);
+      setKlienten(klientenRes.data.filter(k => k.status !== 'bewohner' && k.status !== 'ausgezogen'));
+      setWgs(wgsRes.data);
     } catch (error) {
       console.error('Error:', error);
     } finally {
@@ -116,14 +108,8 @@ export default function Besichtigungen() {
     }
 
     try {
-      const res = await fetch(`${API_URL}/api/besichtigungen`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(newBesichtigung)
-      });
-      
-      if (!res.ok) throw new Error('Fehler');
-      
+      await axios.post(`${API_URL}/api/besichtigungen`, newBesichtigung);
+
       toast.success('Besichtigung geplant');
       setShowNewDialog(false);
       setNewBesichtigung({ klient_id: '', pflege_wg_id: '', termin: '', notizen: '' });
