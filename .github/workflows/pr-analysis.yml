@@ -1,0 +1,38 @@
+name: PR Impact Analysis
+
+on:
+  pull_request:
+    branches: [main]
+    types: [opened, synchronize]
+
+jobs:
+  analyze:
+    name: Agent Impact Analysis
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+      contents: read
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: pip install httpx
+
+      - name: Run Impact Analysis
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          AZURE_SEARCH_SERVICE_NAME: ${{ secrets.AZURE_SEARCH_SERVICE_NAME }}
+          AZURE_SEARCH_ADMIN_KEY: ${{ secrets.AZURE_SEARCH_ADMIN_KEY }}
+        run: |
+          python scripts/pr-impact-analysis.py \
+            --repo domusvita-immobilienverwaltung \
+            --pr ${{ github.event.pull_request.number }} \
+            --module immobilien \
+            --post-comment
