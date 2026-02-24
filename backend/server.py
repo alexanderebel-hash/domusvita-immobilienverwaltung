@@ -36,7 +36,8 @@ from schemas import (
     KlientCreate, KlientUpdate, KlientResponse,
     KommunikationCreate, KommunikationResponse,
     AktivitaetResponse, PipelineStats, KlientenDashboard,
-    WGStammdatenUpdate, EinzugspaketRequest, EinzugspaketEmailRequest
+    WGStammdatenUpdate, EinzugspaketRequest, EinzugspaketEmailRequest,
+    AuszugRequest
 )
 
 # Load environment
@@ -1092,6 +1093,7 @@ async def generate_einzugspaket(data: EinzugspaketRequest, current_user: Dict = 
     await db.klient_aktivitaeten.insert_one({
         "id": generate_id(),
         "klient_id": data.klient_id,
+        "benutzer_name": current_user.get("name", "System"),
         "aktion": f"Einzugspaket generiert ({wg.get('kurzname')}, Zimmer {zimmer.get('nummer')})",
         "timestamp": to_iso(now())
     })
@@ -1174,6 +1176,7 @@ async def save_einzugspaket(data: EinzugspaketRequest, current_user: Dict = Depe
     await db.klient_aktivitaeten.insert_one({
         "id": generate_id(),
         "klient_id": data.klient_id,
+        "benutzer_name": current_user.get("name", "System"),
         "aktion": f"Einzugspaket gespeichert ({wg.get('kurzname')}, Zimmer {zimmer.get('nummer')})",
         "timestamp": to_iso(now())
     })
@@ -1255,13 +1258,14 @@ async def send_einzugspaket_email(data: EinzugspaketEmailRequest, current_user: 
         "anhaenge": [filename],
         "empfaenger": data.empfaenger_email,
         "erstellt_am": to_iso(now()),
-        "erstellt_von_name": "System"
+        "erstellt_von_name": current_user.get("name", "System")
     }
     await db.klient_kommunikation.insert_one(komm)
 
     await db.klient_aktivitaeten.insert_one({
         "id": generate_id(),
         "klient_id": data.klient_id,
+        "benutzer_name": current_user.get("name", "System"),
         "aktion": f"Einzugspaket per E-Mail gesendet an {data.empfaenger_email}",
         "timestamp": to_iso(now())
     })
@@ -1762,6 +1766,7 @@ async def create_klient(klient: KlientCreate, current_user: Dict = Depends(get_c
     await db.klient_aktivitaeten.insert_one({
         "id": generate_id(),
         "klient_id": klient_dict["id"],
+        "benutzer_name": current_user.get("name", "System"),
         "aktion": "Klient angelegt",
         "nachher_wert": "neu",
         "timestamp": to_iso(now())
@@ -1784,6 +1789,7 @@ async def update_klient(klient_id: str, klient: KlientUpdate, current_user: Dict
         await db.klient_aktivitaeten.insert_one({
             "id": generate_id(),
             "klient_id": klient_id,
+            "benutzer_name": current_user.get("name", "System"),
             "aktion": "Status geändert",
             "vorher_wert": existing.get("status"),
             "nachher_wert": update_data["status"],
@@ -1848,6 +1854,7 @@ async def create_kommunikation(klient_id: str, komm: KommunikationCreate, curren
     await db.klient_aktivitaeten.insert_one({
         "id": generate_id(),
         "klient_id": klient_id,
+        "benutzer_name": current_user.get("name", "System"),
         "aktion": typ_labels.get(komm_dict["typ"], komm_dict["typ"]),
         "timestamp": to_iso(now())
     })
@@ -1863,6 +1870,25 @@ async def get_kommunikation(klient_id: str, current_user: Dict = Depends(get_cur
         if "_id" in k:
             del k["_id"]
     return kommunikation
+
+@api_router.delete("/klienten/{klient_id}/kommunikation/{komm_id}")
+async def delete_kommunikation(klient_id: str, komm_id: str, current_user: Dict = Depends(get_current_user)):
+    """Delete a communication entry"""
+    komm = await db.klient_kommunikation.find_one({"id": komm_id, "klient_id": klient_id})
+    if not komm:
+        raise HTTPException(status_code=404, detail="Kommunikationseintrag nicht gefunden")
+
+    await db.klient_kommunikation.delete_one({"id": komm_id})
+
+    await db.klient_aktivitaeten.insert_one({
+        "id": generate_id(),
+        "klient_id": klient_id,
+        "benutzer_name": current_user.get("name", "System"),
+        "aktion": f"Kommunikationseintrag gelöscht ({komm.get('typ', 'unbekannt')})",
+        "timestamp": to_iso(now())
+    })
+
+    return {"message": "Kommunikationseintrag gelöscht"}
 
 # Klienten Pipeline Drag & Drop
 @api_router.post("/klienten/{klient_id}/status")
@@ -1883,6 +1909,7 @@ async def update_klient_status(klient_id: str, status: str, current_user: Dict =
     await db.klient_aktivitaeten.insert_one({
         "id": generate_id(),
         "klient_id": klient_id,
+        "benutzer_name": current_user.get("name", "System"),
         "aktion": "Status geändert",
         "vorher_wert": old_status,
         "nachher_wert": status,
@@ -1935,12 +1962,66 @@ async def assign_klient_to_zimmer(klient_id: str, zimmer_id: str, current_user: 
     await db.klient_aktivitaeten.insert_one({
         "id": generate_id(),
         "klient_id": klient_id,
+        "benutzer_name": current_user.get("name", "System"),
         "aktion": f"Zimmer {zimmer.get('nummer')} in {wg.get('kurzname', 'WG')} zugewiesen",
         "nachher_wert": zimmer_id,
         "timestamp": to_iso(now())
     })
     
     return {"message": "Zimmer zugewiesen"}
+
+# Auszug
+@api_router.post("/klienten/{klient_id}/auszug")
+async def klient_auszug(klient_id: str, data: AuszugRequest, current_user: Dict = Depends(get_current_user)):
+    """Process client move-out: free room, update status"""
+    klient = await db.klienten.find_one({"id": klient_id})
+    if not klient:
+        raise HTTPException(status_code=404, detail="Klient nicht gefunden")
+
+    if klient.get("status") not in ("bewohner", "auszug_geplant"):
+        raise HTTPException(status_code=400, detail="Klient ist kein aktiver Bewohner")
+
+    freigegebenes_zimmer = None
+
+    # Free room
+    if klient.get("zimmer_id"):
+        zimmer = await db.wg_zimmer.find_one({"id": klient["zimmer_id"]})
+        if zimmer:
+            await db.wg_zimmer.update_one(
+                {"id": klient["zimmer_id"]},
+                {"$set": {"status": "frei", "aktueller_bewohner_id": None}}
+            )
+            freigegebenes_zimmer = zimmer.get("nummer")
+
+    # Update client
+    await db.klienten.update_one(
+        {"id": klient_id},
+        {"$set": {
+            "status": "ausgezogen",
+            "auszugsdatum": to_iso(now()),
+            "auszugsgrund": data.grund,
+            "zimmer_id": None,
+            "updated_at": to_iso(now())
+        }}
+    )
+
+    # Log activity
+    grund_text = f" (Grund: {data.grund})" if data.grund else ""
+    await db.klient_aktivitaeten.insert_one({
+        "id": generate_id(),
+        "klient_id": klient_id,
+        "benutzer_name": current_user.get("name", "System"),
+        "aktion": f"Auszug durchgeführt{grund_text}",
+        "vorher_wert": "bewohner",
+        "nachher_wert": "ausgezogen",
+        "timestamp": to_iso(now())
+    })
+
+    return {
+        "message": "Auszug erfolgreich durchgeführt",
+        "klient_id": klient_id,
+        "freigegebenes_zimmer": freigegebenes_zimmer
+    }
 
 # ==================== KLIENTEN DOKUMENTE ====================
 
@@ -1981,6 +2062,7 @@ async def upload_klient_dokument(
     await db.klient_aktivitaeten.insert_one({
         "id": generate_id(),
         "klient_id": klient_id,
+        "benutzer_name": current_user.get("name", "System"),
         "aktion": f"Dokument hochgeladen: {file.filename}",
         "nachher_wert": kategorie,
         "timestamp": to_iso(now())
@@ -2049,15 +2131,47 @@ async def send_klient_email(klient_id: str, data: dict, current_user: Dict = Dep
             if dok:
                 anhaenge_namen.append(dok["name"])
     
-    # TODO: Replace with real SMTP/SendGrid when configured
-    # For now, log as communication entry
     email_sent = False
     smtp_host = os.environ.get("SMTP_HOST", "")
-    
+
     if smtp_host:
-        # Real email sending would go here
-        email_sent = True
-    
+        try:
+            import aiosmtplib
+            from email.mime.multipart import MIMEMultipart
+            from email.mime.text import MIMEText
+            from email.mime.base import MIMEBase
+            from email import encoders
+
+            msg = MIMEMultipart()
+            msg["From"] = os.environ.get("SMTP_FROM", "noreply@domusvita.de")
+            msg["To"] = empfaenger
+            msg["Subject"] = betreff
+            msg.attach(MIMEText(inhalt, "plain", "utf-8"))
+
+            # Attach documents
+            if dokument_ids:
+                for dok_id in dokument_ids:
+                    dok = await db.klient_dokumente.find_one({"id": dok_id})
+                    if dok and dok.get("file_data"):
+                        file_content = base64.b64decode(dok["file_data"])
+                        part = MIMEBase("application", "octet-stream")
+                        part.set_payload(file_content)
+                        encoders.encode_base64(part)
+                        part.add_header("Content-Disposition", "attachment", filename=dok.get("name", "dokument"))
+                        msg.attach(part)
+
+            await aiosmtplib.send(
+                msg,
+                hostname=smtp_host,
+                port=int(os.environ.get("SMTP_PORT", 587)),
+                username=os.environ.get("SMTP_USER", ""),
+                password=os.environ.get("SMTP_PASS", ""),
+                use_tls=True,
+            )
+            email_sent = True
+        except Exception as e:
+            logger.error(f"SMTP send failed for klient email: {e}")
+
     # Log as communication
     komm = {
         "id": generate_id(),
@@ -2068,10 +2182,10 @@ async def send_klient_email(klient_id: str, data: dict, current_user: Dict = Dep
         "anhaenge": anhaenge_namen,
         "empfaenger": empfaenger,
         "erstellt_am": to_iso(now()),
-        "erstellt_von_name": "System"
+        "erstellt_von_name": current_user.get("name", "System")
     }
     await db.klient_kommunikation.insert_one(komm)
-    
+
     # Update document status
     for dok_id in dokument_ids:
         await db.klient_dokumente.update_one(
@@ -2083,6 +2197,7 @@ async def send_klient_email(klient_id: str, data: dict, current_user: Dict = Dep
     await db.klient_aktivitaeten.insert_one({
         "id": generate_id(),
         "klient_id": klient_id,
+        "benutzer_name": current_user.get("name", "System"),
         "aktion": f"E-Mail gesendet an {empfaenger}" + (f" mit {len(anhaenge_namen)} Anhängen" if anhaenge_namen else ""),
         "timestamp": to_iso(now())
     })
@@ -2417,6 +2532,7 @@ async def whatsapp_webhook(data: dict, current_user: Dict = Depends(get_current_
         await db.klient_aktivitaeten.insert_one({
             "id": generate_id(),
             "klient_id": klient["id"],
+            "benutzer_name": from_number,
             "aktion": f"WhatsApp erhalten von {from_number}",
             "timestamp": to_iso(now())
         })
@@ -2467,13 +2583,14 @@ async def send_whatsapp(data: dict, current_user: Dict = Depends(get_current_use
         "inhalt": nachricht,
         "anhaenge": [],
         "erstellt_am": to_iso(now()),
-        "erstellt_von_name": "System"
+        "erstellt_von_name": current_user.get("name", "System")
     }
     await db.klient_kommunikation.insert_one(komm)
-    
+
     await db.klient_aktivitaeten.insert_one({
         "id": generate_id(),
         "klient_id": klient_id,
+        "benutzer_name": current_user.get("name", "System"),
         "aktion": f"WhatsApp gesendet an {telefon}",
         "timestamp": to_iso(now())
     })
@@ -2527,6 +2644,7 @@ async def create_besichtigung(data: dict, current_user: Dict = Depends(get_curre
         await db.klient_aktivitaeten.insert_one({
             "id": generate_id(),
             "klient_id": data.get("klient_id"),
+            "benutzer_name": current_user.get("name", "System"),
             "aktion": "Besichtigung geplant",
             "timestamp": to_iso(now())
         })

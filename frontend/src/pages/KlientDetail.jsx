@@ -4,7 +4,7 @@ import axios from 'axios';
 import {
   ArrowLeft, User, Phone, Mail, MessageSquare, Calendar, FileText,
   Clock, Building2, Plus, Send, History, Home, Upload, Download,
-  Trash2, Paperclip, Check, X, Euro, Package
+  Trash2, Paperclip, Check, X, Euro, Package, LogOut
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
 import { Button } from '../components/ui/button';
@@ -27,6 +27,9 @@ const STATUS_LABELS = {
   zusage: 'Zusage',
   einzug_geplant: 'Einzug geplant',
   bewohner: 'Bewohner',
+  auszug_geplant: 'Auszug geplant',
+  ausgezogen: 'Ausgezogen',
+  verstorben: 'Verstorben',
   abgesagt: 'Abgesagt'
 };
 
@@ -39,6 +42,9 @@ const STATUS_COLORS = {
   zusage: 'bg-green-500',
   einzug_geplant: 'bg-teal-500',
   bewohner: 'bg-emerald-600',
+  auszug_geplant: 'bg-amber-600',
+  ausgezogen: 'bg-slate-500',
+  verstorben: 'bg-slate-700',
   abgesagt: 'bg-gray-500'
 };
 
@@ -99,6 +105,9 @@ export default function KlientDetail() {
   const [uploadKategorie, setUploadKategorie] = useState('sonstiges');
   const [dokumente, setDokumente] = useState([]);
   const [sendingEmail, setSendingEmail] = useState(false);
+  const [showAuszugDialog, setShowAuszugDialog] = useState(false);
+  const [auszugGrund, setAuszugGrund] = useState('');
+  const [deletingKommId, setDeletingKommId] = useState(null);
 
   useEffect(() => {
     fetchKlient();
@@ -225,6 +234,31 @@ export default function KlientDetail() {
         ? prev.dokument_ids.filter(id => id !== dokId)
         : [...prev.dokument_ids, dokId]
     }));
+  };
+
+  const handleAuszug = async () => {
+    try {
+      await axios.post(`${API_URL}/api/klienten/${klientId}/auszug`, {
+        grund: auszugGrund || null
+      });
+      toast.success('Auszug erfolgreich durchgeführt');
+      setShowAuszugDialog(false);
+      setAuszugGrund('');
+      fetchKlient();
+    } catch (error) {
+      toast.error(error.response?.data?.detail || 'Fehler beim Auszug');
+    }
+  };
+
+  const handleDeleteKommunikation = async (kommId) => {
+    try {
+      await axios.delete(`${API_URL}/api/klienten/${klientId}/kommunikation/${kommId}`);
+      toast.success('Eintrag gelöscht');
+      setDeletingKommId(null);
+      fetchKlient();
+    } catch (error) {
+      toast.error('Fehler beim Löschen');
+    }
   };
 
   const openEmailDialog = () => {
@@ -374,6 +408,18 @@ export default function KlientDetail() {
             <Package className="w-4 h-4 mr-1.5" />
             Einzugspaket
           </Button>
+          {(klient.status === 'bewohner' || klient.status === 'auszug_geplant') && (
+            <Button
+              size="sm"
+              variant="outline"
+              className="border-red-300 text-red-500 hover:bg-red-50"
+              onClick={() => setShowAuszugDialog(true)}
+              data-testid="auszug-button"
+            >
+              <LogOut className="w-4 h-4 mr-1.5" />
+              Auszug
+            </Button>
+          )}
         </div>
       </div>
 
@@ -606,9 +652,40 @@ export default function KlientDetail() {
                               <p className="text-slate-900 font-medium">
                                 {KOMMUNIKATION_LABELS[item.typ] || item.typ}
                               </p>
-                              <span className="text-slate-400 text-sm">
-                                {formatDateTime(item.erstellt_am)}
-                              </span>
+                              <div className="flex items-center gap-2">
+                                <span className="text-slate-400 text-sm">
+                                  {formatDateTime(item.erstellt_am)}
+                                </span>
+                                {deletingKommId === item.id ? (
+                                  <div className="flex items-center gap-1">
+                                    <Button
+                                      variant="ghost"
+                                      size="sm"
+                                      className="h-6 w-6 p-0 text-red-500 hover:bg-red-50"
+                                      onClick={() => handleDeleteKommunikation(item.id)}
+                                    >
+                                      <Check className="w-3.5 h-3.5" />
+                                    </Button>
+                                    <Button
+                                      variant="ghost"
+                                      size="sm"
+                                      className="h-6 w-6 p-0 text-slate-400 hover:bg-slate-50"
+                                      onClick={() => setDeletingKommId(null)}
+                                    >
+                                      <X className="w-3.5 h-3.5" />
+                                    </Button>
+                                  </div>
+                                ) : (
+                                  <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    className="h-6 w-6 p-0 text-slate-300 hover:text-red-500 hover:bg-red-50"
+                                    onClick={() => setDeletingKommId(item.id)}
+                                  >
+                                    <Trash2 className="w-3.5 h-3.5" />
+                                  </Button>
+                                )}
+                              </div>
                             </div>
                             {item.betreff && (
                               <p className="text-slate-700 text-sm mt-1 font-medium">{item.betreff}</p>
@@ -950,6 +1027,55 @@ export default function KlientDetail() {
             >
               <Send className="w-4 h-4 mr-2" />
               {sendingEmail ? 'Wird gesendet...' : 'Senden'}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Auszug Dialog */}
+      <Dialog open={showAuszugDialog} onOpenChange={setShowAuszugDialog}>
+        <DialogContent className="bg-white border-slate-200 text-slate-900">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2 text-red-600">
+              <LogOut className="w-5 h-5" />
+              Auszug durchführen
+            </DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <p className="text-slate-600">
+              Möchten Sie den Auszug von <strong>{klient?.vorname} {klient?.nachname}</strong> durchführen?
+              {klient?.zimmer_nummer && (
+                <span> Das Zimmer {klient.zimmer_nummer} wird freigegeben.</span>
+              )}
+            </p>
+            <div>
+              <label className="text-slate-500 text-sm">Auszugsgrund (optional)</label>
+              <Select value={auszugGrund} onValueChange={setAuszugGrund}>
+                <SelectTrigger className="bg-white border-slate-200 text-slate-900">
+                  <SelectValue placeholder="Grund auswählen..." />
+                </SelectTrigger>
+                <SelectContent className="bg-white border-slate-200">
+                  <SelectItem value="umzug_pflegeheim">Umzug ins Pflegeheim</SelectItem>
+                  <SelectItem value="umzug_familie">Umzug zur Familie</SelectItem>
+                  <SelectItem value="umzug_andere_wg">Umzug in andere WG</SelectItem>
+                  <SelectItem value="krankenhaus">Krankenhausaufenthalt</SelectItem>
+                  <SelectItem value="verstorben">Verstorben</SelectItem>
+                  <SelectItem value="sonstiges">Sonstiges</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="ghost" onClick={() => { setShowAuszugDialog(false); setAuszugGrund(''); }}>
+              Abbrechen
+            </Button>
+            <Button
+              onClick={handleAuszug}
+              className="bg-red-600 hover:bg-red-700 text-white"
+              data-testid="confirm-auszug-btn"
+            >
+              <LogOut className="w-4 h-4 mr-2" />
+              Auszug bestätigen
             </Button>
           </DialogFooter>
         </DialogContent>

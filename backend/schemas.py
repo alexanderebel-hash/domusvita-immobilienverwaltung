@@ -661,6 +661,10 @@ class WGStammdatenUpdate(BaseModel):
     pflegedienst_name: str = "DomusVita Gesundheit GmbH"
 
 
+class AuszugRequest(BaseModel):
+    grund: Optional[str] = None  # z.B. "Umzug ins Pflegeheim", "Verstorben"
+
+
 class EinzugspaketRequest(BaseModel):
     klient_id: str
     zimmer_id: str
