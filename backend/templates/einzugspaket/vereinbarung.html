@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="page-break"></div>
+
+<h1>Gemeinschaftsvereinbarung</h1>
+<p><strong>Ambulant betreute Wohngemeinschaft {{ wg.kurzname }}</strong><br>
+{{ stammdaten.wg_adresse_strasse }}, {{ stammdaten.wg_adresse_plz_ort }}</p>
+
+<h2>1. Pr&auml;ambel</h2>
+<p>Die Bewohnerinnen und Bewohner der ambulant betreuten Wohngemeinschaft
+{{ wg.kurzname }} schlie&szlig;en sich zu einer Wohn- und Lebensgemeinschaft zusammen.
+Ziel ist ein selbstbestimmtes, gemeinschaftliches Wohnen mit professioneller
+pflegerischer Unterst&uuml;tzung.</p>
+
+<h2>2. Grundlagen der Gemeinschaft</h2>
+<p>Die Wohngemeinschaft besteht aus {{ wg.kapazitaet }} Bewohnerzimmern mit
+Gemeinschaftsr&auml;umen (K&uuml;che, Wohnzimmer, B&auml;der). Jeder Bewohner hat
+ein eigenes Zimmer als privaten R&uuml;ckzugsort.</p>
+
+<h2>3. Organisation und Selbstbestimmung</h2>
+<ul>
+  <li>Die Bewohner oder ihre Bevollm&auml;chtigten entscheiden gemeinsam &uuml;ber
+    die Angelegenheiten der Wohngemeinschaft.</li>
+  <li>Es werden regelm&auml;&szlig;ig WG-Versammlungen durchgef&uuml;hrt.</li>
+  <li>Die Bewohner bestimmen frei &uuml;ber ihren Pflegedienst.</li>
+  <li>Ein Gremium der Angeh&ouml;rigen/Bevollm&auml;chtigten vertritt die Interessen
+    der Bewohner.</li>
+</ul>
+
+<h2>4. Haushaltskasse / Haushaltsbuch</h2>
+<p>F&uuml;r die gemeinschaftlichen Ausgaben (Lebensmittel, Reinigungsmittel,
+Gemeinschaftsanschaffungen) wird ein Haushaltskonto gef&uuml;hrt.</p>
+<ul>
+  <li>Monatlicher Beitrag: <strong>{{ "%.2f"|format(stammdaten.lebensmittelpauschale) }} EUR</strong> (Lebensmittelpauschale)</li>
+  <li>WG-Beitrag: <strong>{{ "%.2f"|format(stammdaten.wg_beitrag) }} EUR</strong></li>
+  <li>Konto: {{ stammdaten.haushaltsbuch_bank }}, IBAN: {{ stammdaten.haushaltsbuch_iban }}</li>
+</ul>
+
+<h2>5. Pflegerische Versorgung</h2>
+<p>Die pflegerische Versorgung wird durch <strong>{{ stammdaten.pflegedienst_name }}</strong>
+sichergestellt. Jeder Bewohner hat einen individuellen Pflegevertrag.
+Die Pr&auml;senzkr&auml;fte sind 24 Stunden vor Ort.</p>
+
+<h2>6. K&uuml;ndigung / Auszug</h2>
+<p>Die Mitgliedschaft in der Wohngemeinschaft endet mit dem Ende des
+Nutzungsvertrages (Mietvertrag). Die K&uuml;ndigungsfrist betr&auml;gt in der Regel
+3 Monate zum Monatsende.</p>
+
+<h2>7. Einverst&auml;ndniserkl&auml;rung</h2>
+<p>Mit meiner Unterschrift erkl&auml;re ich mich mit den Regelungen dieser
+Gemeinschaftsvereinbarung einverstanden.</p>
+
+<div class="signature-line">
+  <div class="signature-box">
+    <div class="line">Ort, Datum</div>
+  </div>
+  <div class="signature-box">
+    <div class="line">{{ klient.vorname }} {{ klient.nachname }} / Bevollm&auml;chtigte/r</div>
+  </div>
+</div>
+{% endblock %}

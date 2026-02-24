@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import { ArrowLeft, Bed, User, Phone, Calendar, Plus, Euro, TrendingUp } from 'lucide-react';
+import { ArrowLeft, Bed, User, Phone, Calendar, Plus, Euro, TrendingUp, Settings, Save } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
 import { Button } from '../components/ui/button';
 import { Badge } from '../components/ui/badge';
+import { Input } from '../components/ui/input';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '../components/ui/dialog';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../components/ui/tabs';
+import { toast } from 'sonner';
 
 const API_URL = process.env.REACT_APP_BACKEND_URL || '';
 
@@ -36,10 +38,13 @@ export default function PflegeWGDetail() {
   const [imageLoaded, setImageLoaded] = useState(false);
   const [kosten, setKosten] = useState(null);
   const [activeTab, setActiveTab] = useState('grundriss');
+  const [stammdaten, setStammdaten] = useState(null);
+  const [savingStammdaten, setSavingStammdaten] = useState(false);
 
   useEffect(() => {
     fetchWG();
     fetchKosten();
+    fetchStammdaten();
   }, [wgId]);
 
   const fetchWG = async () => {
@@ -58,6 +63,29 @@ export default function PflegeWGDetail() {
       const { data } = await axios.get(`${API_URL}/api/pflege-wgs/${wgId}/kosten`);
       setKosten(data);
     } catch (e) { /* ignore */ }
+  };
+
+  const fetchStammdaten = async () => {
+    try {
+      const { data } = await axios.get(`${API_URL}/api/pflege-wgs/${wgId}/stammdaten`);
+      setStammdaten(data);
+    } catch (e) { /* ignore */ }
+  };
+
+  const handleSaveStammdaten = async () => {
+    setSavingStammdaten(true);
+    try {
+      await axios.put(`${API_URL}/api/pflege-wgs/${wgId}/stammdaten`, stammdaten);
+      toast.success('Stammdaten gespeichert');
+    } catch (e) {
+      toast.error('Fehler beim Speichern');
+    } finally {
+      setSavingStammdaten(false);
+    }
+  };
+
+  const updateStammdaten = (field, value) => {
+    setStammdaten(prev => ({ ...prev, [field]: value }));
   };
 
   const handleZimmerClick = (zimmer) => {
@@ -122,6 +150,10 @@ export default function PflegeWGDetail() {
           <TabsTrigger value="kosten" className="data-[state=active]:bg-slate-50" data-testid="tab-kosten">
             <Euro className="w-4 h-4 mr-2" />
             Kostenübersicht
+          </TabsTrigger>
+          <TabsTrigger value="einstellungen" className="data-[state=active]:bg-slate-50" data-testid="tab-einstellungen">
+            <Settings className="w-4 h-4 mr-2" />
+            Einstellungen
           </TabsTrigger>
         </TabsList>
 
@@ -376,6 +408,126 @@ export default function PflegeWGDetail() {
                   Die Kostensätze sind Standardwerte. Sie können die echten Kosten später hinterlegen.
                 </p>
               </div>
+            </div>
+          ) : (
+            <div className="flex items-center justify-center py-12">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-cyan-500"></div>
+            </div>
+          )}
+        </TabsContent>
+
+        {/* Einstellungen Tab */}
+        <TabsContent value="einstellungen">
+          {stammdaten ? (
+            <div className="space-y-6">
+              {/* Vermieter */}
+              <Card className="bg-white border-slate-200">
+                <CardHeader>
+                  <CardTitle className="text-slate-900">Vermieter-Daten</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <label className="text-slate-500 text-sm">Vermieter Name</label>
+                      <Input value={stammdaten.vermieter_name || ''} onChange={e => updateStammdaten('vermieter_name', e.target.value)} className="bg-white border-slate-200 text-slate-900" />
+                    </div>
+                    <div>
+                      <label className="text-slate-500 text-sm">Pflegedienst Name</label>
+                      <Input value={stammdaten.pflegedienst_name || ''} onChange={e => updateStammdaten('pflegedienst_name', e.target.value)} className="bg-white border-slate-200 text-slate-900" />
+                    </div>
+                    <div>
+                      <label className="text-slate-500 text-sm">Straße</label>
+                      <Input value={stammdaten.vermieter_strasse || ''} onChange={e => updateStammdaten('vermieter_strasse', e.target.value)} className="bg-white border-slate-200 text-slate-900" />
+                    </div>
+                    <div>
+                      <label className="text-slate-500 text-sm">PLZ / Ort</label>
+                      <Input value={stammdaten.vermieter_plz_ort || ''} onChange={e => updateStammdaten('vermieter_plz_ort', e.target.value)} className="bg-white border-slate-200 text-slate-900" />
+                    </div>
+                    <div>
+                      <label className="text-slate-500 text-sm">IBAN</label>
+                      <Input value={stammdaten.vermieter_iban || ''} onChange={e => updateStammdaten('vermieter_iban', e.target.value)} className="bg-white border-slate-200 text-slate-900" />
+                    </div>
+                    <div>
+                      <label className="text-slate-500 text-sm">Bank</label>
+                      <Input value={stammdaten.vermieter_bank || ''} onChange={e => updateStammdaten('vermieter_bank', e.target.value)} className="bg-white border-slate-200 text-slate-900" />
+                    </div>
+                    <div>
+                      <label className="text-slate-500 text-sm">BIC</label>
+                      <Input value={stammdaten.vermieter_bic || ''} onChange={e => updateStammdaten('vermieter_bic', e.target.value)} className="bg-white border-slate-200 text-slate-900" />
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* WG-Adresse */}
+              <Card className="bg-white border-slate-200">
+                <CardHeader>
+                  <CardTitle className="text-slate-900">WG-Adresse</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <label className="text-slate-500 text-sm">Straße</label>
+                      <Input value={stammdaten.wg_adresse_strasse || ''} onChange={e => updateStammdaten('wg_adresse_strasse', e.target.value)} className="bg-white border-slate-200 text-slate-900" />
+                    </div>
+                    <div>
+                      <label className="text-slate-500 text-sm">PLZ / Ort</label>
+                      <Input value={stammdaten.wg_adresse_plz_ort || ''} onChange={e => updateStammdaten('wg_adresse_plz_ort', e.target.value)} className="bg-white border-slate-200 text-slate-900" />
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Haushaltsbuch */}
+              <Card className="bg-white border-slate-200">
+                <CardHeader>
+                  <CardTitle className="text-slate-900">Haushaltsbuch-Konto</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <label className="text-slate-500 text-sm">IBAN</label>
+                      <Input value={stammdaten.haushaltsbuch_iban || ''} onChange={e => updateStammdaten('haushaltsbuch_iban', e.target.value)} className="bg-white border-slate-200 text-slate-900" />
+                    </div>
+                    <div>
+                      <label className="text-slate-500 text-sm">Bank</label>
+                      <Input value={stammdaten.haushaltsbuch_bank || ''} onChange={e => updateStammdaten('haushaltsbuch_bank', e.target.value)} className="bg-white border-slate-200 text-slate-900" />
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Kosten-Pauschalen */}
+              <Card className="bg-white border-slate-200">
+                <CardHeader>
+                  <CardTitle className="text-slate-900">Kosten-Pauschalen (Einzugspaket)</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    <div>
+                      <label className="text-slate-500 text-sm">Lebensmittelpauschale</label>
+                      <Input type="number" step="0.01" value={stammdaten.lebensmittelpauschale || 0} onChange={e => updateStammdaten('lebensmittelpauschale', parseFloat(e.target.value) || 0)} className="bg-white border-slate-200 text-slate-900" />
+                    </div>
+                    <div>
+                      <label className="text-slate-500 text-sm">WG-Beitrag</label>
+                      <Input type="number" step="0.01" value={stammdaten.wg_beitrag || 0} onChange={e => updateStammdaten('wg_beitrag', parseFloat(e.target.value) || 0)} className="bg-white border-slate-200 text-slate-900" />
+                    </div>
+                    <div>
+                      <label className="text-slate-500 text-sm">WG-Zuschlag</label>
+                      <Input type="number" step="0.01" value={stammdaten.wg_zuschlag || 0} onChange={e => updateStammdaten('wg_zuschlag', parseFloat(e.target.value) || 0)} className="bg-white border-slate-200 text-slate-900" />
+                    </div>
+                    <div>
+                      <label className="text-slate-500 text-sm">Entlastungsbetrag</label>
+                      <Input type="number" step="0.01" value={stammdaten.entlastungsbetrag || 0} onChange={e => updateStammdaten('entlastungsbetrag', parseFloat(e.target.value) || 0)} className="bg-white border-slate-200 text-slate-900" />
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Button onClick={handleSaveStammdaten} disabled={savingStammdaten} className="bg-cyan-600 hover:bg-cyan-700">
+                <Save className="w-4 h-4 mr-2" />
+                {savingStammdaten ? 'Wird gespeichert...' : 'Stammdaten speichern'}
+              </Button>
             </div>
           ) : (
             <div className="flex items-center justify-center py-12">

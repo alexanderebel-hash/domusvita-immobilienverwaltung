@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="page-break"></div>
+
+<h1>Einzugs-Checkliste</h1>
+<p><strong>{{ klient.vorname }} {{ klient.nachname }}</strong> &mdash;
+{{ wg.kurzname }}, Zimmer {{ zimmer.nummer }}</p>
+<p>Einzugsdatum: {{ mietbeginn or datum_heute }}</p>
+
+<h2>Vor dem Einzug erledigen</h2>
+<ul class="checkbox-list">
+  <li>Nutzungsvertrag (Mietvertrag) unterschrieben</li>
+  <li>Gemeinschaftsvereinbarung unterschrieben</li>
+  <li>SEPA-Lastschriftmandat ausgef&uuml;llt und unterschrieben</li>
+  <li>Haushaltsbuch-Erkl&auml;rung unterschrieben</li>
+  <li>Kaution &uuml;berwiesen ({{ "%.2f"|format(kaution) }} EUR)</li>
+  <li>Pflegevertrag mit {{ stammdaten.pflegedienst_name }} abgeschlossen</li>
+  <li>Hausordnung zur Kenntnis genommen</li>
+  <li>Bewohner-Kurzprofil ausgef&uuml;llt</li>
+  <li>Kopie Personalausweis / Reisepass</li>
+  <li>Krankenversicherungskarte</li>
+  <li>Pflegegrad-Bescheid</li>
+  <li>Vorsorgevollmacht / Betreuungsurkunde</li>
+  <li>Medikamentenplan</li>
+  <li>Arztbriefe / Entlassungsberichte</li>
+</ul>
+
+<h2>Am Einzugstag</h2>
+<ul class="checkbox-list">
+  <li>Schl&uuml;ssel&uuml;bergabe (_____ Schl&uuml;ssel erhalten)</li>
+  <li>Zimmer besichtigt und &uuml;bernommen</li>
+  <li>Z&auml;hlerst&auml;nde notiert (falls zutreffend)</li>
+  <li>Bewohner den Mitbewohnern vorgestellt</li>
+  <li>Pr&auml;senzkr&auml;fte / Pflegeteam kennengelernt</li>
+  <li>Hausrundgang durchgef&uuml;hrt</li>
+  <li>Notfallkontakte hinterlegt</li>
+</ul>
+
+<h2>Nach dem Einzug (innerhalb 2 Wochen)</h2>
+<ul class="checkbox-list">
+  <li>Ummeldung beim Einwohnermeldeamt</li>
+  <li>Hausarzt informieren / neuen Hausarzt finden</li>
+  <li>Apotheke informieren (Medikamentenlieferung)</li>
+  <li>Erstgespr&auml;ch mit Pflegedienstleitung</li>
+  <li>Individuelle Pflegeplanung erstellt</li>
+  <li>Dauerauftr&auml;ge / &Uuml;berweisungen eingerichtet</li>
+</ul>
+
+<h2>Anmerkungen</h2>
+<p style="border-bottom: 1px solid #ccc; padding-bottom: 20px; margin-bottom: 10px;">&nbsp;</p>
+<p style="border-bottom: 1px solid #ccc; padding-bottom: 20px; margin-bottom: 10px;">&nbsp;</p>
+<p style="border-bottom: 1px solid #ccc; padding-bottom: 20px; margin-bottom: 10px;">&nbsp;</p>
+
+<div class="signature-line">
+  <div class="signature-box">
+    <div class="line">Ort, Datum</div>
+  </div>
+  <div class="signature-box">
+    <div class="line">{{ klient.vorname }} {{ klient.nachname }} / Bevollm&auml;chtigte/r</div>
+  </div>
+</div>
+{% endblock %}

@@ -20,6 +20,7 @@ import KlientenPipeline from "./pages/KlientenPipeline";
 import KlientDetail from "./pages/KlientDetail";
 import NeuerKlient from "./pages/NeuerKlient";
 import Besichtigungen from "./pages/Besichtigungen";
+import EinzugspaketGenerator from "./pages/EinzugspaketGenerator";
 import "./App.css";
 
 // Protected routes wrapper - redirects to login if not authenticated
@@ -55,6 +56,7 @@ function ProtectedApp() {
         <Route path="/pflege-wgs" element={<PflegeWGs />} />
         <Route path="/pflege-wgs/pipeline" element={<KlientenPipeline />} />
         <Route path="/pflege-wgs/besichtigungen" element={<Besichtigungen />} />
+        <Route path="/pflege-wgs/einzugspaket" element={<EinzugspaketGenerator />} />
         <Route path="/pflege-wgs/klienten/neu" element={<NeuerKlient />} />
         <Route path="/pflege-wgs/klienten/:klientId" element={<KlientDetail />} />
         <Route path="/pflege-wgs/:wgId" element={<PflegeWGDetail />} />

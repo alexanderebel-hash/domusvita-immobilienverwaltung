@@ -1,0 +1,90 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="page-break"></div>
+
+<h1>Er&ouml;ffnung Haushaltsbuch</h1>
+<p><strong>{{ wg.property_name }}</strong><br>
+{{ stammdaten.wg_adresse_strasse }}, {{ stammdaten.wg_adresse_plz_ort }}</p>
+
+<h2>Erkl&auml;rung zur Teilnahme am Haushaltskonto</h2>
+
+<p>Hiermit erkl&auml;re ich,</p>
+
+<table class="info-table">
+  <tr>
+    <td class="label">Name, Vorname:</td>
+    <td class="value">{{ klient.nachname }}, {{ klient.vorname }}</td>
+  </tr>
+  <tr>
+    <td class="label">Wohngemeinschaft:</td>
+    <td class="value">{{ wg.kurzname }}, Zimmer {{ zimmer.nummer }}</td>
+  </tr>
+  <tr>
+    <td class="label">Einzugsdatum:</td>
+    <td class="value">{{ mietbeginn or datum_heute }}</td>
+  </tr>
+</table>
+
+<p>meine Teilnahme am gemeinschaftlichen Haushaltskonto der Wohngemeinschaft
+{{ wg.kurzname }}.</p>
+
+<h2>Kontodetails</h2>
+
+<table class="info-table">
+  <tr>
+    <td class="label">Kontoinhaber:</td>
+    <td class="value">WG {{ wg.kurzname }} Haushaltskonto</td>
+  </tr>
+  <tr>
+    <td class="label">Bank:</td>
+    <td class="value">{{ stammdaten.haushaltsbuch_bank }}</td>
+  </tr>
+  <tr>
+    <td class="label">IBAN:</td>
+    <td class="value">{{ stammdaten.haushaltsbuch_iban }}</td>
+  </tr>
+</table>
+
+<h2>Monatliche Beitr&auml;ge</h2>
+
+<table class="cost-table">
+  <thead>
+    <tr>
+      <th>Position</th>
+      <th class="amount">Betrag</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Lebensmittelpauschale</td>
+      <td class="amount">{{ "%.2f"|format(stammdaten.lebensmittelpauschale) }} EUR</td>
+    </tr>
+    <tr>
+      <td>WG-Beitrag (Reinigung, Verbrauchsmaterial)</td>
+      <td class="amount">{{ "%.2f"|format(stammdaten.wg_beitrag) }} EUR</td>
+    </tr>
+    <tr class="total-row">
+      <td>Gesamt monatlich</td>
+      <td class="amount">{{ "%.2f"|format(stammdaten.lebensmittelpauschale + stammdaten.wg_beitrag) }} EUR</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>Der Beitrag ist jeweils zum <strong>1. des Monats</strong> f&auml;llig und wird per
+SEPA-Lastschrift vom angegebenen Konto eingezogen.</p>
+
+<div class="highlight-box">
+  <strong>Hinweis:</strong> Die Haushaltskasse wird transparent gef&uuml;hrt. Alle Ausgaben
+  werden im Haushaltsbuch dokumentiert und k&ouml;nnen jederzeit von den Bewohnern
+  oder Bevollm&auml;chtigten eingesehen werden.
+</div>
+
+<div class="signature-line">
+  <div class="signature-box">
+    <div class="line">Ort, Datum</div>
+  </div>
+  <div class="signature-box">
+    <div class="line">{{ klient.vorname }} {{ klient.nachname }} / Bevollm&auml;chtigte/r</div>
+  </div>
+</div>
+{% endblock %}

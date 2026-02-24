@@ -7,6 +7,7 @@ import {
   Wrench,
   FolderOpen,
   Heart,
+  Package,
   X,
   BarChart3,
   ExternalLink,
@@ -25,6 +26,7 @@ const navItems = [
 
 const pflegeItems = [
   { name: "Pflege-WGs", path: "/pflege-wgs", icon: Heart },
+  { name: "Einzugspakete", path: "/pflege-wgs/einzugspaket", icon: Package },
 ];
 
 export default function Sidebar({ isOpen, onClose }) {
@@ -104,7 +106,10 @@ export default function Sidebar({ isOpen, onClose }) {
           </p>
           {pflegeItems.map((item) => {
             const Icon = item.icon;
-            const isActive = location.pathname.startsWith(item.path);
+            // Specific match for sub-routes, fallback to startsWith for parent
+            const isActive = item.path === "/pflege-wgs"
+              ? location.pathname === "/pflege-wgs" || (location.pathname.startsWith("/pflege-wgs") && !location.pathname.startsWith("/pflege-wgs/einzugspaket"))
+              : location.pathname.startsWith(item.path);
 
             return (
               <NavLink

@@ -1,0 +1,690 @@
+{
+  "meta": {
+    "generiert_am": "2026-02-24",
+    "quelle": "Dokumente WGs/Verwaltung ALLE Wohngemeinschaften",
+    "zweck": "Datengrundlage fuer domusvita-immobilienverwaltung Repo",
+    "waehrung": "EUR",
+    "version": "1.1",
+    "aenderungen_v1_1": "Vertragsstruktur, Kooperationsvertraege, Bewohner-Zusatzkosten, Sterndamm-Adresse, Bankverbindungen ergaenzt"
+  },
+
+  "wohngemeinschaften": {
+    "kupferkessel_gross": {
+      "name": "WG Kupferkessel",
+      "kurzname": "Kupferkessel 9",
+      "adresse": "Baumschulenstrasse 64, 12437 Berlin",
+      "etage": "1. OG",
+      "vermieter": "300&VIER GmbH",
+      "hauptmieter": "DomusVita gGmbH",
+      "heizungsart": "Erdgas",
+      "warmwasser_in_heizkosten": true,
+      "gesamtflaeche_qm": 338.0,
+      "zimmerflaeche_gesamt_qm": 148.6,
+      "gemeinschaftsflaeche_qm": 189.4,
+      "anzahl_zimmer": 8,
+      "doppelzimmer": ["8"],
+      "kalkulationsbasis_2024": {
+        "nettokaltmiete_pro_qm": 13.00,
+        "kalte_betriebskosten_pro_qm": 1.50,
+        "angemessenheitsgrenze_2024_kalt": 583.00
+      },
+      "zimmer": [
+        {
+          "nummer": 1,
+          "zimmerflaeche_qm": 13.03,
+          "gemeinschaftsflaeche_anteil_qm": 23.68,
+          "mietflaeche_qm": 36.71,
+          "nettokaltmiete": 477.17,
+          "kalte_betriebskosten": 55.06,
+          "bruttokaltmiete": 532.22,
+          "heizung_warmwasser": 36.34,
+          "warmmiete": 568.56,
+          "strom": 30.00,
+          "schoenheitsreparaturen": 40.38,
+          "zahlbetrag_gesamt": 638.94,
+          "bewohner": {
+            "name": "Testberg-10, Test-J",
+            "einzug": "2025-05-01",
+            "kosten_pauschale": 290.00
+          }
+        },
+        {
+          "nummer": 2,
+          "zimmerflaeche_qm": 19.01,
+          "gemeinschaftsflaeche_anteil_qm": 23.68,
+          "mietflaeche_qm": 42.69,
+          "nettokaltmiete": 554.91,
+          "kalte_betriebskosten": 64.03,
+          "bruttokaltmiete": 618.93,
+          "heizung_warmwasser": 42.26,
+          "warmmiete": 661.19,
+          "strom": 30.00,
+          "schoenheitsreparaturen": 46.95,
+          "zahlbetrag_gesamt": 738.14,
+          "bewohner": {
+            "name": "Testberg-11, Test-K",
+            "einzug": "2020-06-01",
+            "kosten_pauschale": 290.00
+          }
+        },
+        {
+          "nummer": 3,
+          "zimmerflaeche_qm": 16.46,
+          "gemeinschaftsflaeche_anteil_qm": 23.68,
+          "mietflaeche_qm": 40.14,
+          "nettokaltmiete": 521.76,
+          "kalte_betriebskosten": 60.20,
+          "bruttokaltmiete": 581.96,
+          "heizung_warmwasser": 39.73,
+          "warmmiete": 621.69,
+          "strom": 30.00,
+          "schoenheitsreparaturen": 44.15,
+          "zahlbetrag_gesamt": 695.84,
+          "bewohner": {
+            "name": "Testberg-12, Test-L",
+            "einzug": "2025-07-15",
+            "kosten_pauschale": 290.00
+          }
+        },
+        {
+          "nummer": 4,
+          "zimmerflaeche_qm": 15.99,
+          "gemeinschaftsflaeche_anteil_qm": 23.68,
+          "mietflaeche_qm": 39.67,
+          "nettokaltmiete": 515.65,
+          "kalte_betriebskosten": 59.50,
+          "bruttokaltmiete": 575.14,
+          "heizung_warmwasser": 39.27,
+          "warmmiete": 614.41,
+          "strom": 30.00,
+          "schoenheitsreparaturen": 43.63,
+          "zahlbetrag_gesamt": 688.04,
+          "bewohner": {
+            "name": "Testberg-13, Test-M",
+            "einzug": "2024-06-25",
+            "kosten_pauschale": 290.00
+          }
+        },
+        {
+          "nummer": 5,
+          "zimmerflaeche_qm": 20.01,
+          "gemeinschaftsflaeche_anteil_qm": 23.68,
+          "mietflaeche_qm": 43.69,
+          "nettokaltmiete": 567.91,
+          "kalte_betriebskosten": 65.53,
+          "bruttokaltmiete": 633.43,
+          "heizung_warmwasser": 43.25,
+          "warmmiete": 676.68,
+          "strom": 30.00,
+          "schoenheitsreparaturen": 48.05,
+          "zahlbetrag_gesamt": 754.73,
+          "bewohner": {
+            "name": "Testberg-14, Test-N",
+            "einzug": "2017-10-01",
+            "kosten_pauschale": 290.00
+          }
+        },
+        {
+          "nummer": 6,
+          "zimmerflaeche_qm": 20.59,
+          "gemeinschaftsflaeche_anteil_qm": 23.68,
+          "mietflaeche_qm": 44.27,
+          "nettokaltmiete": 575.45,
+          "kalte_betriebskosten": 66.40,
+          "bruttokaltmiete": 641.84,
+          "heizung_warmwasser": 43.82,
+          "warmmiete": 685.66,
+          "strom": 30.00,
+          "schoenheitsreparaturen": 48.69,
+          "zahlbetrag_gesamt": 764.36,
+          "bewohner": {
+            "name": "Testberg-15, Test-O",
+            "einzug": "2026-01-07",
+            "kosten_pauschale": 290.00
+          }
+        },
+        {
+          "nummer": 7,
+          "zimmerflaeche_qm": 22.03,
+          "gemeinschaftsflaeche_anteil_qm": 23.68,
+          "mietflaeche_qm": 45.71,
+          "nettokaltmiete": 594.17,
+          "kalte_betriebskosten": 68.56,
+          "bruttokaltmiete": 662.72,
+          "heizung_warmwasser": 45.25,
+          "warmmiete": 707.97,
+          "strom": 30.00,
+          "schoenheitsreparaturen": 50.28,
+          "zahlbetrag_gesamt": 788.25,
+          "bewohner": {
+            "name": "Testberg-16, Test-P",
+            "einzug": "2026-01-08",
+            "kosten_pauschale": 290.00
+          }
+        },
+        {
+          "nummer": 8,
+          "typ": "Doppelzimmer",
+          "zimmerflaeche_qm": 21.48,
+          "gemeinschaftsflaeche_anteil_qm": 23.68,
+          "mietflaeche_qm": 45.16,
+          "nettokaltmiete": 587.02,
+          "kalte_betriebskosten": 67.73,
+          "bruttokaltmiete": 654.75,
+          "heizung_warmwasser": 44.70,
+          "warmmiete": 699.45,
+          "strom": 30.00,
+          "schoenheitsreparaturen": 49.67,
+          "zahlbetrag_gesamt": 779.12,
+          "bewohner": {
+            "name": "Testberg-17, Test-Q",
+            "einzug": "2017-10-01",
+            "kosten_pauschale": 290.00
+          }
+        }
+      ],
+      "finanzen": {
+        "summe_nettokaltmiete_monat": 4394.00,
+        "summe_zahlbetraege_monat": 5847.42,
+        "jahresmieteinnahmen_ist": 52728.00,
+        "jahresmieteinnahmen_soll": 70169.04
+      }
+    },
+
+    "kupferkessel_klein": {
+      "name": "WG Kupferkesselchen",
+      "kurzname": "Kupferkesselchen 3",
+      "adresse": "Baumschulenstrasse 64, 12437 Berlin",
+      "etage": "EG rechts",
+      "vermieter": "300&VIER GmbH",
+      "hauptmieter": "DomusVita gGmbH",
+      "heizungsart": "Erdgas",
+      "warmwasser_in_heizkosten": true,
+      "gesamtflaeche_qm": 68.0,
+      "zimmerflaeche_gesamt_qm": 53.3,
+      "gemeinschaftsflaeche_qm": 14.7,
+      "anzahl_zimmer": 3,
+      "kalkulationsbasis_2024": {
+        "nettokaltmiete_pro_qm": 13.25,
+        "kalte_betriebskosten_pro_qm": 1.50,
+        "angemessenheitsgrenze_2024_kalt": 583.00
+      },
+      "zimmer": [
+        {
+          "nummer": 1,
+          "zimmerflaeche_qm": 19.5,
+          "gemeinschaftsflaeche_anteil_qm": 14.7,
+          "mietflaeche_qm": 34.2,
+          "nettokaltmiete": 453.15,
+          "kalte_betriebskosten": 51.30,
+          "bruttokaltmiete": 504.45,
+          "heizung_warmwasser": 39.13,
+          "warmmiete": 543.58,
+          "strom": 30.00,
+          "schoenheitsreparaturen": 37.62,
+          "zahlbetrag_gesamt": 611.20,
+          "bewohner": {
+            "name": "Testberg-18, Test-R",
+            "einzug": "2023-08-01",
+            "kosten_pauschale": 290.00
+          }
+        },
+        {
+          "nummer": 2,
+          "zimmerflaeche_qm": 19.8,
+          "gemeinschaftsflaeche_anteil_qm": 14.7,
+          "mietflaeche_qm": 34.5,
+          "nettokaltmiete": 457.13,
+          "kalte_betriebskosten": 51.75,
+          "bruttokaltmiete": 508.88,
+          "heizung_warmwasser": 34.37,
+          "warmmiete": 543.25,
+          "strom": 30.00,
+          "schoenheitsreparaturen": 37.95,
+          "zahlbetrag_gesamt": 611.20,
+          "bewohner": {
+            "name": "Testberg-19, Test-S",
+            "einzug": null,
+            "kosten_pauschale": 290.00
+          }
+        },
+        {
+          "nummer": 3,
+          "zimmerflaeche_qm": 14.0,
+          "gemeinschaftsflaeche_anteil_qm": 14.7,
+          "mietflaeche_qm": 28.7,
+          "nettokaltmiete": 380.28,
+          "kalte_betriebskosten": 43.05,
+          "bruttokaltmiete": 423.33,
+          "heizung_warmwasser": 28.41,
+          "warmmiete": 451.74,
+          "strom": 30.00,
+          "schoenheitsreparaturen": 31.57,
+          "zahlbetrag_gesamt": 513.31,
+          "bewohner": {
+            "name": "Testberg-20, Test-T",
+            "einzug": "2026-02-18",
+            "kosten_pauschale": 290.00
+          }
+        }
+      ],
+      "finanzen": {
+        "summe_nettokaltmiete_monat": 1290.55,
+        "summe_zahlbetraege_monat": 1735.70,
+        "jahresmieteinnahmen_ist": 15486.60,
+        "jahresmieteinnahmen_soll": 20828.44
+      }
+    },
+
+    "drachenwiese_gross": {
+      "name": "WG Drachenwiese",
+      "kurzname": "Drachenwiese 12",
+      "adresse": "Rudower Strasse 228, 12557 Berlin",
+      "vermieter": "Hilfe in Not GmbH",
+      "hauptmieter": "Hilfe in Not GmbH (Untermieter: Bewohner)",
+      "heizungsart": "Fernwaerme",
+      "warmwasser_in_heizkosten": true,
+      "gesamtflaeche_wohnung_qm": 478.51,
+      "anzahl_zimmer": 12,
+      "nebenkosten_struktur": {
+        "reparaturpauschale": 30.00,
+        "sondermuell_inkontinenz": 20.00,
+        "strom": 45.00,
+        "heizkosten": 50.00,
+        "nebenkosten_summe": 145.00,
+        "abwaehlbar": ["strom", "sondermuell_inkontinenz", "heizkosten"],
+        "nicht_abwaehlbar": ["reparaturpauschale"]
+      },
+      "kaution": "zwei_grundmieten",
+      "zimmer": [
+        {
+          "nummer": 1,
+          "zimmerflaeche_qm": 23.7,
+          "mietangebot_qm": 42.30,
+          "grundmiete_kalt": 753.96,
+          "nebenkosten": 145.00,
+          "gesamtmiete": 898.96,
+          "bewohner": {
+            "name": "Testberg-21, Test-U",
+            "einzug": "2025-03-01",
+            "kosten_pauschale": 290.00
+          }
+        },
+        {
+          "nummer": 2,
+          "zimmerflaeche_qm": null,
+          "mietangebot_qm": 40.70,
+          "grundmiete_kalt": 725.44,
+          "nebenkosten": 145.00,
+          "gesamtmiete": 870.44,
+          "bewohner": {
+            "name": "Testberg-22, Test-V",
+            "einzug": "2024-02-01",
+            "kosten_pauschale": 290.00,
+            "hinweis": "kein Mietvertrag in Airtable"
+          }
+        },
+        {
+          "nummer": 3,
+          "zimmerflaeche_qm": 17.4,
+          "mietangebot_qm": 37.41,
+          "grundmiete_kalt": 641.68,
+          "nebenkosten": 145.00,
+          "gesamtmiete": 786.68,
+          "bewohner": {
+            "name": "Testberg-23, Test-W",
+            "einzug": "2024-07-17",
+            "kosten_pauschale": 290.00
+          }
+        },
+        {
+          "nummer": 4,
+          "zimmerflaeche_qm": 17.2,
+          "mietangebot_qm": 35.80,
+          "grundmiete_kalt": 638.11,
+          "nebenkosten": 145.00,
+          "gesamtmiete": 783.11,
+          "bewohner": {
+            "name": "Testberg-24, Test-X",
+            "einzug": "2023-10-22",
+            "kosten_pauschale": 290.00
+          }
+        },
+        {
+          "nummer": 5,
+          "zimmerflaeche_qm": 16.89,
+          "mietangebot_qm": 35.10,
+          "grundmiete_kalt": 625.64,
+          "nebenkosten": 145.00,
+          "gesamtmiete": 770.64,
+          "bewohner": {
+            "name": "Testberg-25, Test-Y",
+            "einzug": "2024-08-01",
+            "kosten_pauschale": 290.00
+          }
+        },
+        {
+          "nummer": 6,
+          "zimmerflaeche_qm": 20.3,
+          "mietangebot_qm": 38.90,
+          "grundmiete_kalt": 693.36,
+          "nebenkosten": 145.00,
+          "gesamtmiete": 838.36,
+          "bewohner": {
+            "name": "Testberg-26, Test-Z",
+            "einzug": "2025-03-17",
+            "kosten_pauschale": 290.00
+          }
+        },
+        {
+          "nummer": 7,
+          "zimmerflaeche_qm": null,
+          "mietangebot_qm": 39.90,
+          "grundmiete_kalt": 693.36,
+          "nebenkosten": 145.00,
+          "gesamtmiete": 838.36,
+          "bewohner": {
+            "name": "Testberg-27, Test-AA",
+            "einzug": "2026-01-20",
+            "kosten_pauschale": 290.00
+          }
+        },
+        {
+          "nummer": 8,
+          "zimmerflaeche_qm": 17.8,
+          "mietangebot_qm": 36.40,
+          "grundmiete_kalt": 648.80,
+          "nebenkosten": 145.00,
+          "gesamtmiete": 793.80,
+          "bewohner": {
+            "name": "Testberg-28, Test-AB",
+            "einzug": "2024-03-01",
+            "kosten_pauschale": 290.00
+          }
+        },
+        {
+          "nummer": 9,
+          "zimmerflaeche_qm": 20.7,
+          "mietangebot_qm": 39.90,
+          "grundmiete_kalt": 700.49,
+          "nebenkosten": 145.00,
+          "gesamtmiete": 845.49,
+          "bewohner": {
+            "name": "Testberg-29, Test-AC",
+            "einzug": "2025-01-23",
+            "kosten_pauschale": 290.00
+          }
+        },
+        {
+          "nummer": 10,
+          "zimmerflaeche_qm": 22.1,
+          "mietangebot_qm": 40.00,
+          "grundmiete_kalt": 712.96,
+          "nebenkosten": 145.00,
+          "gesamtmiete": 857.96,
+          "bewohner": {
+            "name": "Testberg-30, Test-AD",
+            "einzug": "2023-11-01",
+            "kosten_pauschale": 290.00
+          }
+        },
+        {
+          "nummer": 11,
+          "zimmerflaeche_qm": 19.5,
+          "mietangebot_qm": 38.10,
+          "grundmiete_kalt": 679.10,
+          "nebenkosten": 145.00,
+          "gesamtmiete": 824.10,
+          "bewohner": null
+        },
+        {
+          "nummer": 12,
+          "zimmerflaeche_qm": 21.5,
+          "mietangebot_qm": 40.10,
+          "grundmiete_kalt": 714.75,
+          "nebenkosten": 145.00,
+          "gesamtmiete": 859.75,
+          "bewohner": null
+        }
+      ]
+    },
+
+    "drachenwiese_klein": {
+      "name": "WG Drachenblick",
+      "kurzname": "Drachenblick 4",
+      "adresse": "Rudower Strasse 226, 12557 Berlin",
+      "etage": "EG",
+      "vermieter": "5D Living GmbH",
+      "heizungsart": "Fernwaerme",
+      "warmwasser_in_heizkosten": true,
+      "gesamtflaeche_wohnung_qm": 132.45,
+      "gesamtflaeche_grundriss_qm": 120.08,
+      "anzahl_zimmer": 4,
+      "raeume": {
+        "wohnen_kueche_qm": 39.63,
+        "bad_qm": 11.71,
+        "flur_qm": 9.71,
+        "abstellraum_qm": 2.22,
+        "wc_qm": 3.84,
+        "terrasse_qm": 20.40
+      },
+      "gemeinschaftsflaeche_qm": 79.33,
+      "gemeinschaftsflaeche_anteil_pro_zimmer_qm": 19.83,
+      "nebenkosten_struktur": {
+        "reparaturpauschale": 30.00,
+        "sondermuell_inkontinenz": 20.00,
+        "strom": 50.00,
+        "heizkosten": 45.00,
+        "nebenkosten_summe": 145.00,
+        "abwaehlbar": ["strom", "sondermuell_inkontinenz", "heizkosten"],
+        "nicht_abwaehlbar": ["reparaturpauschale"]
+      },
+      "kaution": "zwei_grundmieten",
+      "zimmer": [
+        {
+          "nummer": 1,
+          "zimmername": "Lotusbuete",
+          "zimmerflaeche_qm": 12.37,
+          "mietflaeche_qm": 32.20,
+          "grundmiete_kalt": 434.38,
+          "nebenkosten": 145.00,
+          "gesamtmiete": 579.38,
+          "bewohner": {
+            "name": "Testberg-31, Test-AE",
+            "einzug": "2026-01-05",
+            "kosten_pauschale": 290.00
+          }
+        },
+        {
+          "nummer": 2,
+          "zimmername": "Morgentau",
+          "zimmerflaeche_qm": 14.16,
+          "mietflaeche_qm": 33.99,
+          "grundmiete_kalt": 458.53,
+          "nebenkosten": 145.00,
+          "gesamtmiete": 603.53,
+          "bewohner": null
+        },
+        {
+          "nummer": 3,
+          "zimmername": "Savanne",
+          "zimmerflaeche_qm": 14.16,
+          "mietflaeche_qm": 33.99,
+          "grundmiete_kalt": 458.53,
+          "nebenkosten": 145.00,
+          "gesamtmiete": 603.53,
+          "bewohner": {
+            "name": "Testberg-32, Test-AF",
+            "einzug": "2025-04-01",
+            "kosten_pauschale": 290.00
+          }
+        },
+        {
+          "nummer": 4,
+          "zimmername": "Bernstein",
+          "zimmerflaeche_qm": 12.43,
+          "mietflaeche_qm": 32.26,
+          "grundmiete_kalt": 435.19,
+          "nebenkosten": 145.00,
+          "gesamtmiete": 580.19,
+          "bewohner": null
+        }
+      ]
+    },
+
+    "sterndamm": {
+      "name": "WG Sterndamm",
+      "kurzname": "Sterndamm 10",
+      "adresse": "Sterndamm 13, 12487 Berlin",
+      "anzahl_zimmer": 10,
+      "vermieter": "(aus Dokumenten nicht extrahiert - eigenes Einzugspaket vorhanden)",
+      "hinweis": "Keine detaillierte Preiskalkulation in den Dokumenten gefunden. Nur Belegungsdaten und historische Pflegeeinnahmen verfuegbar. Adresse aus Einzugspaket Sterndamm extrahiert.",
+      "zimmer": [
+        {
+          "nummer": 1,
+          "bewohner": { "name": "Testberg-01, Test-A", "kosten_pauschale": 290.00 }
+        },
+        {
+          "nummer": 2,
+          "bewohner": { "name": "Heinrich, Joerg", "kosten_pauschale": 290.00 }
+        },
+        {
+          "nummer": 3,
+          "bewohner": { "name": "Testberg-03, Test-C", "einzug": "2026-01-20", "kosten_pauschale": 290.00 }
+        },
+        {
+          "nummer": 4,
+          "bewohner": { "name": "Testberg-04, Test-D", "kosten_pauschale": 290.00 }
+        },
+        {
+          "nummer": 5,
+          "bewohner": { "name": "Testberg-05, Test-E", "kosten_pauschale": 290.00 }
+        },
+        {
+          "nummer": 6,
+          "bewohner": { "name": "Lange, Bend", "kosten_pauschale": 290.00 }
+        },
+        {
+          "nummer": 7,
+          "bewohner": { "name": "Testberg-07, Test-G", "kosten_pauschale": 290.00 }
+        },
+        {
+          "nummer": 8,
+          "bewohner": null
+        },
+        {
+          "nummer": 9,
+          "bewohner": { "name": "Testberg-08, Test-H", "kosten_pauschale": 290.00 }
+        },
+        {
+          "nummer": 10,
+          "bewohner": { "name": "Schloericke, Ronald", "einzug": "2026-01-06", "kosten_pauschale": 290.00 }
+        }
+      ]
+    }
+  },
+
+  "belegung_zusammenfassung": {
+    "stand": "2026-02-24",
+    "kupferkessel_gross": { "gesamt": 8, "belegt": 8, "frei": 0 },
+    "kupferkessel_klein": { "gesamt": 3, "belegt": 3, "frei": 0 },
+    "drachenwiese_gross": { "gesamt": 12, "belegt": 10, "frei": 2 },
+    "drachenwiese_klein": { "gesamt": 4, "belegt": 2, "frei": 2 },
+    "sterndamm": { "gesamt": 10, "belegt": 9, "frei": 1 },
+    "total": { "gesamt": 37, "belegt": 32, "frei": 5 }
+  },
+
+  "vertragsstruktur": {
+    "kupferkessel": {
+      "hauptmietvertrag": {
+        "vermieter": "Gebrueder EDE GbR",
+        "mieter": "300&VIER GmbH",
+        "objekt": "Baumschulenstrasse 64, 12437 Berlin",
+        "monatliche_miete": 3100.00,
+        "vertragsbeginn": "2016-09-01",
+        "hinweis": "300&VIER vermietet als Zwischenmieter an DomusVita gGmbH / Bewohner weiter"
+      },
+      "kooperationsvertraege": {
+        "partner_a": "300&VIER GmbH",
+        "partner_b": "DomusVita gGmbH",
+        "kooperationsvertrag_1": {
+          "bezeichnung": "Kupferkessel 1 (WG Kupferkessel Gross, 1. OG)",
+          "kooperationsgebuehr_monat": 800.00,
+          "vertragsdatum": "2017-10"
+        },
+        "kooperationsvertrag_2": {
+          "bezeichnung": "Kupferkessel 2 (WG Kupferkesselchen, EG rechts)",
+          "kooperationsgebuehr_monat": 500.00,
+          "vertragsdatum": "2023-03"
+        },
+        "gesamt_kooperationsgebuehr_monat": 1300.00
+      }
+    },
+    "drachenwiese": {
+      "vermieter": "Hilfe in Not GmbH",
+      "mietvertragstyp": "Bruttomiete (Untermietvertrag direkt mit Bewohner)",
+      "bankverbindung_vermieter": {
+        "kontoinhaber": "Hilfe in Not GmbH",
+        "iban": "DE53 1005 0000 0190 9988 90"
+      }
+    },
+    "drachenblick": {
+      "vermieter": "5D Living GmbH",
+      "mietvertragstyp": "Bruttomiete (Untermietvertrag direkt mit Bewohner)"
+    }
+  },
+
+  "bewohner_zusatzkosten": {
+    "beschreibung": "Monatliche Kosten pro Bewohner neben der Miete (aus Einzugspaket)",
+    "lebensmittelpauschale": 290.00,
+    "wg_beitrag": 30.00,
+    "gemeinschaftliche_einkauefe": 290.00,
+    "wg_zuschlag": 224.00,
+    "entlastungsbetrag_125b_sgbxi": 131.00,
+    "bankverbindung_domusvita": {
+      "kontoinhaber": "DomusVita gGmbH",
+      "iban": "DE18 1005 0000 0190 6561 40",
+      "bank": "Berliner Sparkasse"
+    }
+  },
+
+  "einheitliche_pauschalen": {
+    "kosten_pauschale_pro_bewohner": 290.00,
+    "beschreibung": "Einheitliche Pauschale fuer alle Bewohner (DomusVita Betreuungspauschale / Lebensmittelpauschale)"
+  },
+
+  "historische_daten": {
+    "kupferkessel_alte_kalkulation": {
+      "nettokaltmiete_pro_qm": 9.96,
+      "kalte_betriebskosten_pro_qm": 1.50,
+      "bruttokaltmietengrenze": 364.50,
+      "grenze_20_prozent": 437.40,
+      "jahresmieteinnahmen": 38134.05
+    },
+    "kreditdaten": {
+      "kredit_300k": {
+        "kaufpreis": 260000,
+        "makler": 18564,
+        "grunderwerbsteuer": 15600,
+        "notar": 3000,
+        "gesamtinvestition": 297164,
+        "kreditbetrag": 350000,
+        "laufzeit_jahre": 15,
+        "zinssatz": 0.021,
+        "afa_wertbasis": 200000,
+        "afa_satz": 0.03,
+        "steuersatz": 0.42,
+        "amortisation_ohne_steuern_jahre": 7.2,
+        "amortisation_mit_steuern_jahre": 10
+      },
+      "kredit_100k": {
+        "kreditbetrag": 100000,
+        "zinssatz": 0.017,
+        "annuitaet_jahr": 10958.63,
+        "laufzeit_jahre": 10,
+        "gesamtrueckzahlung": 109586.31,
+        "gesamtzinsen": 9586.31
+      }
+    }
+  }
+}

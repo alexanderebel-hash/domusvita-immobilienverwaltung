@@ -18,3 +18,10 @@ Pillow
 PyJWT==2.10.1
 cryptography==46.0.3
 aiohttp==3.11.16
+
+# PDF Generation (Einzugspaket)
+weasyprint>=62.0
+Jinja2>=3.1.0
+
+# Email (optional, for SMTP sending)
+aiosmtplib>=2.0.0

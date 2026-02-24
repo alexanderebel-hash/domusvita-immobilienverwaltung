@@ -6,6 +6,11 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     gcc \
     g++ \
     libffi-dev \
+    libpango-1.0-0 \
+    libpangoft2-1.0-0 \
+    libpangocairo-1.0-0 \
+    libgdk-pixbuf2.0-0 \
+    libcairo2 \
     && rm -rf /var/lib/apt/lists/*
 
 COPY requirements.txt .
@@ -15,6 +20,8 @@ COPY database.py .
 COPY schemas.py .
 COPY server.py .
 COPY auth.py .
+COPY pdf_generator.py .
+COPY templates/ templates/
 
 RUN date -u '+%d.%m.%Y %H:%M' > /app/.build_timestamp
 

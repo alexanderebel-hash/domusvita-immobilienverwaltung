@@ -1,0 +1,82 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="header-block">
+  <div class="company">{{ stammdaten.pflegedienst_name }}</div>
+  <div class="subtitle">Ambulant betreute Wohngemeinschaft &middot; {{ wg.property_name }}</div>
+</div>
+
+<div class="date-right">{{ datum_heute }}</div>
+
+<div class="address-block">
+  {{ klient.vorname }} {{ klient.nachname }}<br>
+  {% if klient.kontakt_name %}c/o {{ klient.kontakt_name }}<br>{% endif %}
+</div>
+
+<h1>Willkommen in der {{ wg.kurzname }}</h1>
+
+<p>Sehr geehrte/r {{ klient.vorname }} {{ klient.nachname }},</p>
+
+<p>wir freuen uns sehr, Sie in unserer ambulant betreuten Wohngemeinschaft
+<strong>{{ wg.kurzname }}</strong> in der {{ stammdaten.wg_adresse_strasse }},
+{{ stammdaten.wg_adresse_plz_ort }} begr&uuml;&szlig;en zu d&uuml;rfen.</p>
+
+<p>Anbei erhalten Sie alle wichtigen Unterlagen f&uuml;r Ihren Einzug:</p>
+
+<ol>
+  <li>Gemeinschaftsvereinbarung der Wohngemeinschaft</li>
+  <li>Er&ouml;ffnung des Haushaltsbuchs / Einzugserm&auml;chtigung</li>
+  <li>SEPA-Lastschriftmandat</li>
+  <li>Kosten&uuml;bersicht</li>
+  <li>Nutzungsvertrag (Mietvertrag)</li>
+  <li>Hausordnung</li>
+  <li>Bewohner-Kurzprofil</li>
+  <li>Aufgaben-Checkliste</li>
+</ol>
+
+<h2>Ihre Wohngemeinschaft auf einen Blick</h2>
+
+<table class="info-table">
+  <tr>
+    <td class="label">Wohngemeinschaft:</td>
+    <td class="value">{{ wg.property_name }}</td>
+  </tr>
+  <tr>
+    <td class="label">Adresse:</td>
+    <td class="value">{{ stammdaten.wg_adresse_strasse }}, {{ stammdaten.wg_adresse_plz_ort }}</td>
+  </tr>
+  <tr>
+    <td class="label">Ihr Zimmer:</td>
+    <td class="value">Zimmer {{ zimmer.nummer }}{% if zimmer.flaeche_qm %} ({{ zimmer.flaeche_qm }} m&sup2;){% endif %}</td>
+  </tr>
+  <tr>
+    <td class="label">Einzugsdatum:</td>
+    <td class="value">{{ mietbeginn or datum_heute }}</td>
+  </tr>
+  <tr>
+    <td class="label">Vermieter:</td>
+    <td class="value">{{ stammdaten.vermieter_name }}</td>
+  </tr>
+  <tr>
+    <td class="label">Pflegedienst:</td>
+    <td class="value">{{ stammdaten.pflegedienst_name }}</td>
+  </tr>
+</table>
+
+<h2>Wichtige Kontakte</h2>
+
+<table class="info-table">
+  <tr>
+    <td class="label">Vermieter:</td>
+    <td class="value">{{ stammdaten.vermieter_name }}<br>{{ stammdaten.vermieter_strasse }}<br>{{ stammdaten.vermieter_plz_ort }}</td>
+  </tr>
+  <tr>
+    <td class="label">Pflegedienst:</td>
+    <td class="value">{{ stammdaten.pflegedienst_name }}</td>
+  </tr>
+</table>
+
+<p>Bei Fragen stehen wir Ihnen jederzeit gerne zur Verf&uuml;gung.</p>
+
+<p>Mit freundlichen Gr&uuml;&szlig;en<br>
+<strong>{{ stammdaten.pflegedienst_name }}</strong></p>
+{% endblock %}

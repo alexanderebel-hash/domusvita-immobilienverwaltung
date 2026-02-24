@@ -1,4 +1,5 @@
 from fastapi import FastAPI, APIRouter, HTTPException, Depends, UploadFile, File, BackgroundTasks
+from fastapi.responses import StreamingResponse, HTMLResponse
 from fastapi.middleware.cors import CORSMiddleware
 from dotenv import load_dotenv
 from contextlib import asynccontextmanager
@@ -12,6 +13,7 @@ import uuid
 import base64
 import io
 from PIL import Image
+from pdf_generator import EinzugspaketGenerator, DOCUMENT_SECTIONS, SECTION_LABELS
 
 from auth import get_current_user, get_current_user_optional, DEV_MODE, AZURE_AD_TENANT_ID, AZURE_AD_CLIENT_ID
 
@@ -33,7 +35,8 @@ from schemas import (
     PflegeWGResponse, ZimmerCreate, ZimmerUpdate, ZimmerResponse,
     KlientCreate, KlientUpdate, KlientResponse,
     KommunikationCreate, KommunikationResponse,
-    AktivitaetResponse, PipelineStats, KlientenDashboard
+    AktivitaetResponse, PipelineStats, KlientenDashboard,
+    WGStammdatenUpdate, EinzugspaketRequest, EinzugspaketEmailRequest
 )
 
 # Load environment
@@ -1044,6 +1047,230 @@ async def get_handwerker_status_options():
         "photo_categories": ["Vorher", "Während", "Nachher"]
     }
 
+# ==================== EINZUGSPAKET PDF ====================
+
+pdf_generator = EinzugspaketGenerator()
+
+@api_router.get("/einzugspaket/sections")
+async def get_einzugspaket_sections(current_user: Dict = Depends(get_current_user)):
+    """Get available document sections for Einzugspaket"""
+    return [{"key": k, "label": SECTION_LABELS.get(k, k)} for k in DOCUMENT_SECTIONS]
+
+@api_router.post("/einzugspaket/generate")
+async def generate_einzugspaket(data: EinzugspaketRequest, current_user: Dict = Depends(get_current_user)):
+    """Generate Einzugspaket PDF for a client"""
+    # Load data
+    klient = await db.klienten.find_one({"id": data.klient_id})
+    if not klient:
+        raise HTTPException(status_code=404, detail="Klient nicht gefunden")
+
+    wg = next((w for w in PFLEGE_WGS_DATA if w["id"] == data.wg_id), None)
+    if not wg:
+        raise HTTPException(status_code=404, detail="WG nicht gefunden")
+
+    zimmer = await db.wg_zimmer.find_one({"id": data.zimmer_id})
+    if not zimmer:
+        raise HTTPException(status_code=404, detail="Zimmer nicht gefunden")
+
+    stammdaten = await db.wg_stammdaten.find_one({"wg_id": data.wg_id}, {"_id": 0})
+    if not stammdaten:
+        stammdaten = WG_STAMMDATEN_DEFAULTS.get(data.wg_id, {})
+
+    # Generate PDF
+    pdf_bytes = pdf_generator.generate(
+        klient=klient,
+        wg=wg,
+        zimmer=zimmer,
+        stammdaten=stammdaten,
+        mietbeginn=data.mietbeginn,
+        sections=data.dokumente,
+    )
+
+    filename = f"Einzugspaket_{klient.get('nachname')}_{klient.get('vorname')}_{wg.get('kurzname')}.pdf"
+
+    # Log activity
+    await db.klient_aktivitaeten.insert_one({
+        "id": generate_id(),
+        "klient_id": data.klient_id,
+        "aktion": f"Einzugspaket generiert ({wg.get('kurzname')}, Zimmer {zimmer.get('nummer')})",
+        "timestamp": to_iso(now())
+    })
+
+    return StreamingResponse(
+        io.BytesIO(pdf_bytes),
+        media_type="application/pdf",
+        headers={"Content-Disposition": f'attachment; filename="{filename}"'}
+    )
+
+@api_router.post("/einzugspaket/preview")
+async def preview_einzugspaket(data: EinzugspaketRequest, current_user: Dict = Depends(get_current_user)):
+    """Generate HTML preview of Einzugspaket"""
+    klient = await db.klienten.find_one({"id": data.klient_id})
+    if not klient:
+        raise HTTPException(status_code=404, detail="Klient nicht gefunden")
+
+    wg = next((w for w in PFLEGE_WGS_DATA if w["id"] == data.wg_id), None)
+    if not wg:
+        raise HTTPException(status_code=404, detail="WG nicht gefunden")
+
+    zimmer = await db.wg_zimmer.find_one({"id": data.zimmer_id})
+    if not zimmer:
+        raise HTTPException(status_code=404, detail="Zimmer nicht gefunden")
+
+    stammdaten = await db.wg_stammdaten.find_one({"wg_id": data.wg_id}, {"_id": 0})
+    if not stammdaten:
+        stammdaten = WG_STAMMDATEN_DEFAULTS.get(data.wg_id, {})
+
+    html = pdf_generator.generate_preview_html(
+        klient=klient,
+        wg=wg,
+        zimmer=zimmer,
+        stammdaten=stammdaten,
+        mietbeginn=data.mietbeginn,
+        sections=data.dokumente,
+    )
+    return HTMLResponse(content=html)
+
+@api_router.post("/einzugspaket/save")
+async def save_einzugspaket(data: EinzugspaketRequest, current_user: Dict = Depends(get_current_user)):
+    """Generate Einzugspaket PDF and save it as klient_dokument"""
+    klient = await db.klienten.find_one({"id": data.klient_id})
+    if not klient:
+        raise HTTPException(status_code=404, detail="Klient nicht gefunden")
+
+    wg = next((w for w in PFLEGE_WGS_DATA if w["id"] == data.wg_id), None)
+    if not wg:
+        raise HTTPException(status_code=404, detail="WG nicht gefunden")
+
+    zimmer = await db.wg_zimmer.find_one({"id": data.zimmer_id})
+    if not zimmer:
+        raise HTTPException(status_code=404, detail="Zimmer nicht gefunden")
+
+    stammdaten = await db.wg_stammdaten.find_one({"wg_id": data.wg_id}, {"_id": 0})
+    if not stammdaten:
+        stammdaten = WG_STAMMDATEN_DEFAULTS.get(data.wg_id, {})
+
+    pdf_bytes = pdf_generator.generate(
+        klient=klient, wg=wg, zimmer=zimmer,
+        stammdaten=stammdaten, mietbeginn=data.mietbeginn,
+        sections=data.dokumente,
+    )
+
+    filename = f"Einzugspaket_{klient.get('nachname')}_{klient.get('vorname')}_{wg.get('kurzname')}.pdf"
+
+    dok = {
+        "id": generate_id(),
+        "klient_id": data.klient_id,
+        "name": filename,
+        "kategorie": "einzugspaket",
+        "file_data": base64.b64encode(pdf_bytes).decode(),
+        "file_size": len(pdf_bytes),
+        "file_type": "application/pdf",
+        "status": "hochgeladen",
+        "erstellt_am": to_iso(now()),
+    }
+    await db.klient_dokumente.insert_one(dok)
+
+    await db.klient_aktivitaeten.insert_one({
+        "id": generate_id(),
+        "klient_id": data.klient_id,
+        "aktion": f"Einzugspaket gespeichert ({wg.get('kurzname')}, Zimmer {zimmer.get('nummer')})",
+        "timestamp": to_iso(now())
+    })
+
+    return {"message": "Einzugspaket gespeichert", "dokument_id": dok["id"], "filename": filename}
+
+@api_router.post("/einzugspaket/send-email")
+async def send_einzugspaket_email(data: EinzugspaketEmailRequest, current_user: Dict = Depends(get_current_user)):
+    """Generate Einzugspaket PDF and send via email"""
+    klient = await db.klienten.find_one({"id": data.klient_id})
+    if not klient:
+        raise HTTPException(status_code=404, detail="Klient nicht gefunden")
+
+    wg = next((w for w in PFLEGE_WGS_DATA if w["id"] == data.wg_id), None)
+    if not wg:
+        raise HTTPException(status_code=404, detail="WG nicht gefunden")
+
+    zimmer = await db.wg_zimmer.find_one({"id": data.zimmer_id})
+    if not zimmer:
+        raise HTTPException(status_code=404, detail="Zimmer nicht gefunden")
+
+    stammdaten = await db.wg_stammdaten.find_one({"wg_id": data.wg_id}, {"_id": 0})
+    if not stammdaten:
+        stammdaten = WG_STAMMDATEN_DEFAULTS.get(data.wg_id, {})
+
+    pdf_bytes = pdf_generator.generate(
+        klient=klient, wg=wg, zimmer=zimmer,
+        stammdaten=stammdaten, mietbeginn=data.mietbeginn,
+    )
+
+    filename = f"Einzugspaket_{klient.get('nachname')}_{klient.get('vorname')}_{wg.get('kurzname')}.pdf"
+    email_sent = False
+
+    # Try real SMTP sending
+    smtp_host = os.environ.get("SMTP_HOST", "")
+    if smtp_host:
+        try:
+            import aiosmtplib
+            from email.mime.multipart import MIMEMultipart
+            from email.mime.text import MIMEText
+            from email.mime.application import MIMEApplication
+
+            msg = MIMEMultipart()
+            msg["From"] = os.environ.get("SMTP_FROM", "noreply@domusvita.de")
+            msg["To"] = data.empfaenger_email
+            msg["Subject"] = data.betreff
+
+            body = data.nachricht or (
+                f"Sehr geehrte Damen und Herren,\n\n"
+                f"anbei erhalten Sie das Einzugspaket für {klient.get('vorname')} "
+                f"{klient.get('nachname')} in der WG {wg.get('kurzname')}.\n\n"
+                f"Mit freundlichen Grüßen\n{stammdaten.get('pflegedienst_name', 'DomusVita')}"
+            )
+            msg.attach(MIMEText(body, "plain", "utf-8"))
+
+            attachment = MIMEApplication(pdf_bytes, _subtype="pdf")
+            attachment.add_header("Content-Disposition", "attachment", filename=filename)
+            msg.attach(attachment)
+
+            await aiosmtplib.send(
+                msg,
+                hostname=smtp_host,
+                port=int(os.environ.get("SMTP_PORT", 587)),
+                username=os.environ.get("SMTP_USER", ""),
+                password=os.environ.get("SMTP_PASS", ""),
+                use_tls=True,
+            )
+            email_sent = True
+        except Exception as e:
+            logger.error(f"SMTP send failed: {e}")
+
+    # Save as communication entry
+    komm = {
+        "id": generate_id(),
+        "klient_id": data.klient_id,
+        "typ": "email_aus",
+        "betreff": data.betreff,
+        "inhalt": (data.nachricht or "Einzugspaket gesendet") + f"\n\nAnhänge: {filename}",
+        "anhaenge": [filename],
+        "empfaenger": data.empfaenger_email,
+        "erstellt_am": to_iso(now()),
+        "erstellt_von_name": "System"
+    }
+    await db.klient_kommunikation.insert_one(komm)
+
+    await db.klient_aktivitaeten.insert_one({
+        "id": generate_id(),
+        "klient_id": data.klient_id,
+        "aktion": f"Einzugspaket per E-Mail gesendet an {data.empfaenger_email}",
+        "timestamp": to_iso(now())
+    })
+
+    return {
+        "message": "E-Mail gesendet" if email_sent else "Einzugspaket als Kommunikationseintrag gespeichert (SMTP nicht konfiguriert)",
+        "email_sent": email_sent,
+    }
+
 # ==================== SEED DATA ====================
 
 @api_router.post("/seed")
@@ -1193,7 +1420,7 @@ PFLEGE_WGS_DATA = [
         "id": "wg-sterndamm",
         "kurzname": "Sterndamm",
         "property_name": "WG Sterndamm",
-        "property_address": "Sterndamm 10, 12109 Berlin",
+        "property_address": "Sterndamm 13, 12487 Berlin",
         "kapazitaet": 10,
         "grundriss_url": "https://customer-assets.emergentagent.com/job_domushome/artifacts/gv8gcuns_Grundriss%20Sterndamm.png",
         "beschreibung": "Ambulant betreute Wohngemeinschaft mit 10 Zimmern"
@@ -1202,17 +1429,17 @@ PFLEGE_WGS_DATA = [
         "id": "wg-kupferkessel",
         "kurzname": "Kupferkessel",
         "property_name": "WG Kupferkessel",
-        "property_address": "Baumschulenstraße 64, 12437 Berlin",
-        "kapazitaet": 9,
+        "property_address": "Baumschulenstraße 64, 1. OG, 12437 Berlin",
+        "kapazitaet": 8,
         "grundriss_url": None,
-        "beschreibung": "Große ambulant betreute Wohngemeinschaft mit 9 Zimmern"
+        "beschreibung": "Ambulant betreute Wohngemeinschaft mit 8 Zimmern (inkl. 1 Doppelzimmer)"
     },
     {
         "id": "wg-kupferkessel-klein",
-        "kurzname": "Kupferkessel Klein",
-        "property_name": "WG Kupferkessel Klein",
-        "property_address": "Baumschulenstraße 64, 12437 Berlin",
-        "kapazitaet": 4,
+        "kurzname": "Kupferkesselchen",
+        "property_name": "WG Kupferkesselchen",
+        "property_address": "Baumschulenstraße 64, EG rechts, 12437 Berlin",
+        "kapazitaet": 3,
         "grundriss_url": "https://customer-assets.emergentagent.com/job_domushome/artifacts/suv923c5_KUPFERKESSEL%20KLEIN%20GRUNDRISS.png",
         "beschreibung": "Kleinere Wohngemeinschaft mit 4 Zimmern"
     },
@@ -1236,51 +1463,53 @@ PFLEGE_WGS_DATA = [
     }
 ]
 
-# Echte Bewohnerdaten aus Excel-Import
+# Echte Bewohnerdaten aus wg-datengrundlage.json (Stand 2026-02-24)
 ECHTE_BEWOHNER_DATA = {
     "wg-sterndamm": [
-        {"vorname": "Test-A", "nachname": "Testberg-01", "einzugsdatum": "2023-07-04"},
-        {"vorname": "Test-E", "nachname": "Testberg-05", "einzugsdatum": "2023-07-04"},
-        {"vorname": "Test-G", "nachname": "Testberg-07", "einzugsdatum": "2023-07-04"},
-        {"vorname": "Test-H", "nachname": "Testberg-08", "einzugsdatum": "2023-07-04"},
-        {"vorname": "Test-D", "nachname": "Testberg-04", "einzugsdatum": "2024-06-05"},
-        {"vorname": "Jürgen", "nachname": "Paetow", "einzugsdatum": "2024-06-05"},
-        {"vorname": "Test-F", "nachname": "Testberg-06", "einzugsdatum": "2025-07-18"},
-        {"vorname": "Test-B", "nachname": "Testberg-02", "einzugsdatum": "2025-11-14"},
-        {"vorname": "Test-I", "nachname": "Testberg-09", "einzugsdatum": "2025-11-25"},
-        {"vorname": "Test-C", "nachname": "Testberg-03", "einzugsdatum": "2026-01-21"}
+        {"vorname": "Test-A", "nachname": "Testberg-01", "zimmer_nr": "1"},
+        {"vorname": "Test-B", "nachname": "Testberg-02", "zimmer_nr": "2"},
+        {"vorname": "Test-C", "nachname": "Testberg-03", "einzugsdatum": "2026-01-20", "zimmer_nr": "3"},
+        {"vorname": "Test-D", "nachname": "Testberg-04", "zimmer_nr": "4"},
+        {"vorname": "Test-E", "nachname": "Testberg-05", "zimmer_nr": "5"},
+        {"vorname": "Test-F", "nachname": "Testberg-06", "zimmer_nr": "6"},
+        {"vorname": "Test-G", "nachname": "Testberg-07", "zimmer_nr": "7"},
+        # Zimmer 8 frei
+        {"vorname": "Test-H", "nachname": "Testberg-08", "zimmer_nr": "9"},
+        {"vorname": "Test-I", "nachname": "Testberg-09", "einzugsdatum": "2026-01-06", "zimmer_nr": "10"},
     ],
     "wg-kupferkessel": [
-        {"vorname": "Test-K", "nachname": "Testberg-11", "einzugsdatum": "2023-07-04"},
-        {"vorname": "Test-N", "nachname": "Testberg-14", "einzugsdatum": "2023-07-04"},
-        {"vorname": "Test-Q", "nachname": "Testberg-17", "einzugsdatum": "2023-07-04"},
-        {"vorname": "Test-L", "nachname": "Testberg-12", "einzugsdatum": "2023-07-04"},
-        {"vorname": "Test-M", "nachname": "Testberg-13", "einzugsdatum": "2024-06-17"},
-        {"vorname": "Test-J", "nachname": "Testberg-10", "einzugsdatum": "2025-04-30"},
-        {"vorname": "Test-O", "nachname": "Testberg-15", "einzugsdatum": "2025-07-15"},
-        {"vorname": "Test-P", "nachname": "Testberg-16", "einzugsdatum": "2025-11-06"}
+        {"vorname": "Test-J", "nachname": "Testberg-10", "einzugsdatum": "2025-05-01", "zimmer_nr": "1"},
+        {"vorname": "Test-K", "nachname": "Testberg-11", "einzugsdatum": "2020-06-01", "zimmer_nr": "2"},
+        {"vorname": "Test-L", "nachname": "Testberg-12", "einzugsdatum": "2025-07-15", "zimmer_nr": "3"},
+        {"vorname": "Test-M", "nachname": "Testberg-13", "einzugsdatum": "2024-06-25", "zimmer_nr": "4"},
+        {"vorname": "Test-N", "nachname": "Testberg-14", "einzugsdatum": "2017-10-01", "zimmer_nr": "5"},
+        {"vorname": "Test-O", "nachname": "Testberg-15", "einzugsdatum": "2026-01-07", "zimmer_nr": "6"},
+        {"vorname": "Test-P", "nachname": "Testberg-16", "einzugsdatum": "2026-01-08", "zimmer_nr": "7"},
+        {"vorname": "Test-Q", "nachname": "Testberg-17", "einzugsdatum": "2017-10-01", "zimmer_nr": "8"},
     ],
     "wg-kupferkessel-klein": [
-        {"vorname": "Test-R", "nachname": "Testberg-18", "einzugsdatum": "2023-07-04"},
-        {"vorname": "David", "nachname": "Guminski", "einzugsdatum": "2025-09-09"},
-        {"vorname": "Test-S", "nachname": "Testberg-19", "einzugsdatum": "2026-01-06"}
+        {"vorname": "Test-R", "nachname": "Testberg-18", "einzugsdatum": "2023-08-01", "zimmer_nr": "1"},
+        {"vorname": "Test-S", "nachname": "Testberg-19", "zimmer_nr": "2"},
+        {"vorname": "Test-T", "nachname": "Testberg-20", "einzugsdatum": "2026-02-18", "zimmer_nr": "3"},
     ],
     "wg-drachenwiese": [
-        {"vorname": "Test-X", "nachname": "Testberg-24", "einzugsdatum": "2023-08-22"},
-        {"vorname": "Ursula", "nachname": "Lauermann", "einzugsdatum": "2023-09-04"},
-        {"vorname": "Test-AD", "nachname": "Testberg-30", "einzugsdatum": "2023-09-14"},
-        {"vorname": "Test-V", "nachname": "Testberg-22", "einzugsdatum": "2023-11-14"},
-        {"vorname": "Test-AB", "nachname": "Testberg-28", "einzugsdatum": "2024-06-05"},
-        {"vorname": "Test-Y", "nachname": "Testberg-25", "einzugsdatum": "2024-07-09"},
-        {"vorname": "Test-W", "nachname": "Testberg-23", "einzugsdatum": "2024-07-10"},
-        {"vorname": "Test-AC", "nachname": "Testberg-29", "einzugsdatum": "2025-01-24"},
-        {"vorname": "Test-U", "nachname": "Testberg-21", "einzugsdatum": "2025-03-04"},
-        {"vorname": "Test-Z", "nachname": "Testberg-26", "einzugsdatum": "2025-03-20"},
-        {"vorname": "Test-AA", "nachname": "Testberg-27", "einzugsdatum": "2025-11-06"}
+        {"vorname": "Test-U", "nachname": "Testberg-21", "einzugsdatum": "2025-03-01", "zimmer_nr": "1"},
+        {"vorname": "Test-V", "nachname": "Testberg-22", "einzugsdatum": "2024-02-01", "zimmer_nr": "2"},
+        {"vorname": "Test-W", "nachname": "Testberg-23", "einzugsdatum": "2024-07-17", "zimmer_nr": "3"},
+        {"vorname": "Test-X", "nachname": "Testberg-24", "einzugsdatum": "2023-10-22", "zimmer_nr": "4"},
+        {"vorname": "Test-Y", "nachname": "Testberg-25", "einzugsdatum": "2024-08-01", "zimmer_nr": "5"},
+        {"vorname": "Test-Z", "nachname": "Testberg-26", "einzugsdatum": "2025-03-17", "zimmer_nr": "6"},
+        {"vorname": "Test-AA", "nachname": "Testberg-27", "einzugsdatum": "2026-01-20", "zimmer_nr": "7"},
+        {"vorname": "Test-AB", "nachname": "Testberg-28", "einzugsdatum": "2024-03-01", "zimmer_nr": "8"},
+        {"vorname": "Test-AC", "nachname": "Testberg-29", "einzugsdatum": "2025-01-23", "zimmer_nr": "9"},
+        {"vorname": "Test-AD", "nachname": "Testberg-30", "einzugsdatum": "2023-11-01", "zimmer_nr": "10"},
+        # Zimmer 11 + 12 frei
     ],
     "wg-drachenblick": [
-        {"vorname": "Test-AF", "nachname": "Testberg-32", "einzugsdatum": "2025-04-08"},
-        {"vorname": "Test-AE", "nachname": "Testberg-31", "einzugsdatum": "2025-10-10"}
+        {"vorname": "Test-AE", "nachname": "Testberg-31", "einzugsdatum": "2026-01-05", "zimmer_nr": "1"},
+        # Zimmer 2 (Morgentau) frei
+        {"vorname": "Test-AF", "nachname": "Testberg-32", "einzugsdatum": "2025-04-01", "zimmer_nr": "3"},
+        # Zimmer 4 (Bernstein) frei
     ]
 }
 
@@ -2009,6 +2238,149 @@ async def get_gesamt_kosten(current_user: Dict = Depends(get_current_user)):
         "gesamt_auslastung": round((gesamt_bewohner / gesamt_kapazitaet) * 100) if gesamt_kapazitaet else 0
     }
 
+# ==================== WG-STAMMDATEN ====================
+
+# Default-Stammdaten fuer alle 5 WGs (aus Original-PDFs extrahiert)
+WG_STAMMDATEN_DEFAULTS = {
+    "wg-sterndamm": {
+        "vermieter_name": "DomusVita gGmbH",
+        "vermieter_strasse": "Sterndamm 13",
+        "vermieter_plz_ort": "12487 Berlin",
+        "vermieter_iban": "DE18 1005 0000 0190 6561 40",
+        "vermieter_bank": "Berliner Sparkasse",
+        "vermieter_bic": "BELADEBEXXX",
+        "wg_adresse_strasse": "Sterndamm 13",
+        "wg_adresse_plz_ort": "12487 Berlin",
+        "haushaltsbuch_iban": "DE18 1005 0000 0190 6561 40",
+        "haushaltsbuch_bank": "Berliner Sparkasse",
+        "lebensmittelpauschale": 290.0,
+        "wg_beitrag": 30.0,
+        "wg_zuschlag": 224.0,
+        "entlastungsbetrag": 131.0,
+        "pflegedienst_name": "DomusVita gGmbH",
+    },
+    "wg-kupferkessel": {
+        "vermieter_name": "300&VIER GmbH",
+        "vermieter_strasse": "Baumschulenstraße 64",
+        "vermieter_plz_ort": "12437 Berlin",
+        "vermieter_iban": "DE18 1005 0000 0190 6561 40",
+        "vermieter_bank": "Berliner Sparkasse",
+        "vermieter_bic": "BELADEBEXXX",
+        "wg_adresse_strasse": "Baumschulenstraße 64, 1. OG",
+        "wg_adresse_plz_ort": "12437 Berlin",
+        "haushaltsbuch_iban": "DE18 1005 0000 0190 6561 40",
+        "haushaltsbuch_bank": "Berliner Sparkasse",
+        "lebensmittelpauschale": 290.0,
+        "wg_beitrag": 30.0,
+        "wg_zuschlag": 224.0,
+        "entlastungsbetrag": 131.0,
+        "pflegedienst_name": "DomusVita gGmbH",
+        "hauptmieter": "DomusVita gGmbH",
+        "nettokaltmiete_pro_qm": 13.00,
+        "kalte_betriebskosten_pro_qm": 1.50,
+        "kooperationsgebuehr_monat": 800.0,
+    },
+    "wg-kupferkessel-klein": {
+        "vermieter_name": "300&VIER GmbH",
+        "vermieter_strasse": "Baumschulenstraße 64",
+        "vermieter_plz_ort": "12437 Berlin",
+        "vermieter_iban": "DE18 1005 0000 0190 6561 40",
+        "vermieter_bank": "Berliner Sparkasse",
+        "vermieter_bic": "BELADEBEXXX",
+        "wg_adresse_strasse": "Baumschulenstraße 64, EG rechts",
+        "wg_adresse_plz_ort": "12437 Berlin",
+        "haushaltsbuch_iban": "DE18 1005 0000 0190 6561 40",
+        "haushaltsbuch_bank": "Berliner Sparkasse",
+        "lebensmittelpauschale": 290.0,
+        "wg_beitrag": 30.0,
+        "wg_zuschlag": 224.0,
+        "entlastungsbetrag": 131.0,
+        "pflegedienst_name": "DomusVita gGmbH",
+        "hauptmieter": "DomusVita gGmbH",
+        "nettokaltmiete_pro_qm": 13.25,
+        "kalte_betriebskosten_pro_qm": 1.50,
+        "kooperationsgebuehr_monat": 500.0,
+    },
+    "wg-drachenwiese": {
+        "vermieter_name": "Hilfe in Not GmbH",
+        "vermieter_strasse": "Rudower Straße 228",
+        "vermieter_plz_ort": "12557 Berlin",
+        "vermieter_iban": "DE53 1005 0000 0190 9988 90",
+        "vermieter_bank": "Berliner Sparkasse",
+        "vermieter_bic": "BELADEBEXXX",
+        "wg_adresse_strasse": "Rudower Straße 228",
+        "wg_adresse_plz_ort": "12557 Berlin",
+        "haushaltsbuch_iban": "DE18 1005 0000 0190 6561 40",
+        "haushaltsbuch_bank": "Berliner Sparkasse",
+        "lebensmittelpauschale": 290.0,
+        "wg_beitrag": 30.0,
+        "wg_zuschlag": 224.0,
+        "entlastungsbetrag": 131.0,
+        "pflegedienst_name": "DomusVita gGmbH",
+        "mietvertragstyp": "Bruttomiete (Untermietvertrag)",
+        "nebenkosten_reparaturpauschale": 30.0,
+        "nebenkosten_sondermuell": 20.0,
+        "nebenkosten_strom": 45.0,
+        "nebenkosten_heizkosten": 50.0,
+        "kaution": "zwei_grundmieten",
+    },
+    "wg-drachenblick": {
+        "vermieter_name": "5D Living GmbH",
+        "vermieter_strasse": "Rudower Straße 226",
+        "vermieter_plz_ort": "12557 Berlin",
+        "vermieter_iban": "DE18 1005 0000 0190 6561 40",
+        "vermieter_bank": "Berliner Sparkasse",
+        "vermieter_bic": "BELADEBEXXX",
+        "wg_adresse_strasse": "Rudower Straße 226",
+        "wg_adresse_plz_ort": "12557 Berlin",
+        "haushaltsbuch_iban": "DE18 1005 0000 0190 6561 40",
+        "haushaltsbuch_bank": "Berliner Sparkasse",
+        "lebensmittelpauschale": 290.0,
+        "wg_beitrag": 30.0,
+        "wg_zuschlag": 224.0,
+        "entlastungsbetrag": 131.0,
+        "pflegedienst_name": "DomusVita gGmbH",
+        "mietvertragstyp": "Bruttomiete (Untermietvertrag)",
+        "nebenkosten_reparaturpauschale": 30.0,
+        "nebenkosten_sondermuell": 20.0,
+        "nebenkosten_strom": 50.0,
+        "nebenkosten_heizkosten": 45.0,
+        "kaution": "zwei_grundmieten",
+    },
+}
+
+@api_router.get("/pflege-wgs/{wg_id}/stammdaten")
+async def get_wg_stammdaten(wg_id: str, current_user: Dict = Depends(get_current_user)):
+    """Get Stammdaten for a WG (returns defaults if not yet configured)"""
+    wg = next((w for w in PFLEGE_WGS_DATA if w["id"] == wg_id), None)
+    if not wg:
+        raise HTTPException(status_code=404, detail="WG nicht gefunden")
+
+    stammdaten = await db.wg_stammdaten.find_one({"wg_id": wg_id}, {"_id": 0})
+    if not stammdaten:
+        stammdaten = WG_STAMMDATEN_DEFAULTS.get(wg_id, {})
+        stammdaten["wg_id"] = wg_id
+
+    return stammdaten
+
+@api_router.put("/pflege-wgs/{wg_id}/stammdaten")
+async def update_wg_stammdaten(wg_id: str, data: WGStammdatenUpdate, current_user: Dict = Depends(get_current_user)):
+    """Update Stammdaten for a WG (upsert)"""
+    wg = next((w for w in PFLEGE_WGS_DATA if w["id"] == wg_id), None)
+    if not wg:
+        raise HTTPException(status_code=404, detail="WG nicht gefunden")
+
+    stammdaten_dict = data.model_dump()
+    stammdaten_dict["wg_id"] = wg_id
+    stammdaten_dict["updated_at"] = to_iso(now())
+
+    await db.wg_stammdaten.update_one(
+        {"wg_id": wg_id},
+        {"$set": stammdaten_dict},
+        upsert=True
+    )
+    return {"message": "Stammdaten aktualisiert", "data": stammdaten_dict}
+
 # ==================== WHATSAPP BUSINESS ====================
 
 @api_router.post("/whatsapp/webhook")
@@ -2185,82 +2557,83 @@ async def seed_klienten_data():
     if existing > 0:
         return {"message": "Klientendaten bereits vorhanden", "zimmer_count": existing}
     
-    # Seed rooms for each WG with correct capacities
+    # Seed rooms from wg-datengrundlage.json (exakte Daten)
     zimmer_data = []
-    
-    # Sterndamm (10 Zimmer)
-    for i in range(1, 11):
+    belegte_zimmer_nummern = {}
+    for wg_id, bew_list in ECHTE_BEWOHNER_DATA.items():
+        belegte_zimmer_nummern[wg_id] = {b.get("zimmer_nr") for b in bew_list if b.get("zimmer_nr")}
+
+    # Kupferkessel Gross (8 Zimmer, alle belegt) - exakte Flaechen aus Datengrundlage
+    kk_flaechen = {1: 13.03, 2: 19.01, 3: 16.46, 4: 15.99, 5: 20.01, 6: 20.59, 7: 22.03, 8: 21.48}
+    kk_mieten = {1: 477.17, 2: 554.91, 3: 521.76, 4: 515.65, 5: 567.91, 6: 575.45, 7: 594.17, 8: 587.02}
+    for i in range(1, 9):
+        belegt = str(i) in belegte_zimmer_nummern.get("wg-kupferkessel", set())
         zimmer_data.append({
-            "id": generate_id(), 
-            "pflege_wg_id": "wg-sterndamm", 
-            "nummer": str(i), 
-            "name": f"Zimmer {i}", 
-            "flaeche_qm": 18.0 + (i % 5),
-            "status": "belegt",  # Alle 10 belegt
-            "position_x": 50 + ((i-1) % 5) * 130,
-            "position_y": 50 + ((i-1) // 5) * 150,
-            "breite": 120, 
-            "hoehe": 130
+            "id": generate_id(), "pflege_wg_id": "wg-kupferkessel", "nummer": str(i),
+            "name": f"Zimmer {i}" + (" (Doppelzimmer)" if i == 8 else ""),
+            "flaeche_qm": kk_flaechen.get(i, 18.0),
+            "nettokaltmiete": kk_mieten.get(i, 550.0),
+            "status": "belegt" if belegt else "frei",
+            "position_x": 50 + ((i-1) % 3) * 140, "position_y": 50 + ((i-1) // 3) * 140,
+            "breite": 130, "hoehe": 120
         })
-    
-    # Kupferkessel (9 Zimmer) - 8 belegt, 1 frei
-    for i in range(1, 10):
+
+    # Kupferkesselchen (3 Zimmer) - exakte Flaechen
+    kkk_flaechen = {1: 19.5, 2: 19.8, 3: 14.0}
+    kkk_mieten = {1: 453.15, 2: 457.13, 3: 380.28}
+    for i in range(1, 4):
+        belegt = str(i) in belegte_zimmer_nummern.get("wg-kupferkessel-klein", set())
         zimmer_data.append({
-            "id": generate_id(),
-            "pflege_wg_id": "wg-kupferkessel",
-            "nummer": str(i),
-            "name": f"Zimmer {i}",
-            "flaeche_qm": 17.0 + (i % 4),
-            "status": "belegt" if i <= 8 else "frei",
-            "position_x": 50 + ((i-1) % 3) * 140,
-            "position_y": 50 + ((i-1) // 3) * 140,
-            "breite": 130,
-            "hoehe": 120
+            "id": generate_id(), "pflege_wg_id": "wg-kupferkessel-klein", "nummer": str(i),
+            "name": f"Zimmer {i}", "flaeche_qm": kkk_flaechen.get(i, 17.0),
+            "nettokaltmiete": kkk_mieten.get(i, 430.0),
+            "status": "belegt" if belegt else "frei",
+            "position_x": 100 + ((i-1) % 2) * 200, "position_y": 100 + ((i-1) // 2) * 200,
+            "breite": 150, "hoehe": 150
         })
-    
-    # Kupferkessel Klein (4 Zimmer) - 3 belegt, 1 frei
-    for i in range(1, 5):
-        zimmer_data.append({
-            "id": generate_id(),
-            "pflege_wg_id": "wg-kupferkessel-klein",
-            "nummer": str(i),
-            "name": f"Zimmer {i}",
-            "flaeche_qm": 15.0 + (i * 2),
-            "status": "belegt" if i <= 3 else "frei",
-            "position_x": 100 + ((i-1) % 2) * 200,
-            "position_y": 100 + ((i-1) // 2) * 200,
-            "breite": 150,
-            "hoehe": 150
-        })
-    
-    # Drachenwiese (12 Zimmer) - 11 belegt, 1 frei
+
+    # Drachenwiese (12 Zimmer, 10 belegt, 2 frei) - exakte Flaechen und Grundmieten
+    dw_flaechen = {1: 23.7, 2: None, 3: 17.4, 4: 17.2, 5: 16.89, 6: 20.3, 7: None, 8: 17.8, 9: 20.7, 10: 22.1, 11: 19.5, 12: 21.5}
+    dw_mieten = {1: 753.96, 2: 725.44, 3: 641.68, 4: 638.11, 5: 625.64, 6: 693.36, 7: 693.36, 8: 648.80, 9: 700.49, 10: 712.96, 11: 679.10, 12: 714.75}
     for i in range(1, 13):
+        belegt = str(i) in belegte_zimmer_nummern.get("wg-drachenwiese", set())
         zimmer_data.append({
-            "id": generate_id(),
-            "pflege_wg_id": "wg-drachenwiese",
-            "nummer": str(i),
-            "name": f"Zimmer {i}",
-            "flaeche_qm": 17.0 + (i % 8),
-            "status": "belegt" if i <= 11 else "frei",
-            "position_x": 80 if i <= 5 else 550,
-            "position_y": 120 + ((i-1) % 6) * 85,
-            "breite": 110,
-            "hoehe": 75
+            "id": generate_id(), "pflege_wg_id": "wg-drachenwiese", "nummer": str(i),
+            "name": f"Zimmer {i}", "flaeche_qm": dw_flaechen.get(i),
+            "grundmiete_kalt": dw_mieten.get(i, 680.0),
+            "status": "belegt" if belegt else "frei",
+            "position_x": 80 if i <= 6 else 550, "position_y": 120 + ((i-1) % 6) * 85,
+            "breite": 110, "hoehe": 75
         })
-    
-    # Drachenblick (4 Zimmer) - 2 belegt, 2 frei
+
+    # Drachenblick (4 Zimmer, 2 belegt, 2 frei) - exakte Flaechen und Zimmernamen
+    db_data = {
+        1: {"name": "Lotusblüte", "flaeche": 12.37, "miete": 434.38},
+        2: {"name": "Morgentau", "flaeche": 14.16, "miete": 458.53},
+        3: {"name": "Savanne", "flaeche": 14.16, "miete": 458.53},
+        4: {"name": "Bernstein", "flaeche": 12.43, "miete": 435.19},
+    }
     for i in range(1, 5):
+        belegt = str(i) in belegte_zimmer_nummern.get("wg-drachenblick", set())
+        d = db_data[i]
         zimmer_data.append({
-            "id": generate_id(),
-            "pflege_wg_id": "wg-drachenblick",
-            "nummer": str(i),
-            "name": f"Zimmer {i}",
-            "flaeche_qm": 13.0 + (i * 2),
-            "status": "belegt" if i <= 2 else "frei",
-            "position_x": 100 + ((i-1) % 2) * 250,
-            "position_y": 150 + ((i-1) // 2) * 200,
-            "breite": 150,
-            "hoehe": 150
+            "id": generate_id(), "pflege_wg_id": "wg-drachenblick", "nummer": str(i),
+            "name": d["name"], "flaeche_qm": d["flaeche"],
+            "grundmiete_kalt": d["miete"],
+            "status": "belegt" if belegt else "frei",
+            "position_x": 100 + ((i-1) % 2) * 250, "position_y": 150 + ((i-1) // 2) * 200,
+            "breite": 150, "hoehe": 150
+        })
+
+    # Sterndamm (10 Zimmer, 9 belegt, 1 frei) - keine exakten Flaechen verfuegbar
+    for i in range(1, 11):
+        belegt = str(i) in belegte_zimmer_nummern.get("wg-sterndamm", set())
+        zimmer_data.append({
+            "id": generate_id(), "pflege_wg_id": "wg-sterndamm", "nummer": str(i),
+            "name": f"Zimmer {i}", "flaeche_qm": 18.0 + (i % 5),
+            "status": "belegt" if belegt else "frei",
+            "position_x": 50 + ((i-1) % 5) * 130, "position_y": 50 + ((i-1) // 5) * 150,
+            "breite": 120, "hoehe": 130
         })
     
     for z in zimmer_data:
@@ -2271,12 +2644,11 @@ async def seed_klienten_data():
     
     # Create real residents as Klienten
     klienten_data = []
-    zimmer_index = {"wg-sterndamm": 0, "wg-kupferkessel": 0, "wg-kupferkessel-klein": 0, "wg-drachenwiese": 0, "wg-drachenblick": 0}
-    
+    # Build lookup: (wg_id, nummer) -> zimmer dict
+    zimmer_lookup = {(z["pflege_wg_id"], z["nummer"]): z for z in zimmer_data}
+
     for wg_id, bewohner_liste in ECHTE_BEWOHNER_DATA.items():
-        wg_zimmer = [z for z in zimmer_data if z["pflege_wg_id"] == wg_id and z["status"] == "belegt"]
-        
-        for i, bew in enumerate(bewohner_liste):
+        for bew in bewohner_liste:
             klient_id = generate_id()
             klient = {
                 "id": klient_id,
@@ -2285,23 +2657,24 @@ async def seed_klienten_data():
                 "status": "bewohner",
                 "anfrage_quelle": "email",
                 "dringlichkeit": "flexibel",
-                "einzugsdatum": bew["einzugsdatum"],
+                "einzugsdatum": bew.get("einzugsdatum"),
                 "anfrage_am": to_iso(now() - timedelta(days=365)),
                 "created_at": to_iso(now()),
                 "updated_at": to_iso(now()),
                 "bevorzugte_wgs": []
             }
-            
-            # Assign to room if available
-            if i < len(wg_zimmer):
-                zimmer = wg_zimmer[i]
-                klient["zimmer_id"] = zimmer["id"]
-                # Update zimmer with bewohner
-                await db.wg_zimmer.update_one(
-                    {"id": zimmer["id"]},
-                    {"$set": {"aktueller_bewohner_id": klient_id}}
-                )
-            
+
+            # Assign to room by zimmer_nr
+            zimmer_nr = bew.get("zimmer_nr")
+            if zimmer_nr:
+                zimmer = zimmer_lookup.get((wg_id, zimmer_nr))
+                if zimmer:
+                    klient["zimmer_id"] = zimmer["id"]
+                    await db.wg_zimmer.update_one(
+                        {"id": zimmer["id"]},
+                        {"$set": {"aktueller_bewohner_id": klient_id}}
+                    )
+
             klienten_data.append(klient)
     
     # Add some Interessenten (prospects) for the pipeline

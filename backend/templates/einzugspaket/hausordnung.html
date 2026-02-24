@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="page-break"></div>
+
+<h1>Hausordnung</h1>
+<p><strong>{{ wg.property_name }}</strong><br>
+{{ stammdaten.wg_adresse_strasse }}, {{ stammdaten.wg_adresse_plz_ort }}</p>
+
+<h2>1. Allgemeines</h2>
+<p>Diese Hausordnung regelt das Zusammenleben in der ambulant betreuten
+Wohngemeinschaft. Sie dient dem harmonischen Miteinander aller Bewohner
+und dem Schutz der gemeinsamen Wohnr&auml;ume.</p>
+
+<h2>2. Ruhezeiten</h2>
+<ul>
+  <li>Nachtruhe: 22:00 bis 06:00 Uhr</li>
+  <li>Mittagsruhe: 13:00 bis 15:00 Uhr</li>
+  <li>An Sonn- und Feiertagen gelten ganzt&auml;gig verst&auml;rkte R&uuml;cksichtnahme</li>
+</ul>
+
+<h2>3. Gemeinschaftsr&auml;ume</h2>
+<ul>
+  <li>K&uuml;che, Wohnzimmer und B&auml;der sind von allen Bewohnern gemeinsam zu nutzen
+    und sauber zu hinterlassen.</li>
+  <li>Pers&ouml;nliche Gegenst&auml;nde sind in den eigenen Zimmern aufzubewahren.</li>
+  <li>Lebensmittel sind im K&uuml;hlschrank mit Namen zu beschriften, sofern es sich
+    um pers&ouml;nliche Vorr&auml;te handelt.</li>
+</ul>
+
+<h2>4. Eigenes Zimmer</h2>
+<ul>
+  <li>Jeder Bewohner ist f&uuml;r die Sauberkeit und Ordnung in seinem Zimmer
+    verantwortlich.</li>
+  <li>N&auml;gel, Schrauben und bauliche Ver&auml;nderungen bed&uuml;rfen der Zustimmung des
+    Vermieters.</li>
+  <li>Das Zimmer darf pers&ouml;nlich eingerichtet werden.</li>
+</ul>
+
+<h2>5. Besuch</h2>
+<ul>
+  <li>Besucher sind jederzeit willkommen.</li>
+  <li>Besuche nach 22:00 Uhr sind vorher mit den Pr&auml;senzkr&auml;ften abzustimmen.</li>
+  <li>&Uuml;bernachtungen von Besuchern sind nach Absprache m&ouml;glich.</li>
+</ul>
+
+<h2>6. Haustiere</h2>
+<p>Die Haltung von Haustieren bedarf der Zustimmung aller Mitbewohner und
+des Vermieters. Kleintiere (Fische, Hamster etc.) sind in der Regel gestattet.</p>
+
+<h2>7. Rauchen</h2>
+<p>In den Gemeinschaftsr&auml;umen und Zimmern ist das Rauchen untersagt.
+Rauchen ist nur im Au&szlig;enbereich (Balkon/Garten) gestattet.</p>
+
+<h2>8. Sicherheit</h2>
+<ul>
+  <li>Die Hauseingangst&uuml;r ist ab 20:00 Uhr geschlossen zu halten.</li>
+  <li>Flucht- und Rettungswege sind stets freizuhalten.</li>
+  <li>Elektrische Ger&auml;te sind mit Sorgfalt zu benutzen.</li>
+  <li>Offenes Feuer (Kerzen etc.) ist im gesamten Wohnbereich verboten.</li>
+</ul>
+
+<h2>9. Schadensmeldung</h2>
+<p>Sch&auml;den an der Wohnung oder Einrichtung sind unverz&uuml;glich dem Vermieter
+oder den Pr&auml;senzkr&auml;ften zu melden.</p>
+
+<p style="margin-top: 30px;"><em>Die Hausordnung ist Bestandteil des Nutzungsvertrags.</em></p>
+
+<div class="signature-line">
+  <div class="signature-box">
+    <div class="line">Ort, Datum</div>
+  </div>
+  <div class="signature-box">
+    <div class="line">{{ klient.vorname }} {{ klient.nachname }} / Bevollm&auml;chtigte/r</div>
+  </div>
+</div>
+{% endblock %}

@@ -4,7 +4,7 @@ import axios from 'axios';
 import {
   ArrowLeft, User, Phone, Mail, MessageSquare, Calendar, FileText,
   Clock, Building2, Plus, Send, History, Home, Upload, Download,
-  Trash2, Paperclip, Check, X, Euro
+  Trash2, Paperclip, Check, X, Euro, Package
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
 import { Button } from '../components/ui/button';
@@ -78,6 +78,7 @@ const DOK_KATEGORIEN = [
   { value: 'vollmacht', label: 'Vollmacht' },
   { value: 'arztbrief', label: 'Arztbrief' },
   { value: 'pflegegutachten', label: 'Pflegegutachten' },
+  { value: 'einzugspaket', label: 'Einzugspaket' },
   { value: 'sonstiges', label: 'Sonstiges' },
 ];
 
@@ -347,7 +348,7 @@ export default function KlientDetail() {
               WhatsApp
             </Button>
           )}
-          <Button 
+          <Button
             size="sm"
             onClick={() => setShowNoteDialog(true)}
             className="bg-purple-600 hover:bg-purple-700 text-white"
@@ -355,6 +356,23 @@ export default function KlientDetail() {
           >
             <Plus className="w-4 h-4 mr-1.5" />
             Eintrag
+          </Button>
+          <Button
+            size="sm"
+            variant="outline"
+            className="border-cyan-300 text-cyan-600 hover:bg-cyan-50"
+            onClick={() => {
+              const params = new URLSearchParams({ klient: klientId });
+              if (klient.zimmer_id) {
+                // Find WG from zimmer
+                params.set('wg', klient.bevorzugte_wgs?.[0] || '');
+              }
+              navigate(`/pflege-wgs/einzugspaket?${params.toString()}`);
+            }}
+            data-testid="einzugspaket-button"
+          >
+            <Package className="w-4 h-4 mr-1.5" />
+            Einzugspaket
           </Button>
         </div>
       </div>

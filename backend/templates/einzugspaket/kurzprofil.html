@@ -1,0 +1,125 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="page-break"></div>
+
+<h1>Bewohner-Kurzprofil</h1>
+<p><em>Bitte ausgef&uuml;llt an die WG-Leitung / Pflegedienst &uuml;bergeben</em></p>
+
+<h2>Pers&ouml;nliche Angaben</h2>
+
+<table class="info-table">
+  <tr>
+    <td class="label">Name, Vorname:</td>
+    <td class="value">{{ klient.nachname }}, {{ klient.vorname }}</td>
+  </tr>
+  <tr>
+    <td class="label">Geburtsdatum:</td>
+    <td class="value">{% if klient.geburtsdatum %}{{ klient.geburtsdatum[:10] if klient.geburtsdatum is string else klient.geburtsdatum }}{% else %}_________________{% endif %}</td>
+  </tr>
+  <tr>
+    <td class="label">Geschlecht:</td>
+    <td class="value">{{ klient.geschlecht or '_________________' }}</td>
+  </tr>
+  <tr>
+    <td class="label">Pflegegrad:</td>
+    <td class="value">{{ klient.pflegegrad if klient.pflegegrad != 'keiner' else '_________________' }}</td>
+  </tr>
+  <tr>
+    <td class="label">WG / Zimmer:</td>
+    <td class="value">{{ wg.kurzname }} / Zimmer {{ zimmer.nummer }}</td>
+  </tr>
+  <tr>
+    <td class="label">Einzugsdatum:</td>
+    <td class="value">{{ mietbeginn or datum_heute }}</td>
+  </tr>
+</table>
+
+<h2>Kontaktperson / Bevollm&auml;chtigte/r</h2>
+
+<table class="info-table">
+  <tr>
+    <td class="label">Name:</td>
+    <td class="value">{{ klient.kontakt_name or '______________________________' }}</td>
+  </tr>
+  <tr>
+    <td class="label">Beziehung:</td>
+    <td class="value">{{ klient.kontakt_beziehung or '______________________________' }}</td>
+  </tr>
+  <tr>
+    <td class="label">Telefon:</td>
+    <td class="value">{{ klient.kontakt_telefon or '______________________________' }}</td>
+  </tr>
+  <tr>
+    <td class="label">E-Mail:</td>
+    <td class="value">{{ klient.kontakt_email or '______________________________' }}</td>
+  </tr>
+</table>
+
+<h2>Gesundheitliche Angaben</h2>
+
+<table class="info-table">
+  <tr>
+    <td class="label">Diagnosen:</td>
+    <td class="value">{{ klient.diagnosen or '______________________________' }}</td>
+  </tr>
+  <tr>
+    <td class="label">Besonderheiten:</td>
+    <td class="value">{{ klient.besonderheiten or '______________________________' }}</td>
+  </tr>
+  <tr>
+    <td class="label">Allergien:</td>
+    <td class="value">______________________________</td>
+  </tr>
+  <tr>
+    <td class="label">Medikamente:</td>
+    <td class="value">______________________________</td>
+  </tr>
+</table>
+
+<h2>Pers&ouml;nliche Vorlieben</h2>
+
+<table class="info-table">
+  <tr>
+    <td class="label">Ern&auml;hrung:</td>
+    <td class="value">______________________________</td>
+  </tr>
+  <tr>
+    <td class="label">Hobbys / Interessen:</td>
+    <td class="value">______________________________</td>
+  </tr>
+  <tr>
+    <td class="label">Tagesstruktur:</td>
+    <td class="value">______________________________</td>
+  </tr>
+  <tr>
+    <td class="label">Besondere W&uuml;nsche:</td>
+    <td class="value">______________________________</td>
+  </tr>
+</table>
+
+<h2>Hausarzt</h2>
+
+<table class="info-table">
+  <tr>
+    <td class="label">Name:</td>
+    <td class="value">______________________________</td>
+  </tr>
+  <tr>
+    <td class="label">Telefon:</td>
+    <td class="value">______________________________</td>
+  </tr>
+  <tr>
+    <td class="label">Adresse:</td>
+    <td class="value">______________________________</td>
+  </tr>
+</table>
+
+<div class="signature-line">
+  <div class="signature-box">
+    <div class="line">Ort, Datum</div>
+  </div>
+  <div class="signature-box">
+    <div class="line">Ausgef&uuml;llt von</div>
+  </div>
+</div>
+{% endblock %}

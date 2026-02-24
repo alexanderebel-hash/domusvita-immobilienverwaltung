@@ -1,0 +1,100 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="page-break"></div>
+
+<h1>Kosten&uuml;bersicht</h1>
+<p><strong>{{ wg.property_name }}</strong> &mdash; Zimmer {{ zimmer.nummer }}</p>
+<p>F&uuml;r: {{ klient.vorname }} {{ klient.nachname }}</p>
+
+<h2>Monatliche Kosten</h2>
+
+<table class="cost-table">
+  <thead>
+    <tr>
+      <th>Position</th>
+      <th class="amount">Betrag / Monat</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Miete (Nutzungsentgelt) Zimmer {{ zimmer.nummer }}{% if zimmer.flaeche_qm %} ({{ zimmer.flaeche_qm }} m&sup2;){% endif %}</td>
+      <td class="amount">{{ "%.2f"|format(miete_zimmer) }} EUR</td>
+    </tr>
+    <tr>
+      <td>Lebensmittelpauschale</td>
+      <td class="amount">{{ "%.2f"|format(stammdaten.lebensmittelpauschale) }} EUR</td>
+    </tr>
+    <tr>
+      <td>WG-Beitrag</td>
+      <td class="amount">{{ "%.2f"|format(stammdaten.wg_beitrag) }} EUR</td>
+    </tr>
+    <tr>
+      <td>WG-Zuschlag (Betreuungsleistung)</td>
+      <td class="amount">{{ "%.2f"|format(stammdaten.wg_zuschlag) }} EUR</td>
+    </tr>
+    <tr class="total-row">
+      <td>Gesamt monatlich</td>
+      <td class="amount">{{ "%.2f"|format(gesamt_monatlich) }} EUR</td>
+    </tr>
+  </tbody>
+</table>
+
+<h2>Davon erstattet / &uuml;bernommen</h2>
+
+<table class="cost-table">
+  <thead>
+    <tr>
+      <th>Position</th>
+      <th class="amount">Betrag / Monat</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Entlastungsbetrag (&sect; 45b SGB XI)</td>
+      <td class="amount">{{ "%.2f"|format(stammdaten.entlastungsbetrag) }} EUR</td>
+    </tr>
+    <tr>
+      <td>WG-Zuschlag (&sect; 38a SGB XI) &mdash; bei Pflegegrad 1&ndash;5</td>
+      <td class="amount">{{ "%.2f"|format(stammdaten.wg_zuschlag) }} EUR</td>
+    </tr>
+    <tr class="total-row">
+      <td>Verbleibender Eigenanteil (ca.)</td>
+      <td class="amount">{{ "%.2f"|format(eigenanteil) }} EUR</td>
+    </tr>
+  </tbody>
+</table>
+
+<div class="highlight-box">
+  <strong>Hinweis:</strong> Die tats&auml;chlichen Erstattungen h&auml;ngen vom Pflegegrad und
+  der individuellen Leistungsbewilligung ab. Die hier genannten Betr&auml;ge
+  sind Richtwerte. Der Entlastungsbetrag (125 EUR) steht jedem Pflegebed&uuml;rftigen
+  ab Pflegegrad 1 zu.
+</div>
+
+<h2>Kaution</h2>
+<table class="info-table">
+  <tr>
+    <td class="label">Kaution (2 Monatsmieten):</td>
+    <td class="value"><strong>{{ "%.2f"|format(kaution) }} EUR</strong></td>
+  </tr>
+  <tr>
+    <td class="label">F&auml;llig bei Einzug:</td>
+    <td class="value">{{ mietbeginn or datum_heute }}</td>
+  </tr>
+  <tr>
+    <td class="label">&Uuml;berweisung an:</td>
+    <td class="value">{{ stammdaten.vermieter_name }}<br>
+      IBAN: {{ stammdaten.vermieter_iban }}<br>
+      {{ stammdaten.vermieter_bank }}</td>
+  </tr>
+</table>
+
+<div class="signature-line">
+  <div class="signature-box">
+    <div class="line">Ort, Datum</div>
+  </div>
+  <div class="signature-box">
+    <div class="line">{{ klient.vorname }} {{ klient.nachname }} / Bevollm&auml;chtigte/r</div>
+  </div>
+</div>
+{% endblock %}

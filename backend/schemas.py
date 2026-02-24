@@ -630,3 +630,50 @@ class KlientenDashboard(BaseModel):
     freie_zimmer: int
     pipeline: List[PipelineStats]
     handlungsbedarf: List[dict]
+
+
+# ==================== WG-STAMMDATEN SCHEMAS ====================
+
+class WGStammdatenUpdate(BaseModel):
+    # Vermieter
+    vermieter_name: str = "DomusVita Gesundheit GmbH"
+    vermieter_strasse: str = ""
+    vermieter_plz_ort: str = ""
+    vermieter_iban: str = ""
+    vermieter_bank: str = ""
+    vermieter_bic: Optional[str] = None
+
+    # WG-Adresse
+    wg_adresse_strasse: str = ""
+    wg_adresse_plz_ort: str = ""
+
+    # Haushaltsbuch-Konto
+    haushaltsbuch_iban: str = ""
+    haushaltsbuch_bank: str = ""
+
+    # Kosten-Pauschalen (fuer Einzugspaket)
+    lebensmittelpauschale: float = 290.0
+    wg_beitrag: float = 30.0
+    wg_zuschlag: float = 224.0
+    entlastungsbetrag: float = 131.0
+
+    # Pflege-Firma
+    pflegedienst_name: str = "DomusVita Gesundheit GmbH"
+
+
+class EinzugspaketRequest(BaseModel):
+    klient_id: str
+    zimmer_id: str
+    wg_id: str
+    mietbeginn: Optional[str] = None
+    dokumente: Optional[List[str]] = None  # Liste der gewuenschten Dokument-Typen
+
+
+class EinzugspaketEmailRequest(BaseModel):
+    klient_id: str
+    zimmer_id: str
+    wg_id: str
+    empfaenger_email: str
+    betreff: str = "Einzugspaket - DomusVita Pflege-Wohngemeinschaft"
+    nachricht: str = ""
+    mietbeginn: Optional[str] = None

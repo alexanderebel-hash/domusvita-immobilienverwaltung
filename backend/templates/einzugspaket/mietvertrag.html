@@ -1,0 +1,115 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="page-break"></div>
+
+<h1>Nutzungsvertrag</h1>
+<p><em>(Mietvertrag &uuml;ber ein Zimmer in einer ambulant betreuten Wohngemeinschaft)</em></p>
+
+<h2>Vertragsparteien</h2>
+
+<table class="info-table">
+  <tr>
+    <td class="label">Vermieter:</td>
+    <td class="value">{{ stammdaten.vermieter_name }}<br>
+      {{ stammdaten.vermieter_strasse }}<br>
+      {{ stammdaten.vermieter_plz_ort }}</td>
+  </tr>
+  <tr>
+    <td class="label">Mieter:</td>
+    <td class="value">{{ klient.vorname }} {{ klient.nachname }}{% if klient.geburtsdatum %}<br>
+      geb. {{ klient.geburtsdatum[:10] if klient.geburtsdatum is string else klient.geburtsdatum }}{% endif %}</td>
+  </tr>
+</table>
+
+<h2>&sect; 1 Mietgegenstand</h2>
+<p>Der Vermieter vermietet dem Mieter in der Wohngemeinschaft
+<strong>{{ wg.property_name }}</strong>, {{ stammdaten.wg_adresse_strasse }},
+{{ stammdaten.wg_adresse_plz_ort }}:</p>
+<ul>
+  <li><strong>Zimmer {{ zimmer.nummer }}</strong>{% if zimmer.flaeche_qm %} mit einer Fl&auml;che von ca. {{ zimmer.flaeche_qm }} m&sup2;{% endif %}</li>
+  <li>Mitbenutzung der Gemeinschaftsr&auml;ume (K&uuml;che, Wohnzimmer, B&auml;der, Flure)</li>
+</ul>
+
+<h2>&sect; 2 Mietbeginn und Mietdauer</h2>
+<p>Das Mietverh&auml;ltnis beginnt am <strong>{{ mietbeginn or datum_heute }}</strong>
+und l&auml;uft auf unbestimmte Zeit.</p>
+
+<h2>&sect; 3 Miete und Nebenkosten</h2>
+<p>Die monatliche Gesamtmiete betr&auml;gt:</p>
+<table class="cost-table">
+  <tbody>
+    <tr>
+      <td>Grundmiete (Nutzungsentgelt)</td>
+      <td class="amount">{{ "%.2f"|format(miete_zimmer) }} EUR</td>
+    </tr>
+    <tr class="total-row">
+      <td>Monatliche Miete gesamt</td>
+      <td class="amount">{{ "%.2f"|format(miete_zimmer) }} EUR</td>
+    </tr>
+  </tbody>
+</table>
+<p>Die Miete ist monatlich im Voraus, sp&auml;testens zum <strong>3. Werktag</strong>
+des Monats, auf folgendes Konto zu &uuml;berweisen oder wird per SEPA-Lastschrift
+eingezogen:</p>
+<table class="info-table">
+  <tr>
+    <td class="label">Kontoinhaber:</td>
+    <td class="value">{{ stammdaten.vermieter_name }}</td>
+  </tr>
+  <tr>
+    <td class="label">IBAN:</td>
+    <td class="value">{{ stammdaten.vermieter_iban }}</td>
+  </tr>
+  <tr>
+    <td class="label">Bank:</td>
+    <td class="value">{{ stammdaten.vermieter_bank }}</td>
+  </tr>
+</table>
+
+<h2>&sect; 4 Kaution</h2>
+<p>Der Mieter hinterlegt eine Kaution in H&ouml;he von <strong>2 Monatsmieten =
+{{ "%.2f"|format(kaution) }} EUR</strong>. Die Kaution ist bei Einzug f&auml;llig
+und wird nach Beendigung des Mietverh&auml;ltnisses abz&uuml;glich etwaiger
+Forderungen zur&uuml;ckgezahlt.</p>
+
+<h2>&sect; 5 K&uuml;ndigung</h2>
+<p>Das Mietverh&auml;ltnis kann von beiden Seiten mit einer Frist von
+<strong>3 Monaten zum Monatsende</strong> schriftlich gek&uuml;ndigt werden.
+Das Recht zur au&szlig;erordentlichen K&uuml;ndigung aus wichtigem Grund bleibt
+unber&uuml;hrt.</p>
+
+<h2>&sect; 6 Pflege und Betreuung</h2>
+<p>Die pflegerische Versorgung ist nicht Gegenstand dieses Vertrages. Der Mieter
+schlie&szlig;t einen separaten Pflegevertrag mit einem Pflegedienst seiner Wahl ab.
+Aktuell wird die Pflege durch {{ stammdaten.pflegedienst_name }} erbracht.</p>
+
+<h2>&sect; 7 Hausordnung</h2>
+<p>Der Mieter erkennt die beigef&uuml;gte Hausordnung als Bestandteil dieses
+Vertrages an.</p>
+
+<h2>&sect; 8 Sonstige Vereinbarungen</h2>
+<ul>
+  <li>Das Zimmer wird m&ouml;bliert oder unm&ouml;bliert &uuml;bergeben (nach Absprache).</li>
+  <li>&Auml;nderungen und Erg&auml;nzungen dieses Vertrages bed&uuml;rfen der Schriftform.</li>
+  <li>Sollte eine Bestimmung dieses Vertrages unwirksam sein, bleiben die
+    &uuml;brigen Bestimmungen davon unber&uuml;hrt.</li>
+</ul>
+
+<div class="signature-line">
+  <div class="signature-box">
+    <div class="line">Ort, Datum</div>
+  </div>
+  <div class="signature-box">
+    <div class="line">Vermieter: {{ stammdaten.vermieter_name }}</div>
+  </div>
+</div>
+
+<div class="signature-line" style="margin-top: 20px;">
+  <div class="signature-box">
+    <div class="line">Ort, Datum</div>
+  </div>
+  <div class="signature-box">
+    <div class="line">Mieter: {{ klient.vorname }} {{ klient.nachname }}</div>
+  </div>
+</div>
+{% endblock %}

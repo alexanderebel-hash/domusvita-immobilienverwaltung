@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="page-break"></div>
+
+<h1>SEPA-Lastschriftmandat</h1>
+
+<div class="sepa-box">
+  <h2 style="margin-top: 0;">Erteilung eines SEPA-Lastschriftmandats</h2>
+
+  <h3>Zahlungsempf&auml;nger (Gl&auml;ubiger)</h3>
+  <table class="info-table">
+    <tr>
+      <td class="label">Name:</td>
+      <td class="value">{{ stammdaten.vermieter_name }}</td>
+    </tr>
+    <tr>
+      <td class="label">Anschrift:</td>
+      <td class="value">{{ stammdaten.vermieter_strasse }}, {{ stammdaten.vermieter_plz_ort }}</td>
+    </tr>
+  </table>
+
+  <h3>Zahlungspflichtiger (Kontoinhaber)</h3>
+  <table class="info-table">
+    <tr>
+      <td class="label">Name:</td>
+      <td class="value">{{ klient.vorname }} {{ klient.nachname }}</td>
+    </tr>
+    <tr>
+      <td class="label">Anschrift:</td>
+      <td class="value">{{ stammdaten.wg_adresse_strasse }}, {{ stammdaten.wg_adresse_plz_ort }}</td>
+    </tr>
+    <tr>
+      <td class="label">IBAN:</td>
+      <td class="value" style="letter-spacing: 1px;">____________________________________</td>
+    </tr>
+    <tr>
+      <td class="label">BIC:</td>
+      <td class="value">____________________________________</td>
+    </tr>
+    <tr>
+      <td class="label">Kreditinstitut:</td>
+      <td class="value">____________________________________</td>
+    </tr>
+  </table>
+
+  <p style="margin-top: 16px;">Ich erm&auml;chtige den Zahlungsempf&auml;nger {{ stammdaten.vermieter_name }},
+  Zahlungen von meinem Konto mittels Lastschrift einzuziehen. Zugleich weise
+  ich mein Kreditinstitut an, die vom Zahlungsempf&auml;nger auf mein Konto
+  gezogenen Lastschriften einzul&ouml;sen.</p>
+
+  <p><strong>Hinweis:</strong> Ich kann innerhalb von acht Wochen, beginnend mit dem
+  Belastungsdatum, die Erstattung des belasteten Betrages verlangen. Es gelten
+  dabei die mit meinem Kreditinstitut vereinbarten Bedingungen.</p>
+
+  <h3>Verwendungszweck</h3>
+  <ul>
+    <li>Miete / Nutzungsentgelt Zimmer {{ zimmer.nummer }}, WG {{ wg.kurzname }}</li>
+    <li>Haushaltskassenbeitrag (Lebensmittel + WG-Beitrag)</li>
+    <li>WG-Zuschlag gem. Vertrag</li>
+  </ul>
+</div>
+
+<div class="signature-line">
+  <div class="signature-box">
+    <div class="line">Ort, Datum</div>
+  </div>
+  <div class="signature-box">
+    <div class="line">Unterschrift Kontoinhaber</div>
+  </div>
+</div>
+{% endblock %}
