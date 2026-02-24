@@ -21,6 +21,8 @@ COPY schemas.py .
 COPY server.py .
 COPY auth.py .
 COPY pdf_generator.py .
+COPY email_service.py .
+COPY ai_summary.py .
 COPY templates/ templates/
 
 RUN date -u '+%d.%m.%Y %H:%M' > /app/.build_timestamp

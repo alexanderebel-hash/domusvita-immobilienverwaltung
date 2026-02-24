@@ -598,9 +598,10 @@ class KommunikationResponse(BaseModel):
     betreff: Optional[str] = None
     inhalt: str
     anhaenge: List[str] = []
+    zusammenfassung: Optional[List[str]] = None
     erstellt_von_name: Optional[str] = None
     erstellt_am: datetime
-    
+
     class Config:
         from_attributes = True
 

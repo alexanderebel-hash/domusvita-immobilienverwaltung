@@ -4,7 +4,7 @@ import axios from 'axios';
 import {
   ArrowLeft, User, Phone, Mail, MessageSquare, Calendar, FileText,
   Clock, Building2, Plus, Send, History, Home, Upload, Download,
-  Trash2, Paperclip, Check, X, Euro, Package, LogOut
+  Trash2, Paperclip, Check, X, Euro, Package, LogOut, ChevronDown, ChevronUp
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
 import { Button } from '../components/ui/button';
@@ -108,6 +108,7 @@ export default function KlientDetail() {
   const [showAuszugDialog, setShowAuszugDialog] = useState(false);
   const [auszugGrund, setAuszugGrund] = useState('');
   const [deletingKommId, setDeletingKommId] = useState(null);
+  const [expandedKomm, setExpandedKomm] = useState(new Set());
 
   useEffect(() => {
     fetchKlient();
@@ -634,63 +635,107 @@ export default function KlientDetail() {
             </CardHeader>
             <CardContent>
               {klient.kommunikation?.length > 0 ? (
-                <div className="space-y-4">
+                <div className="space-y-2">
                   {klient.kommunikation.map((item, idx) => {
                     const Icon = KOMMUNIKATION_ICONS[item.typ] || FileText;
+                    const isExpanded = expandedKomm.has(item.id || idx);
+                    const toggleExpand = (e) => {
+                      e.stopPropagation();
+                      setExpandedKomm(prev => {
+                        const next = new Set(prev);
+                        const key = item.id || idx;
+                        if (next.has(key)) next.delete(key);
+                        else next.add(key);
+                        return next;
+                      });
+                    };
                     return (
-                      <div key={idx} className="p-4 bg-white rounded-lg border border-slate-200" data-testid={`komm-entry-${idx}`}>
-                        <div className="flex items-start gap-3">
-                          <div className={`p-2 rounded-lg ${
+                      <div
+                        key={item.id || idx}
+                        className="bg-white rounded-lg border border-slate-200 cursor-pointer hover:border-slate-300 transition-colors"
+                        data-testid={`komm-entry-${idx}`}
+                        onClick={toggleExpand}
+                      >
+                        {/* Collapsed header — always visible */}
+                        <div className="p-3 flex items-center gap-3">
+                          <div className={`p-2 rounded-lg shrink-0 ${
                             item.typ.includes('ein') ? 'bg-emerald-50' : 'bg-cyan-50'
                           }`}>
                             <Icon className={`w-4 h-4 ${
                               item.typ.includes('ein') ? 'text-emerald-500' : 'text-cyan-500'
                             }`} />
                           </div>
-                          <div className="flex-1">
-                            <div className="flex items-center justify-between">
-                              <p className="text-slate-900 font-medium">
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center gap-2">
+                              <span className="text-slate-900 font-medium text-sm truncate">
                                 {KOMMUNIKATION_LABELS[item.typ] || item.typ}
-                              </p>
-                              <div className="flex items-center gap-2">
-                                <span className="text-slate-400 text-sm">
-                                  {formatDateTime(item.erstellt_am)}
-                                </span>
-                                {deletingKommId === item.id ? (
-                                  <div className="flex items-center gap-1">
-                                    <Button
-                                      variant="ghost"
-                                      size="sm"
-                                      className="h-6 w-6 p-0 text-red-500 hover:bg-red-50"
-                                      onClick={() => handleDeleteKommunikation(item.id)}
-                                    >
-                                      <Check className="w-3.5 h-3.5" />
-                                    </Button>
-                                    <Button
-                                      variant="ghost"
-                                      size="sm"
-                                      className="h-6 w-6 p-0 text-slate-400 hover:bg-slate-50"
-                                      onClick={() => setDeletingKommId(null)}
-                                    >
-                                      <X className="w-3.5 h-3.5" />
-                                    </Button>
-                                  </div>
-                                ) : (
-                                  <Button
-                                    variant="ghost"
-                                    size="sm"
-                                    className="h-6 w-6 p-0 text-slate-300 hover:text-red-500 hover:bg-red-50"
-                                    onClick={() => setDeletingKommId(item.id)}
-                                  >
-                                    <Trash2 className="w-3.5 h-3.5" />
-                                  </Button>
-                                )}
-                              </div>
+                              </span>
+                              {item.betreff && (
+                                <span className="text-slate-600 text-sm truncate">— {item.betreff}</span>
+                              )}
                             </div>
-                            {item.betreff && (
-                              <p className="text-slate-700 text-sm mt-1 font-medium">{item.betreff}</p>
+                            {/* AI Summary bullets */}
+                            {item.zusammenfassung?.length > 0 && !isExpanded && (
+                              <ul className="mt-1 space-y-0.5">
+                                {item.zusammenfassung.map((punkt, i) => (
+                                  <li key={i} className="text-slate-400 text-xs flex items-start gap-1.5">
+                                    <span className="mt-1 w-1 h-1 rounded-full bg-slate-300 shrink-0" />
+                                    {punkt}
+                                  </li>
+                                ))}
+                              </ul>
                             )}
-                            <p className="text-slate-500 mt-2 whitespace-pre-wrap">{item.inhalt}</p>
+                          </div>
+                          <div className="flex items-center gap-2 shrink-0">
+                            {item.erstellt_von_name && (
+                              <span className="text-slate-400 text-xs hidden sm:inline">
+                                {item.erstellt_von_name}
+                              </span>
+                            )}
+                            <span className="text-slate-400 text-xs whitespace-nowrap">
+                              {formatDateTime(item.erstellt_am)}
+                            </span>
+                            {deletingKommId === item.id ? (
+                              <div className="flex items-center gap-1" onClick={e => e.stopPropagation()}>
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  className="h-6 w-6 p-0 text-red-500 hover:bg-red-50"
+                                  onClick={() => handleDeleteKommunikation(item.id)}
+                                >
+                                  <Check className="w-3.5 h-3.5" />
+                                </Button>
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  className="h-6 w-6 p-0 text-slate-400 hover:bg-slate-50"
+                                  onClick={() => setDeletingKommId(null)}
+                                >
+                                  <X className="w-3.5 h-3.5" />
+                                </Button>
+                              </div>
+                            ) : (
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                className="h-6 w-6 p-0 text-slate-300 hover:text-red-500 hover:bg-red-50"
+                                onClick={(e) => { e.stopPropagation(); setDeletingKommId(item.id); }}
+                              >
+                                <Trash2 className="w-3.5 h-3.5" />
+                              </Button>
+                            )}
+                            {isExpanded ? (
+                              <ChevronUp className="w-4 h-4 text-slate-400" />
+                            ) : (
+                              <ChevronDown className="w-4 h-4 text-slate-400" />
+                            )}
+                          </div>
+                        </div>
+
+                        {/* Expanded content */}
+                        {isExpanded && (
+                          <div className="px-3 pb-3 pt-0 border-t border-slate-100">
+                            <p className="text-slate-600 mt-3 whitespace-pre-wrap text-sm">{item.inhalt}</p>
                             {item.anhaenge?.length > 0 && (
                               <div className="flex flex-wrap gap-2 mt-2">
                                 {item.anhaenge.map((a, i) => (
@@ -706,7 +751,7 @@ export default function KlientDetail() {
                               </p>
                             )}
                           </div>
-                        </div>
+                        )}
                       </div>
                     );
                   })}
@@ -1008,10 +1053,10 @@ export default function KlientDetail() {
               </div>
             )}
 
-            <div className="p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
-              <p className="text-yellow-500 text-sm">
-                Der Kommunikationseintrag wird automatisch gespeichert. 
-                E-Mail-Versand wird aktiviert, wenn SMTP konfiguriert ist.
+            <div className="p-3 bg-cyan-50 border border-cyan-200 rounded-lg flex items-center gap-2">
+              <Mail className="w-4 h-4 text-cyan-600 shrink-0" />
+              <p className="text-cyan-700 text-sm">
+                Von: <strong>wohngemeinschaften@domusvita.de</strong>
               </p>
             </div>
           </div>

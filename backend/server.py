@@ -12,8 +12,12 @@ import logging
 import uuid
 import base64
 import io
+import asyncio
+import re
 from PIL import Image
 from pdf_generator import EinzugspaketGenerator, DOCUMENT_SECTIONS, SECTION_LABELS
+import email_service
+from ai_summary import generate_summary
 
 from auth import get_current_user, get_current_user_optional, DEV_MODE, AZURE_AD_TENANT_ID, AZURE_AD_CLIENT_ID
 
@@ -52,8 +56,132 @@ async def lifespan(app: FastAPI):
     global db
     db = await PgDatabase.create()
     logger.info(f"Database connected: {db}")
+    # Start inbox polling background task
+    poll_task = asyncio.create_task(poll_inbox_loop())
     yield
+    poll_task.cancel()
     await db.close()
+
+
+async def poll_inbox_loop():
+    """Poll the shared mailbox for new emails every 5 minutes."""
+    await asyncio.sleep(30)  # Wait 30s after startup before first poll
+    while True:
+        try:
+            await process_incoming_emails()
+        except Exception as e:
+            logger.error(f"Inbox polling error: {e}")
+        await asyncio.sleep(300)  # 5 minutes
+
+
+async def generate_and_store_summary(komm_id: str, text: str):
+    """Generate AI summary and store it on the communication entry."""
+    try:
+        summary = await generate_summary(text)
+        if summary:
+            await db.klient_kommunikation.update_one(
+                {"id": komm_id},
+                {"$set": {"zusammenfassung": summary}}
+            )
+    except Exception as e:
+        logger.error(f"Summary generation failed for {komm_id}: {e}")
+
+
+async def process_incoming_emails():
+    """Process unread emails from the shared mailbox and route them to clients."""
+    emails = await email_service.get_unread_emails()
+    if not emails:
+        return
+
+    dv_tag_pattern = re.compile(r"\[DV-([a-f0-9]{8})\]")
+
+    for email in emails:
+        subject = email.get("subject", "")
+        body_text = email.get("body", "")
+        from_email = email.get("from_email", "")
+        from_name = email.get("from_name", "")
+        message_id = email.get("id")
+
+        klient = None
+        komm_id = generate_id()
+
+        # Route 1: Subject contains [DV-{id}] tag → reply to existing client
+        tag_match = dv_tag_pattern.search(subject)
+        if tag_match:
+            short_id = tag_match.group(1)
+            klient = await db.klienten.find_one({"id": {"$regex": f"^{short_id}"}})
+
+        # Route 2: Sender email matches a client's contact email
+        if not klient and from_email:
+            klient = await db.klienten.find_one({"kontakt_email": from_email})
+
+        # Route 3: Keywords suggest a new inquiry
+        if not klient:
+            inquiry_keywords = ["anfrage", "interesse", "pflege-wg", "platz", "wohngemeinschaft", "einzug"]
+            subject_lower = subject.lower()
+            is_inquiry = any(kw in subject_lower for kw in inquiry_keywords)
+
+            if is_inquiry:
+                # Create new client from email
+                new_klient_id = generate_id()
+                klient_data = {
+                    "id": new_klient_id,
+                    "vorname": from_name.split()[0] if from_name else "Unbekannt",
+                    "nachname": " ".join(from_name.split()[1:]) if from_name and len(from_name.split()) > 1 else from_email.split("@")[0],
+                    "kontakt_email": from_email,
+                    "kontakt_name": from_name or from_email,
+                    "status": "neu",
+                    "anfrage_quelle": "email",
+                    "pflegegrad": "keiner",
+                    "dringlichkeit": "flexibel",
+                    "bevorzugte_wgs": [],
+                    "anfrage_am": to_iso(now()),
+                    "created_at": to_iso(now()),
+                    "updated_at": to_iso(now()),
+                }
+                await db.klienten.insert_one(klient_data)
+                klient = klient_data
+                logger.info(f"New klient created from email: {from_email} → {new_klient_id}")
+
+        if klient:
+            # Save as incoming email communication
+            komm = {
+                "id": komm_id,
+                "klient_id": klient["id"],
+                "typ": "email_ein",
+                "betreff": subject,
+                "inhalt": body_text,
+                "anhaenge": [],
+                "erstellt_am": to_iso(now()),
+                "erstellt_von_name": from_name or from_email,
+            }
+            await db.klient_kommunikation.insert_one(komm)
+
+            await db.klient_aktivitaeten.insert_one({
+                "id": generate_id(),
+                "klient_id": klient["id"],
+                "benutzer_name": from_name or from_email,
+                "aktion": f"E-Mail erhalten von {from_email}",
+                "timestamp": to_iso(now()),
+            })
+
+            # Generate AI summary in background
+            asyncio.create_task(generate_and_store_summary(komm_id, body_text))
+        else:
+            # Route 4: Unmatched → save to general email collection
+            await db.email_allgemein.insert_one({
+                "id": generate_id(),
+                "von_email": from_email,
+                "von_name": from_name,
+                "betreff": subject,
+                "inhalt": body_text,
+                "status": "unzugeordnet",
+                "erstellt_am": to_iso(now()),
+            })
+            logger.info(f"Unmatched email from {from_email}: {subject}")
+
+        # Mark as read in mailbox
+        await email_service.mark_as_read(message_id)
 
 # App setup
 app = FastAPI(
@@ -1208,49 +1336,27 @@ async def send_einzugspaket_email(data: EinzugspaketEmailRequest, current_user: 
     )
 
     filename = f"Einzugspaket_{klient.get('nachname')}_{klient.get('vorname')}_{wg.get('kurzname')}.pdf"
-    email_sent = False
 
-    # Try real SMTP sending
-    smtp_host = os.environ.get("SMTP_HOST", "")
-    if smtp_host:
-        try:
-            import aiosmtplib
-            from email.mime.multipart import MIMEMultipart
-            from email.mime.text import MIMEText
-            from email.mime.application import MIMEApplication
+    body = data.nachricht or (
+        f"Sehr geehrte Damen und Herren,\n\n"
+        f"anbei erhalten Sie das Einzugspaket für {klient.get('vorname')} "
+        f"{klient.get('nachname')} in der WG {wg.get('kurzname')}.\n\n"
+        f"Mit freundlichen Grüßen\n{stammdaten.get('pflegedienst_name', 'DomusVita')}"
+    )
 
-            msg = MIMEMultipart()
-            msg["From"] = os.environ.get("SMTP_FROM", "noreply@domusvita.de")
-            msg["To"] = data.empfaenger_email
-            msg["Subject"] = data.betreff
-
-            body = data.nachricht or (
-                f"Sehr geehrte Damen und Herren,\n\n"
-                f"anbei erhalten Sie das Einzugspaket für {klient.get('vorname')} "
-                f"{klient.get('nachname')} in der WG {wg.get('kurzname')}.\n\n"
-                f"Mit freundlichen Grüßen\n{stammdaten.get('pflegedienst_name', 'DomusVita')}"
-            )
-            msg.attach(MIMEText(body, "plain", "utf-8"))
-
-            attachment = MIMEApplication(pdf_bytes, _subtype="pdf")
-            attachment.add_header("Content-Disposition", "attachment", filename=filename)
-            msg.attach(attachment)
-
-            await aiosmtplib.send(
-                msg,
-                hostname=smtp_host,
-                port=int(os.environ.get("SMTP_PORT", 587)),
-                username=os.environ.get("SMTP_USER", ""),
-                password=os.environ.get("SMTP_PASS", ""),
-                use_tls=True,
-            )
-            email_sent = True
-        except Exception as e:
-            logger.error(f"SMTP send failed: {e}")
+    # Send via Graph API
+    subject_tag = f"[DV-{data.klient_id[:8]}] {data.betreff}"
+    email_sent = await email_service.send_email(
+        to=data.empfaenger_email,
+        subject=subject_tag,
+        body=body,
+        attachments=[(filename, pdf_bytes)],
+    )
 
     # Save as communication entry
+    komm_id = generate_id()
     komm = {
-        "id": generate_id(),
+        "id": komm_id,
         "klient_id": data.klient_id,
         "typ": "email_aus",
         "betreff": data.betreff,
@@ -1261,6 +1367,7 @@ async def send_einzugspaket_email(data: EinzugspaketEmailRequest, current_user: 
         "erstellt_von_name": current_user.get("name", "System")
     }
     await db.klient_kommunikation.insert_one(komm)
+    asyncio.create_task(generate_and_store_summary(komm_id, komm["inhalt"]))
 
     await db.klient_aktivitaeten.insert_one({
         "id": generate_id(),
@@ -1271,7 +1378,7 @@ async def send_einzugspaket_email(data: EinzugspaketEmailRequest, current_user: 
     })
 
     return {
-        "message": "E-Mail gesendet" if email_sent else "Einzugspaket als Kommunikationseintrag gespeichert (SMTP nicht konfiguriert)",
+        "message": "E-Mail gesendet" if email_sent else "E-Mail konnte nicht gesendet werden (Graph API nicht konfiguriert). Eintrag gespeichert.",
         "email_sent": email_sent,
     }
 
@@ -1838,7 +1945,8 @@ async def create_kommunikation(klient_id: str, komm: KommunikationCreate, curren
     komm_dict["erstellt_am"] = to_iso(now())
     
     await db.klient_kommunikation.insert_one(komm_dict)
-    
+    asyncio.create_task(generate_and_store_summary(komm_dict["id"], komm_dict.get("inhalt", "")))
+
     # Log activity
     typ_labels = {
         "email_aus": "E-Mail gesendet",
@@ -1850,7 +1958,7 @@ async def create_kommunikation(klient_id: str, komm: KommunikationCreate, curren
         "notiz": "Notiz hinzugefügt",
         "besichtigung": "Besichtigung durchgeführt"
     }
-    
+
     await db.klient_aktivitaeten.insert_one({
         "id": generate_id(),
         "klient_id": klient_id,
@@ -1858,7 +1966,7 @@ async def create_kommunikation(klient_id: str, komm: KommunikationCreate, curren
         "aktion": typ_labels.get(komm_dict["typ"], komm_dict["typ"]),
         "timestamp": to_iso(now())
     })
-    
+
     return komm_dict
 
 @api_router.get("/klienten/{klient_id}/kommunikation")
@@ -2109,72 +2217,44 @@ async def delete_klient_dokument(klient_id: str, dok_id: str, current_user: Dict
 
 @api_router.post("/klienten/{klient_id}/email-senden")
 async def send_klient_email(klient_id: str, data: dict, current_user: Dict = Depends(get_current_user)):
-    """Send email to client's contact person with optional document attachments.
-    Currently MOCKED - stores as communication entry. Configure SMTP for real sending."""
+    """Send email to client's contact person via Graph API with optional document attachments."""
     klient = await db.klienten.find_one({"id": klient_id})
     if not klient:
         raise HTTPException(status_code=404, detail="Klient nicht gefunden")
-    
+
     empfaenger = data.get("empfaenger") or klient.get("kontakt_email")
     if not empfaenger:
         raise HTTPException(status_code=400, detail="Keine E-Mail-Adresse vorhanden")
-    
+
     betreff = data.get("betreff", "Informationen von DomusVita")
     inhalt = data.get("inhalt", "")
     dokument_ids = data.get("dokument_ids", [])
-    
-    # Collect attached documents info
+
+    # Collect attached documents
     anhaenge_namen = []
+    graph_attachments = []
     if dokument_ids:
         for dok_id in dokument_ids:
-            dok = await db.klient_dokumente.find_one({"id": dok_id}, {"name": 1, "_id": 0})
+            dok = await db.klient_dokumente.find_one({"id": dok_id})
             if dok:
-                anhaenge_namen.append(dok["name"])
-    
-    email_sent = False
-    smtp_host = os.environ.get("SMTP_HOST", "")
+                anhaenge_namen.append(dok.get("name", "dokument"))
+                if dok.get("file_data"):
+                    file_content = base64.b64decode(dok["file_data"])
+                    graph_attachments.append((dok.get("name", "dokument"), file_content))
 
-    if smtp_host:
-        try:
-            import aiosmtplib
-            from email.mime.multipart import MIMEMultipart
-            from email.mime.text import MIMEText
-            from email.mime.base import MIMEBase
-            from email import encoders
-
-            msg = MIMEMultipart()
-            msg["From"] = os.environ.get("SMTP_FROM", "noreply@domusvita.de")
-            msg["To"] = empfaenger
-            msg["Subject"] = betreff
-            msg.attach(MIMEText(inhalt, "plain", "utf-8"))
-
-            # Attach documents
-            if dokument_ids:
-                for dok_id in dokument_ids:
-                    dok = await db.klient_dokumente.find_one({"id": dok_id})
-                    if dok and dok.get("file_data"):
-                        file_content = base64.b64decode(dok["file_data"])
-                        part = MIMEBase("application", "octet-stream")
-                        part.set_payload(file_content)
-                        encoders.encode_base64(part)
-                        part.add_header("Content-Disposition", "attachment", filename=dok.get("name", "dokument"))
-                        msg.attach(part)
-
-            await aiosmtplib.send(
-                msg,
-                hostname=smtp_host,
-                port=int(os.environ.get("SMTP_PORT", 587)),
-                username=os.environ.get("SMTP_USER", ""),
-                password=os.environ.get("SMTP_PASS", ""),
-                use_tls=True,
-            )
-            email_sent = True
-        except Exception as e:
-            logger.error(f"SMTP send failed for klient email: {e}")
+    # Send via Graph API with client reference tag
+    subject_tag = f"[DV-{klient_id[:8]}] {betreff}"
+    email_sent = await email_service.send_email(
+        to=empfaenger,
+        subject=subject_tag,
+        body=inhalt,
+        attachments=graph_attachments if graph_attachments else None,
+    )
 
     # Log as communication
+    komm_id = generate_id()
     komm = {
-        "id": generate_id(),
+        "id": komm_id,
         "klient_id": klient_id,
         "typ": "email_aus",
         "betreff": betreff,
@@ -2185,6 +2265,7 @@ async def send_klient_email(klient_id: str, data: dict, current_user: Dict = Dep
         "erstellt_von_name": current_user.get("name", "System")
     }
     await db.klient_kommunikation.insert_one(komm)
+    asyncio.create_task(generate_and_store_summary(komm_id, inhalt))
 
     # Update document status
     for dok_id in dokument_ids:
@@ -2192,7 +2273,7 @@ async def send_klient_email(klient_id: str, data: dict, current_user: Dict = Dep
             {"id": dok_id},
             {"$set": {"status": "gesendet", "gesendet_an": empfaenger, "gesendet_am": to_iso(now())}}
         )
-    
+
     # Auto-log activity
     await db.klient_aktivitaeten.insert_one({
         "id": generate_id(),
@@ -2201,10 +2282,10 @@ async def send_klient_email(klient_id: str, data: dict, current_user: Dict = Dep
         "aktion": f"E-Mail gesendet an {empfaenger}" + (f" mit {len(anhaenge_namen)} Anhängen" if anhaenge_namen else ""),
         "timestamp": to_iso(now())
     })
-    
+
     komm.pop("_id", None)
     return {
-        "message": "E-Mail als Kommunikationseintrag gespeichert" if not email_sent else "E-Mail gesendet",
+        "message": "E-Mail gesendet" if email_sent else "E-Mail konnte nicht gesendet werden. Eintrag gespeichert.",
         "email_sent": email_sent,
         "kommunikation": komm
     }
@@ -2527,7 +2608,8 @@ async def whatsapp_webhook(data: dict, current_user: Dict = Depends(get_current_
             "erstellt_von_name": from_number
         }
         await db.klient_kommunikation.insert_one(komm)
-        
+        asyncio.create_task(generate_and_store_summary(komm["id"], body))
+
         # Auto-log activity
         await db.klient_aktivitaeten.insert_one({
             "id": generate_id(),
@@ -2586,6 +2668,7 @@ async def send_whatsapp(data: dict, current_user: Dict = Depends(get_current_use
         "erstellt_von_name": current_user.get("name", "System")
     }
     await db.klient_kommunikation.insert_one(komm)
+    asyncio.create_task(generate_and_store_summary(komm["id"], nachricht))
 
     await db.klient_aktivitaeten.insert_one({
         "id": generate_id(),
