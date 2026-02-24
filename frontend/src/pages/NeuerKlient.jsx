@@ -75,7 +75,11 @@ export default function NeuerKlient() {
 
     setLoading(true);
     try {
-      const { data: newKlient } = await axios.post(`${API_URL}/api/klienten`, formData);
+      // Clean empty strings to null for optional datetime/enum fields
+      const cleaned = { ...formData };
+      if (!cleaned.geburtsdatum) cleaned.geburtsdatum = null;
+      if (!cleaned.geschlecht) cleaned.geschlecht = null;
+      const { data: newKlient } = await axios.post(`${API_URL}/api/klienten`, cleaned);
       toast.success('Klient erfolgreich angelegt');
 
       // If we have a zimmer to assign, do it now
