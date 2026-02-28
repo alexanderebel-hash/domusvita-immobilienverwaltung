@@ -1574,52 +1574,52 @@ PFLEGE_WGS_DATA = [
     }
 ]
 
-# Echte Bewohnerdaten aus wg-datengrundlage.json (Stand 2026-02-24)
+# Anonymisierte Test-Bewohnerdaten fuer DEV_MODE Seed (DSGVO-konform)
 ECHTE_BEWOHNER_DATA = {
     "wg-sterndamm": [
-        {"vorname": "Test-A", "nachname": "Testberg-01", "zimmer_nr": "1"},
-        {"vorname": "Test-B", "nachname": "Testberg-02", "zimmer_nr": "2"},
-        {"vorname": "Test-C", "nachname": "Testberg-03", "einzugsdatum": "2026-01-20", "zimmer_nr": "3"},
-        {"vorname": "Test-D", "nachname": "Testberg-04", "zimmer_nr": "4"},
-        {"vorname": "Test-E", "nachname": "Testberg-05", "zimmer_nr": "5"},
-        {"vorname": "Test-F", "nachname": "Testberg-06", "zimmer_nr": "6"},
-        {"vorname": "Test-G", "nachname": "Testberg-07", "zimmer_nr": "7"},
+        {"vorname": "Anna", "nachname": "Testberg", "zimmer_nr": "1"},
+        {"vorname": "Karl", "nachname": "Musterfeld", "zimmer_nr": "2"},
+        {"vorname": "Stefan", "nachname": "Beispiel", "einzugsdatum": "2026-01-20", "zimmer_nr": "3"},
+        {"vorname": "Monika", "nachname": "Testhaus", "zimmer_nr": "4"},
+        {"vorname": "Horst", "nachname": "Platzhalter", "zimmer_nr": "5"},
+        {"vorname": "Bernd", "nachname": "Demostr", "zimmer_nr": "6"},
+        {"vorname": "Ernst", "nachname": "Testmann", "zimmer_nr": "7"},
         # Zimmer 8 frei
-        {"vorname": "Test-H", "nachname": "Testberg-08", "zimmer_nr": "9"},
-        {"vorname": "Test-I", "nachname": "Testberg-09", "einzugsdatum": "2026-01-06", "zimmer_nr": "10"},
+        {"vorname": "Rolf", "nachname": "Musterberg", "zimmer_nr": "9"},
+        {"vorname": "Guenther", "nachname": "Testfeld", "einzugsdatum": "2026-01-06", "zimmer_nr": "10"},
     ],
     "wg-kupferkessel": [
-        {"vorname": "Test-J", "nachname": "Testberg-10", "einzugsdatum": "2025-05-01", "zimmer_nr": "1"},
-        {"vorname": "Test-K", "nachname": "Testberg-11", "einzugsdatum": "2020-06-01", "zimmer_nr": "2"},
-        {"vorname": "Test-L", "nachname": "Testberg-12", "einzugsdatum": "2025-07-15", "zimmer_nr": "3"},
-        {"vorname": "Test-M", "nachname": "Testberg-13", "einzugsdatum": "2024-06-25", "zimmer_nr": "4"},
-        {"vorname": "Test-N", "nachname": "Testberg-14", "einzugsdatum": "2017-10-01", "zimmer_nr": "5"},
-        {"vorname": "Test-O", "nachname": "Testberg-15", "einzugsdatum": "2026-01-07", "zimmer_nr": "6"},
-        {"vorname": "Test-P", "nachname": "Testberg-16", "einzugsdatum": "2026-01-08", "zimmer_nr": "7"},
-        {"vorname": "Test-Q", "nachname": "Testberg-17", "einzugsdatum": "2017-10-01", "zimmer_nr": "8"},
+        {"vorname": "Hans-Georg", "nachname": "Beispielmann", "einzugsdatum": "2025-05-01", "zimmer_nr": "1"},
+        {"vorname": "Sabine", "nachname": "Testfrau", "einzugsdatum": "2020-06-01", "zimmer_nr": "2"},
+        {"vorname": "Hans-Martin", "nachname": "Musterhaus", "einzugsdatum": "2025-07-15", "zimmer_nr": "3"},
+        {"vorname": "Walter", "nachname": "Demofeld", "einzugsdatum": "2024-06-25", "zimmer_nr": "4"},
+        {"vorname": "Herbert", "nachname": "Teststein", "einzugsdatum": "2017-10-01", "zimmer_nr": "5"},
+        {"vorname": "Heinz", "nachname": "Platzberg", "einzugsdatum": "2026-01-07", "zimmer_nr": "6"},
+        {"vorname": "Friedrich", "nachname": "Mustertal", "einzugsdatum": "2026-01-08", "zimmer_nr": "7"},
+        {"vorname": "Hans-Werner", "nachname": "Testbach", "einzugsdatum": "2017-10-01", "zimmer_nr": "8"},
     ],
     "wg-kupferkessel-klein": [
-        {"vorname": "Test-R", "nachname": "Testberg-18", "einzugsdatum": "2023-08-01", "zimmer_nr": "1"},
-        {"vorname": "Test-S", "nachname": "Testberg-19", "zimmer_nr": "2"},
-        {"vorname": "Test-T", "nachname": "Testberg-20", "einzugsdatum": "2026-02-18", "zimmer_nr": "3"},
+        {"vorname": "Helmut", "nachname": "Demoberg", "einzugsdatum": "2023-08-01", "zimmer_nr": "1"},
+        {"vorname": "Norbert", "nachname": "Testgrund", "zimmer_nr": "2"},
+        {"vorname": "Wilhelm", "nachname": "Musterbach", "einzugsdatum": "2026-02-18", "zimmer_nr": "3"},
     ],
     "wg-drachenwiese": [
-        {"vorname": "Test-U", "nachname": "Testberg-21", "einzugsdatum": "2025-03-01", "zimmer_nr": "1"},
-        {"vorname": "Test-V", "nachname": "Testberg-22", "einzugsdatum": "2024-02-01", "zimmer_nr": "2"},
-        {"vorname": "Test-W", "nachname": "Testberg-23", "einzugsdatum": "2024-07-17", "zimmer_nr": "3"},
-        {"vorname": "Test-X", "nachname": "Testberg-24", "einzugsdatum": "2023-10-22", "zimmer_nr": "4"},
-        {"vorname": "Test-Y", "nachname": "Testberg-25", "einzugsdatum": "2024-08-01", "zimmer_nr": "5"},
-        {"vorname": "Test-Z", "nachname": "Testberg-26", "einzugsdatum": "2025-03-17", "zimmer_nr": "6"},
-        {"vorname": "Test-AA", "nachname": "Testberg-27", "einzugsdatum": "2026-01-20", "zimmer_nr": "7"},
-        {"vorname": "Test-AB", "nachname": "Testberg-28", "einzugsdatum": "2024-03-01", "zimmer_nr": "8"},
-        {"vorname": "Test-AC", "nachname": "Testberg-29", "einzugsdatum": "2025-01-23", "zimmer_nr": "9"},
-        {"vorname": "Test-AD", "nachname": "Testberg-30", "einzugsdatum": "2023-11-01", "zimmer_nr": "10"},
+        {"vorname": "Renate", "nachname": "Testwiese", "einzugsdatum": "2025-03-01", "zimmer_nr": "1"},
+        {"vorname": "Brigitte", "nachname": "Musterfrau", "einzugsdatum": "2024-02-01", "zimmer_nr": "2"},
+        {"vorname": "Christa", "nachname": "Demohaus", "einzugsdatum": "2024-07-17", "zimmer_nr": "3"},
+        {"vorname": "Wolfgang", "nachname": "Testberg", "einzugsdatum": "2023-10-22", "zimmer_nr": "4"},
+        {"vorname": "Klaus", "nachname": "Beispielfeld", "einzugsdatum": "2024-08-01", "zimmer_nr": "5"},
+        {"vorname": "Siegfried", "nachname": "Platzhalterstr", "einzugsdatum": "2025-03-17", "zimmer_nr": "6"},
+        {"vorname": "Erich", "nachname": "Musterstein", "einzugsdatum": "2026-01-20", "zimmer_nr": "7"},
+        {"vorname": "Ingrid", "nachname": "Testtal", "einzugsdatum": "2024-03-01", "zimmer_nr": "8"},
+        {"vorname": "Ursula", "nachname": "Demobach", "einzugsdatum": "2025-01-23", "zimmer_nr": "9"},
+        {"vorname": "Gertrud", "nachname": "Mustergrund", "einzugsdatum": "2023-11-01", "zimmer_nr": "10"},
         # Zimmer 11 + 12 frei
     ],
     "wg-drachenblick": [
-        {"vorname": "Test-AE", "nachname": "Testberg-31", "einzugsdatum": "2026-01-05", "zimmer_nr": "1"},
+        {"vorname": "Lothar", "nachname": "Testhaus", "einzugsdatum": "2026-01-05", "zimmer_nr": "1"},
         # Zimmer 2 (Morgentau) frei
-        {"vorname": "Test-AF", "nachname": "Testberg-32", "einzugsdatum": "2025-04-01", "zimmer_nr": "3"},
+        {"vorname": "Juergen", "nachname": "Demofeld", "einzugsdatum": "2025-04-01", "zimmer_nr": "3"},
         # Zimmer 4 (Bernstein) frei
     ]
 }
@@ -2880,11 +2880,11 @@ async def seed_klienten_data():
     
     # Add some Interessenten (prospects) for the pipeline
     interessenten = [
-        {"id": generate_id(), "vorname": "Test-AG", "nachname": "Testberg-33", "geschlecht": "weiblich", "pflegegrad": "3", "besonderheiten": "Testnotiz Pflegebedarf A", "kontakt_name": "Kontakt Testberg-33", "kontakt_beziehung": "Sohn", "kontakt_telefon": "+49 30 00000001", "kontakt_email": "anonym33@example.de", "status": "neu", "anfrage_quelle": "email", "dringlichkeit": "sofort", "bevorzugte_wgs": ["wg-drachenwiese", "wg-drachenblick"]},
-        {"id": generate_id(), "vorname": "Test-AH", "nachname": "Testberg-34", "geschlecht": "männlich", "pflegegrad": "2", "besonderheiten": "Testnotiz Pflegebedarf B", "kontakt_name": "Kontakt Testberg-34", "kontakt_beziehung": "Tochter", "kontakt_telefon": "+49 30 00000002", "kontakt_email": "anonym34@example.de", "status": "erstgespraech", "anfrage_quelle": "telefon", "dringlichkeit": "4_wochen", "bevorzugte_wgs": ["wg-sterndamm"]},
-        {"id": generate_id(), "vorname": "Test-AI", "nachname": "Testberg-35", "geschlecht": "weiblich", "pflegegrad": "4", "besonderheiten": "Testnotiz Pflegebedarf C", "kontakt_name": "Kontakt Testberg-35", "kontakt_beziehung": "Tochter", "kontakt_telefon": "+49 30 00000003", "kontakt_email": "anonym35@example.de", "status": "besichtigung_geplant", "anfrage_quelle": "vermittlung", "vermittler": "Vivantes Klinikum Neukölln", "dringlichkeit": "sofort", "bevorzugte_wgs": ["wg-drachenwiese"]},
-        {"id": generate_id(), "vorname": "Test-AJ", "nachname": "Testberg-36", "geschlecht": "weiblich", "pflegegrad": "3", "besonderheiten": "Testnotiz Pflegebedarf D", "kontakt_name": "Kontakt Testberg-36", "kontakt_beziehung": "Sohn", "kontakt_telefon": "+49 30 00000004", "kontakt_email": "anonym36@example.de", "status": "unterlagen_gesendet", "anfrage_quelle": "website", "dringlichkeit": "3_monate", "bevorzugte_wgs": ["wg-kupferkessel-klein", "wg-drachenblick"]},
-        {"id": generate_id(), "vorname": "Test-AK", "nachname": "Testberg-37", "geschlecht": "männlich", "pflegegrad": "5", "besonderheiten": "Testnotiz Pflegebedarf E", "kontakt_name": "Kontakt Testberg-37", "kontakt_beziehung": "Ehefrau", "kontakt_telefon": "+49 30 00000005", "kontakt_email": "anonym37@example.de", "status": "entscheidung_ausstehend", "anfrage_quelle": "empfehlung", "dringlichkeit": "sofort", "bevorzugte_wgs": ["wg-drachenwiese"]},
+        {"id": generate_id(), "vorname": "Erika", "nachname": "Testfrau", "geschlecht": "weiblich", "pflegegrad": "3", "besonderheiten": "Testnotiz Pflegebedarf A", "kontakt_name": "Thomas Testfrau", "kontakt_beziehung": "Sohn", "kontakt_telefon": "+49 30 55500001", "kontakt_email": "test1@example.com", "status": "neu", "anfrage_quelle": "email", "dringlichkeit": "sofort", "bevorzugte_wgs": ["wg-drachenwiese", "wg-drachenblick"]},
+        {"id": generate_id(), "vorname": "Hans-Dieter", "nachname": "Mustermann", "geschlecht": "männlich", "pflegegrad": "2", "besonderheiten": "Testnotiz Pflegebedarf B", "kontakt_name": "Petra Mustermann", "kontakt_beziehung": "Tochter", "kontakt_telefon": "+49 30 55500002", "kontakt_email": "test2@example.com", "status": "erstgespraech", "anfrage_quelle": "telefon", "dringlichkeit": "4_wochen", "bevorzugte_wgs": ["wg-sterndamm"]},
+        {"id": generate_id(), "vorname": "Hildegard", "nachname": "Beispielfrau", "geschlecht": "weiblich", "pflegegrad": "4", "besonderheiten": "Testnotiz Pflegebedarf C", "kontakt_name": "Sandra Beispielfrau", "kontakt_beziehung": "Tochter", "kontakt_telefon": "+49 30 55500003", "kontakt_email": "test3@example.com", "status": "besichtigung_geplant", "anfrage_quelle": "vermittlung", "vermittler": "Beispiel-Klinik Berlin", "dringlichkeit": "sofort", "bevorzugte_wgs": ["wg-drachenwiese"]},
+        {"id": generate_id(), "vorname": "Lieselotte", "nachname": "Demofrau", "geschlecht": "weiblich", "pflegegrad": "3", "besonderheiten": "Testnotiz Pflegebedarf D", "kontakt_name": "Martin Demofrau", "kontakt_beziehung": "Sohn", "kontakt_telefon": "+49 30 55500004", "kontakt_email": "test4@example.com", "status": "unterlagen_gesendet", "anfrage_quelle": "website", "dringlichkeit": "3_monate", "bevorzugte_wgs": ["wg-kupferkessel-klein", "wg-drachenblick"]},
+        {"id": generate_id(), "vorname": "Otto", "nachname": "Platzhalter", "geschlecht": "männlich", "pflegegrad": "5", "besonderheiten": "Testnotiz Pflegebedarf E", "kontakt_name": "Helene Platzhalter", "kontakt_beziehung": "Ehefrau", "kontakt_telefon": "+49 30 55500005", "kontakt_email": "test5@example.com", "status": "entscheidung_ausstehend", "anfrage_quelle": "empfehlung", "dringlichkeit": "sofort", "bevorzugte_wgs": ["wg-drachenwiese"]},
     ]
     
     for k in interessenten:
@@ -2899,7 +2899,7 @@ async def seed_klienten_data():
     interessenten_count = len([k for k in klienten_data if k["status"] != "bewohner"])
     
     return {
-        "message": "Echte Bewohnerdaten erfolgreich angelegt",
+        "message": "Test-Bewohnerdaten erfolgreich angelegt",
         "zimmer_count": len(zimmer_data),
         "bewohner_count": bewohner_count,
         "interessenten_count": interessenten_count,
