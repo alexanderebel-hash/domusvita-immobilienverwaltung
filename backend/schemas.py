@@ -50,29 +50,29 @@ class DocumentCategoryEnum(str, Enum):
 # ==================== PROPERTY SCHEMAS ====================
 
 class PropertyBase(BaseModel):
-    name: str
-    address: str
-    city: str
-    postal_code: Optional[str] = None
-    property_type: str
-    status: str
+    name: str = Field(max_length=300)
+    address: str = Field(max_length=500)
+    city: str = Field(max_length=200)
+    postal_code: Optional[str] = Field(None, max_length=20)
+    property_type: str = Field(max_length=100)
+    status: str = Field(max_length=50)
     units_count: int = 0
-    image_url: Optional[str] = None
-    description: Optional[str] = None
+    image_url: Optional[str] = Field(None, max_length=2000)
+    description: Optional[str] = Field(None, max_length=5000)
 
 class PropertyCreate(PropertyBase):
     pass
 
 class PropertyUpdate(BaseModel):
-    name: Optional[str] = None
-    address: Optional[str] = None
-    city: Optional[str] = None
-    postal_code: Optional[str] = None
-    property_type: Optional[str] = None
-    status: Optional[str] = None
+    name: Optional[str] = Field(None, max_length=300)
+    address: Optional[str] = Field(None, max_length=500)
+    city: Optional[str] = Field(None, max_length=200)
+    postal_code: Optional[str] = Field(None, max_length=20)
+    property_type: Optional[str] = Field(None, max_length=100)
+    status: Optional[str] = Field(None, max_length=50)
     units_count: Optional[int] = None
-    image_url: Optional[str] = None
-    description: Optional[str] = None
+    image_url: Optional[str] = Field(None, max_length=2000)
+    description: Optional[str] = Field(None, max_length=5000)
 
 class PropertyResponse(PropertyBase):
     id: str
@@ -108,31 +108,31 @@ class UnitResponse(UnitBase):
 # ==================== CONTACT SCHEMAS ====================
 
 class ContactBase(BaseModel):
-    name: str
-    role: str
-    email: Optional[str] = None
-    phone: Optional[str] = None
-    address: Optional[str] = None
-    company: Optional[str] = None
-    notes: Optional[str] = None
+    name: str = Field(max_length=200)
+    role: str = Field(max_length=50)
+    email: Optional[str] = Field(None, max_length=300)
+    phone: Optional[str] = Field(None, max_length=30)
+    address: Optional[str] = Field(None, max_length=500)
+    company: Optional[str] = Field(None, max_length=300)
+    notes: Optional[str] = Field(None, max_length=5000)
     rating: Optional[int] = 0
-    specialty: Optional[str] = None
-    image_url: Optional[str] = None
+    specialty: Optional[str] = Field(None, max_length=200)
+    image_url: Optional[str] = Field(None, max_length=2000)
 
 class ContactCreate(ContactBase):
     pass
 
 class ContactUpdate(BaseModel):
-    name: Optional[str] = None
-    role: Optional[str] = None
-    email: Optional[str] = None
-    phone: Optional[str] = None
-    address: Optional[str] = None
-    company: Optional[str] = None
-    notes: Optional[str] = None
+    name: Optional[str] = Field(None, max_length=200)
+    role: Optional[str] = Field(None, max_length=50)
+    email: Optional[str] = Field(None, max_length=300)
+    phone: Optional[str] = Field(None, max_length=30)
+    address: Optional[str] = Field(None, max_length=500)
+    company: Optional[str] = Field(None, max_length=300)
+    notes: Optional[str] = Field(None, max_length=5000)
     rating: Optional[int] = None
-    specialty: Optional[str] = None
-    image_url: Optional[str] = None
+    specialty: Optional[str] = Field(None, max_length=200)
+    image_url: Optional[str] = Field(None, max_length=2000)
 
 class ContactResponse(ContactBase):
     id: str
@@ -147,9 +147,9 @@ class ContactResponse(ContactBase):
 class ContractBase(BaseModel):
     property_id: str
     contact_id: Optional[str] = None
-    contract_type: str
-    title: str
-    description: Optional[str] = None
+    contract_type: str = Field(max_length=100)
+    title: str = Field(max_length=300)
+    description: Optional[str] = Field(None, max_length=5000)
     start_date: datetime
     end_date: Optional[datetime] = None
     monthly_amount: float = 0
@@ -189,11 +189,11 @@ class ContractResponse(ContractBase):
 class MaintenanceTicketBase(BaseModel):
     property_id: str
     assigned_to_id: Optional[str] = None
-    title: str
-    description: Optional[str] = None
-    status: str = "Offen"
-    priority: str = "Normal"
-    category: Optional[str] = None
+    title: str = Field(max_length=300)
+    description: Optional[str] = Field(None, max_length=5000)
+    status: str = Field("Offen", max_length=50)
+    priority: str = Field("Normal", max_length=20)
+    category: Optional[str] = Field(None, max_length=100)
     scheduled_date: Optional[datetime] = None
     cost: float = 0
     is_recurring: bool = False
@@ -232,9 +232,9 @@ class MaintenanceTicketResponse(MaintenanceTicketBase):
 
 class DocumentBase(BaseModel):
     property_id: str
-    name: str
-    category: str
-    description: Optional[str] = None
+    name: str = Field(max_length=300)
+    category: str = Field(max_length=100)
+    description: Optional[str] = Field(None, max_length=5000)
 
 class DocumentCreate(DocumentBase):
     file_url: str
@@ -272,8 +272,8 @@ class AIInsight(BaseModel):
     property_id: Optional[str] = None
 
 class AIQueryRequest(BaseModel):
-    query: str
-    context: Optional[str] = None
+    query: str = Field(max_length=5000)
+    context: Optional[str] = Field(None, max_length=10000)
 
 class AIQueryResponse(BaseModel):
     response: str
@@ -351,8 +351,8 @@ class TicketPhotoResponse(BaseModel):
 
 class WorkReportCreate(BaseModel):
     ticket_id: str
-    description: str
-    materials_used: Optional[str] = None
+    description: str = Field(max_length=5000)
+    materials_used: Optional[str] = Field(None, max_length=2000)
     work_hours: float = 0
     material_cost: float = 0
     labor_cost: float = 0
@@ -525,20 +525,20 @@ class ZimmerResponse(ZimmerBase):
 
 # Klient Schemas
 class KlientBase(BaseModel):
-    vorname: str
-    nachname: str
+    vorname: str = Field(max_length=200)
+    nachname: str = Field(max_length=200)
     geburtsdatum: Optional[datetime] = None
-    geschlecht: Optional[str] = None
-    pflegegrad: str = "keiner"
-    besonderheiten: Optional[str] = None
-    diagnosen: Optional[str] = None
-    kontakt_name: Optional[str] = None
-    kontakt_beziehung: Optional[str] = None
-    kontakt_telefon: Optional[str] = None
-    kontakt_email: Optional[str] = None
-    anfrage_quelle: str = "email"
-    vermittler: Optional[str] = None
-    dringlichkeit: str = "flexibel"
+    geschlecht: Optional[str] = Field(None, max_length=20)
+    pflegegrad: str = Field("keiner", max_length=20)
+    besonderheiten: Optional[str] = Field(None, max_length=5000)
+    diagnosen: Optional[str] = Field(None, max_length=5000)
+    kontakt_name: Optional[str] = Field(None, max_length=200)
+    kontakt_beziehung: Optional[str] = Field(None, max_length=100)
+    kontakt_telefon: Optional[str] = Field(None, max_length=30)
+    kontakt_email: Optional[str] = Field(None, max_length=300)
+    anfrage_quelle: str = Field("email", max_length=50)
+    vermittler: Optional[str] = Field(None, max_length=200)
+    dringlichkeit: str = Field("flexibel", max_length=30)
     bevorzugte_wgs: List[str] = []
 
 class KlientCreate(KlientBase):
@@ -586,9 +586,9 @@ class KlientResponse(KlientBase):
 # Kommunikation Schemas
 class KommunikationCreate(BaseModel):
     klient_id: str
-    typ: str
-    betreff: Optional[str] = None
-    inhalt: str
+    typ: str = Field(max_length=30)
+    betreff: Optional[str] = Field(None, max_length=300)
+    inhalt: str = Field(max_length=10000)
     anhaenge: List[str] = []
 
 class KommunikationResponse(BaseModel):

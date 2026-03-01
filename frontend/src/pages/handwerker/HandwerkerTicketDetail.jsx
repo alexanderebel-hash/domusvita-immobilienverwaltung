@@ -39,7 +39,7 @@ import {
 } from "../../components/ui/dialog";
 import { toast } from "sonner";
 
-const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
+const API = `${import.meta.env.VITE_BACKEND_URL}/api`;
 
 const statusOptions = ["Unterwegs", "Vor Ort", "In Arbeit", "Erledigt", "Material fehlt"];
 const photoCategories = ["Vorher", "Während", "Nachher"];

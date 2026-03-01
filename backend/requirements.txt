@@ -14,6 +14,12 @@ httpx==0.27.0
 # Rate Limiting
 slowapi>=0.1.9
 
+# Structured Logging (M-06)
+python-json-logger>=2.0.7
+
+# Error Monitoring (L-03)
+sentry-sdk[fastapi]>=2.19.0
+
 # Image processing
 Pillow
 

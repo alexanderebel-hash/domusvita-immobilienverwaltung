@@ -17,7 +17,7 @@ import {
 import { Button } from "../../components/ui/button";
 import { toast } from "sonner";
 
-const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
+const API = `${import.meta.env.VITE_BACKEND_URL}/api`;
 
 const statusColors = {
   Offen: "bg-amber-500/20 text-amber-400 border-amber-500/30",

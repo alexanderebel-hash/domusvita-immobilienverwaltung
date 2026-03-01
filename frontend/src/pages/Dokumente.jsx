@@ -47,7 +47,7 @@ import {
 import { Label } from "../components/ui/label";
 import { toast } from "sonner";
 
-const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
+const API = `${import.meta.env.VITE_BACKEND_URL}/api`;
 
 const categoryOptions = ["Vertrag", "Protokoll", "Rechnung", "Grundriss", "Sonstiges"];
 const categoryColors = {

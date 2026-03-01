@@ -1,5 +1,11 @@
 """AI-powered communication summary using Anthropic Claude Haiku."""
 
+# K-05/DSGVO: Diese Funktion sendet Kommunikationsinhalte an die Anthropic API.
+# Inhalte koennen personenbezogene Daten (Name, Adresse) und ggf. Gesundheitsdaten
+# (Pflegebedarf bei WG-Bewohnern) enthalten — Art. 9 DSGVO.
+# Pseudonymisierung ist bei Freitext-Kommunikation nicht zuverlaessig moeglich.
+# Voraussetzung: AVV mit Anthropic (K-07), DSFA (K-06).
+
 import os
 import logging
 
@@ -20,10 +26,20 @@ async def generate_summary(text: str) -> list[str]:
     if not text or len(text.strip()) < 20:
         return []
 
+    logger.info("DSGVO Audit: Anthropic API call (ai_summary)", extra={
+        "event": "anthropic_api_call",
+        "module": "immobilien",
+        "function": "generate_summary",
+        "text_length": len(text),
+        "has_potential_pii": True,
+        "pseudonymized": False,
+        "avv_required": "K-07"
+    })
+
     try:
         import anthropic
 
-        client = anthropic.AsyncAnthropic(api_key=ANTHROPIC_API_KEY)
+        client = anthropic.AsyncAnthropic(api_key=ANTHROPIC_API_KEY, timeout=60.0, max_retries=2)
 
         message = await client.messages.create(
             model="claude-haiku-4-5-20251001",

@@ -1,6 +1,8 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { Toaster } from "./components/ui/sonner";
+import ErrorBoundary from "./components/ErrorBoundary";
 import { AuthProvider, useAuth } from "./lib/auth/AuthProvider";
+import Datenschutz from "./pages/Datenschutz";
 import Layout from "./components/Layout";
 import Dashboard from "./pages/Dashboard";
 import Immobilien from "./pages/Immobilien";
@@ -67,6 +69,7 @@ function ProtectedApp() {
 
 function App() {
   return (
+    <ErrorBoundary>
     <div className="App min-h-screen bg-slate-50">
       <AuthProvider>
         <BrowserRouter>
@@ -76,6 +79,9 @@ function App() {
             <Route path="/handwerker/tickets" element={<HandwerkerTickets />} />
             <Route path="/handwerker/ticket/:ticketId" element={<HandwerkerTicketDetail />} />
 
+            {/* Public route — accessible without authentication */}
+            <Route path="/datenschutz" element={<Datenschutz />} />
+
             {/* Protected Main App Routes */}
             <Route path="/*" element={<ProtectedApp />} />
           </Routes>
@@ -83,6 +89,7 @@ function App() {
         <Toaster position="top-right" theme="light" />
       </AuthProvider>
     </div>
+    </ErrorBoundary>
   );
 }
 

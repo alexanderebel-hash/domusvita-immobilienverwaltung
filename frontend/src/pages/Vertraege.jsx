@@ -50,7 +50,7 @@ import { Textarea } from "../components/ui/textarea";
 import { Switch } from "../components/ui/switch";
 import { toast } from "sonner";
 
-const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
+const API = `${import.meta.env.VITE_BACKEND_URL}/api`;
 
 const contractTypes = ["Mietvertrag", "Hauptmietvertrag", "Versicherung", "Wartungsvertrag"];
 const typeColors = {

@@ -33,7 +33,7 @@ import {
 import { Label } from "../components/ui/label";
 import { toast } from "sonner";
 
-const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
+const API = `${import.meta.env.VITE_BACKEND_URL}/api`;
 
 const propertyTypes = ["Wohnung", "Gewerbe", "Pflegewohngemeinschaft", "Mehrfamilienhaus"];
 const statusOptions = ["Eigentum", "Gemietet", "Untervermietet"];

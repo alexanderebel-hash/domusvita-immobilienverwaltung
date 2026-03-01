@@ -1,4 +1,5 @@
 import { Building2 } from "lucide-react";
+import { Link } from "react-router-dom";
 import { useAuth } from "../lib/auth/AuthProvider";
 
 export default function Login() {
@@ -50,6 +51,9 @@ export default function Login() {
         {/* Footer */}
         <p className="text-xs text-slate-400 text-center mt-6">
           DomusVita Gesundheit &middot; 300&VIER GmbH
+        </p>
+        <p className="text-center mt-2">
+          <Link to="/datenschutz" className="text-xs text-gray-400 hover:text-gray-600">Datenschutzerklärung</Link>
         </p>
       </div>
     </div>

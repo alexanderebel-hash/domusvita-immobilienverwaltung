@@ -1,4 +1,4 @@
-from fastapi import FastAPI, APIRouter, HTTPException, Depends, UploadFile, File, BackgroundTasks
+from fastapi import FastAPI, APIRouter, HTTPException, Depends, UploadFile, File, BackgroundTasks, Query
 from fastapi.responses import StreamingResponse, HTMLResponse
 from fastapi.middleware.cors import CORSMiddleware
 from slowapi import Limiter, _rate_limit_exceeded_handler
@@ -196,9 +196,31 @@ app = FastAPI(
 
 api_router = APIRouter(prefix="/api")
 
-# Configure logging
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+# M-06: Structured JSON logging for Azure Container Apps
+from pythonjsonlogger import jsonlogger
+_json_handler = logging.StreamHandler()
+_json_handler.setFormatter(jsonlogger.JsonFormatter(
+    fmt="%(asctime)s %(name)s %(levelname)s %(message)s",
+    rename_fields={"asctime": "timestamp", "levelname": "level"}
+))
+logging.root.handlers = [_json_handler]
+logging.root.setLevel(logging.INFO)
 logger = logging.getLogger(__name__)
+
+# L-03: Sentry error monitoring
+import sentry_sdk
+
+SENTRY_DSN = os.environ.get("SENTRY_DSN", "")
+if SENTRY_DSN:
+    sentry_sdk.init(
+        dsn=SENTRY_DSN,
+        environment=os.environ.get("SENTRY_ENVIRONMENT", "development"),
+        release=os.environ.get("SENTRY_RELEASE", "unknown"),
+        traces_sample_rate=0.2,
+        send_default_pii=False,
+        enable_tracing=True,
+        before_send_transaction=lambda event, hint: None if event.get("transaction") == "/health" else event,
+    )
 
 # ==================== HELPER FUNCTIONS ====================
 
@@ -336,13 +358,13 @@ async def create_property(data: PropertyCreate, current_user: Dict = Depends(get
     return doc
 
 @api_router.get("/properties", response_model=List[PropertyResponse])
-async def get_properties(property_type: Optional[str] = None, city: Optional[str] = None, status: Optional[str] = None, current_user: Dict = Depends(get_current_user)):
+async def get_properties(property_type: Optional[str] = None, city: Optional[str] = None, status: Optional[str] = None, page: int = Query(1, ge=1), limit: int = Query(100, ge=1, le=500), current_user: Dict = Depends(get_current_user)):
     query = {}
     if property_type: query["property_type"] = property_type
     if city: query["city"] = city
     if status: query["status"] = status
-    
-    docs = await db.properties.find(query, {"_id": 0}).to_list(1000)
+    skip = (page - 1) * limit
+    docs = await db.properties.find(query, {"_id": 0}).skip(skip).to_list(limit)
     for d in docs:
         d["created_at"] = from_iso(d.get("created_at"))
         d["updated_at"] = from_iso(d.get("updated_at"))
@@ -441,7 +463,7 @@ async def create_contact(data: ContactCreate, current_user: Dict = Depends(get_c
     return doc
 
 @api_router.get("/contacts", response_model=List[ContactResponse])
-async def get_contacts(role: Optional[str] = None, search: Optional[str] = None, current_user: Dict = Depends(get_current_user)):
+async def get_contacts(role: Optional[str] = None, search: Optional[str] = None, page: int = Query(1, ge=1), limit: int = Query(100, ge=1, le=500), current_user: Dict = Depends(get_current_user)):
     query = {}
     if role: query["role"] = role
     if search:
@@ -450,8 +472,8 @@ async def get_contacts(role: Optional[str] = None, search: Optional[str] = None,
             {"email": {"$regex": search, "$options": "i"}},
             {"company": {"$regex": search, "$options": "i"}}
         ]
-    
-    docs = await db.contacts.find(query, {"_id": 0}).to_list(1000)
+    skip = (page - 1) * limit
+    docs = await db.contacts.find(query, {"_id": 0}).skip(skip).to_list(limit)
     for d in docs:
         d["created_at"] = from_iso(d.get("created_at"))
         d["updated_at"] = from_iso(d.get("updated_at"))
@@ -521,6 +543,8 @@ async def get_contracts(
     contract_type: Optional[str] = None,
     is_active: Optional[bool] = None,
     expiring_soon: Optional[bool] = None,
+    page: int = Query(1, ge=1),
+    limit: int = Query(100, ge=1, le=500),
     current_user: Dict = Depends(get_current_user)
 ):
     query = {}
@@ -531,8 +555,8 @@ async def get_contracts(
         thirty_days = to_iso(now() + timedelta(days=30))
         query["end_date"] = {"$lte": thirty_days, "$gte": to_iso(now())}
         query["is_active"] = True
-    
-    docs = await db.contracts.find(query, {"_id": 0}).to_list(1000)
+    skip = (page - 1) * limit
+    docs = await db.contracts.find(query, {"_id": 0}).skip(skip).to_list(limit)
     results = []
     for d in docs:
         d["start_date"] = from_iso(d.get("start_date"))
@@ -631,6 +655,8 @@ async def get_maintenance_tickets(
     status: Optional[str] = None,
     priority: Optional[str] = None,
     assigned_to_id: Optional[str] = None,
+    page: int = Query(1, ge=1),
+    limit: int = Query(100, ge=1, le=500),
     current_user: Dict = Depends(get_current_user)
 ):
     query = {}
@@ -638,8 +664,8 @@ async def get_maintenance_tickets(
     if status: query["status"] = status
     if priority: query["priority"] = priority
     if assigned_to_id: query["assigned_to_id"] = assigned_to_id
-    
-    docs = await db.maintenance_tickets.find(query, {"_id": 0}).to_list(1000)
+    skip = (page - 1) * limit
+    docs = await db.maintenance_tickets.find(query, {"_id": 0}).skip(skip).to_list(limit)
     results = []
     for d in docs:
         d["scheduled_date"] = from_iso(d.get("scheduled_date"))
@@ -730,12 +756,12 @@ async def create_document(data: DocumentCreate, current_user: Dict = Depends(get
     return doc
 
 @api_router.get("/documents", response_model=List[DocumentResponse])
-async def get_documents(property_id: Optional[str] = None, category: Optional[str] = None, current_user: Dict = Depends(get_current_user)):
+async def get_documents(property_id: Optional[str] = None, category: Optional[str] = None, page: int = Query(1, ge=1), limit: int = Query(100, ge=1, le=500), current_user: Dict = Depends(get_current_user)):
     query = {}
     if property_id: query["property_id"] = property_id
     if category: query["category"] = category
-    
-    docs = await db.documents.find(query, {"_id": 0}).to_list(1000)
+    skip = (page - 1) * limit
+    docs = await db.documents.find(query, {"_id": 0}).skip(skip).to_list(limit)
     results = []
     for d in docs:
         d["created_at"] = from_iso(d.get("created_at"))
@@ -810,29 +836,27 @@ async def query_ai_assistant(request: AIQueryRequest, current_user: Dict = Depen
 
 # ==================== HANDWERKER PORTAL ROUTES ====================
 
-# Simple token storage for handwerker sessions (in production use proper JWT)
-handwerker_sessions = {}
-
+# M-11: Handwerker sessions in DB statt In-Memory
 @api_router.post("/handwerker/login", response_model=HandwerkerLoginResponse)
 async def handwerker_login(request: HandwerkerLoginRequest):
     """Login for craftsmen using their contact ID"""
-    # Find handwerker by ID
     handwerker = await db.contacts.find_one({
         "id": request.handwerker_id,
         "role": "Handwerker"
     }, {"_id": 0})
-    
+
     if not handwerker:
         raise HTTPException(401, "Ungültige Handwerker-ID")
-    
-    # Generate session token
+
+    # Generate session token and store in DB
     token = generate_id()
-    handwerker_sessions[token] = {
+    await db.handwerker_sessions.insert_one({
+        "token": token,
         "handwerker_id": handwerker["id"],
         "name": handwerker.get("name"),
         "expires": (now() + timedelta(days=7)).isoformat()
-    }
-    
+    })
+
     return HandwerkerLoginResponse(
         success=True,
         token=token,
@@ -844,14 +868,14 @@ async def handwerker_login(request: HandwerkerLoginRequest):
 @api_router.get("/handwerker/verify/{token}")
 async def verify_handwerker_token(token: str):
     """Verify if a handwerker token is valid"""
-    session = handwerker_sessions.get(token)
+    session = await db.handwerker_sessions.find_one({"token": token})
     if not session:
         raise HTTPException(401, "Ungültiger Token")
-    
+
     if from_iso(session["expires"]) < now():
-        del handwerker_sessions[token]
+        await db.handwerker_sessions.delete_one({"token": token})
         raise HTTPException(401, "Token abgelaufen")
-    
+
     return {"valid": True, "handwerker_id": session["handwerker_id"], "name": session["name"]}
 
 @api_router.get("/handwerker/tickets/{handwerker_id}", response_model=List[HandwerkerTicketResponse])

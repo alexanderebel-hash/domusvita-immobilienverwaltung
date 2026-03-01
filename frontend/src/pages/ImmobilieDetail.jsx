@@ -27,7 +27,7 @@ import {
 } from "../components/ui/alert-dialog";
 import { toast } from "sonner";
 
-const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
+const API = `${import.meta.env.VITE_BACKEND_URL}/api`;
 
 export default function ImmobilieDetail() {
   const { id } = useParams();

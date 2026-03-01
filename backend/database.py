@@ -175,11 +175,17 @@ class PgCursor:
         self.projection = projection
         self._sort_field = None
         self._sort_dir = "ASC"
+        self._skip = 0
 
     def sort(self, field: str, direction: int):
         _validate_field_name(field)
         self._sort_field = field
         self._sort_dir = "ASC" if direction == 1 else "DESC"
+        return self
+
+    def skip(self, offset: int):
+        """Skip N documents (for pagination). Translates to SQL OFFSET."""
+        self._skip = max(0, int(offset))
         return self
 
     async def to_list(self, limit: int) -> list:
@@ -193,6 +199,8 @@ class PgCursor:
             # Use -> (JSONB) for type-aware sorting (numbers sort numerically)
             sql += f" ORDER BY data->'{self._sort_field}' {self._sort_dir}"
         sql += f" LIMIT {int(limit)}"
+        if self._skip > 0:
+            sql += f" OFFSET {self._skip}"
 
         async with self.collection.pool.acquire() as conn:
             rows = await conn.fetch(sql, *params)

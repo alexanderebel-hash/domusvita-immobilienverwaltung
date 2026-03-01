@@ -14,7 +14,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '.
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '../components/ui/dialog';
 import { toast } from 'sonner';
 
-const API_URL = process.env.REACT_APP_BACKEND_URL || '';
+const API_URL = import.meta.env.VITE_BACKEND_URL || '';
 
 const STEP_LABELS = ['WG & Klient', 'Zimmer & Details', 'Vorschau & Generierung'];
 
@@ -640,7 +640,7 @@ export default function EinzugspaketGenerator() {
             <div className="p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
               <p className="text-yellow-600 text-sm">
                 Das Einzugspaket-PDF wird automatisch als Anhang beigefügt.
-                {!process.env.REACT_APP_SMTP_CONFIGURED && ' E-Mail wird als Kommunikationseintrag gespeichert (SMTP nicht konfiguriert).'}
+                {!import.meta.env.VITE_SMTP_CONFIGURED && ' E-Mail wird als Kommunikationseintrag gespeichert (SMTP nicht konfiguriert).'}
               </p>
             </div>
           </div>

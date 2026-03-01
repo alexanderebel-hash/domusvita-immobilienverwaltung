@@ -1,7 +1,7 @@
 import axios from "axios";
 import { getAccessToken } from "./auth/msalConfig";
 
-const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
 
 const api = axios.create({
   baseURL: `${BACKEND_URL}/api`,
