@@ -58,7 +58,7 @@
     "behavior": "Email sending is MOCKED - communication entry is saved but no real email is sent (SMTP not configured). Returns email_sent: false"
   },
   
-  "seed_data_info": "5 Klienten in pipeline (Gerda Hoffmann, Hans-Jürgen Meyer, Elfriede Wagner, Ingeborg Becker, Kurt Richter). Test documents uploaded during testing. 34 Bewohner total across 5 WGs (87% occupancy).",
+  "seed_data_info": "5 Klienten in pipeline (Erika Testfrau, Friedrich Mustermann, Hildegard Beispielfrau, Gertrud Musterfrau, Otto Platzhalter). Test documents uploaded during testing. 34 Bewohner total across 5 WGs (87% occupancy).",
   
   "retest_needed": false,
   "should_main_agent_self_test": false,
@@ -86,6 +86,6 @@
   "test_data_created": {
     "documents_uploaded": ["test.pdf", "test_doc.txt", "test_upload.txt"],
     "emails_logged": ["TEST_Email_Subject", "TEST_Email_Mit_Anhaengen"],
-    "klient_tested": "fd172b7d-7354-4f7d-b879-5f4abed51855 (Gerda Hoffmann)"
+    "klient_tested": "fd172b7d-7354-4f7d-b879-5f4abed51855 (Erika Testfrau)"
   }
 }

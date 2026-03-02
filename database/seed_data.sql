@@ -11,8 +11,8 @@ INSERT INTO contacts (id, name, role, email, phone, address, company, specialty,
     ('c1000000-0000-0000-0000-000000000001', 'Hans Müller', 'Mieter', 'hans.mueller@email.de', '+49 30 12345678', 'Sterndamm 10, 12109 Berlin', NULL, NULL, NULL),
     ('c2000000-0000-0000-0000-000000000002', 'Maria Schmidt', 'Eigentümer', 'm.schmidt@email.de', '+49 89 98765432', NULL, 'Schmidt Immobilien GmbH', NULL, NULL),
     ('c3000000-0000-0000-0000-000000000003', 'Elektro Weber', 'Handwerker', 'info@elektro-weber.de', '+49 30 55544433', NULL, 'Weber Elektrotechnik', 'Elektrik', 5),
-    ('c4000000-0000-0000-0000-000000000004', 'Sanitär König', 'Handwerker', 'info@koenig-sanitaer.de', '+49 30 00000005', NULL, 'König Sanitär GmbH', 'Sanitär', 4),
-    ('c5000000-0000-0000-0000-000000000005', 'Stadtwerke Berlin', 'Versorger', 'service@stadtwerke-berlin.de', '+49 30 00000001', NULL, 'Stadtwerke Berlin AG', NULL, NULL),
+    ('c4000000-0000-0000-0000-000000000004', 'Sanitär König', 'Handwerker', 'info@koenig-sanitaer.de', '+49 30 66677788', NULL, 'König Sanitär GmbH', 'Sanitär', 4),
+    ('c5000000-0000-0000-0000-000000000005', 'Stadtwerke Berlin', 'Versorger', 'service@stadtwerke-berlin.de', '+49 30 11122233', NULL, 'Stadtwerke Berlin AG', NULL, NULL),
     ('c6000000-0000-0000-0000-000000000006', 'Bezirksamt Treptow-Köpenick', 'Behörde', 'info@ba-tk.berlin.de', '+49 30 90297-0', 'Alt-Köpenick 21, 12555 Berlin', NULL, NULL, NULL);
 
 -- =====================================================

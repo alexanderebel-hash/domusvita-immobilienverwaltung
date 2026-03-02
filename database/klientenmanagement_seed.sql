@@ -79,21 +79,21 @@ INSERT INTO klienten (id, vorname, nachname, geburtsdatum, geschlecht, pflegegra
 
 -- Interessenten (verschiedene Pipeline-Status)
 INSERT INTO klienten (id, vorname, nachname, geburtsdatum, geschlecht, pflegegrad, besonderheiten, kontakt_name, kontakt_beziehung, kontakt_telefon, kontakt_email, status, anfrage_quelle, dringlichkeit, vermittler, bevorzugte_wgs, anfrage_am) VALUES
-    ('k4000000-0000-0000-0000-000000000004', 'Test-AG', 'Testberg-33', '1942-05-20', 'weiblich', '3', 'Fortgeschrittene Demenz, benötigt 24h Betreuung', 'Kontakt Testberg-33', 'Sohn', '+49 30 00000001', 'anonym33@example.de', 'neu', 'email', 'sofort', NULL, ARRAY['wg400000-0000-0000-0000-000000000004', 'wg500000-0000-0000-0000-000000000005']::UUID[], NOW() - INTERVAL '2 days'),
-    ('k5000000-0000-0000-0000-000000000005', 'Test-AH', 'Testberg-34', '1937-09-12', 'männlich', '2', 'Leichte kognitive Einschränkungen', 'Kontakt Testberg-34', 'Tochter', '+49 30 00000002', 'anonym34@example.de', 'erstgespraech', 'telefon', '4_wochen', NULL, ARRAY['wg100000-0000-0000-0000-000000000001']::UUID[], NOW() - INTERVAL '5 days'),
-    ('k6000000-0000-0000-0000-000000000006', 'Test-AI', 'Testberg-35', '1939-02-28', 'weiblich', '4', 'Bettlägerig, PEG-Sonde', 'Kontakt Testberg-35', 'Tochter', '+49 30 00000003', 'anonym35@example.de', 'besichtigung_geplant', 'vermittlung', 'sofort', 'Vivantes Klinikum Neukölln', ARRAY['wg400000-0000-0000-0000-000000000004']::UUID[], NOW() - INTERVAL '3 days'),
-    ('k7000000-0000-0000-0000-000000000007', 'Test-AJ', 'Testberg-36', '1944-08-05', 'weiblich', '3', 'Diabetes, Herzinsuffizienz', 'Kontakt Testberg-36', 'Sohn', '+49 30 00000004', 'anonym36@example.de', 'unterlagen_gesendet', 'website', '3_monate', NULL, ARRAY['wg300000-0000-0000-0000-000000000003', 'wg500000-0000-0000-0000-000000000005']::UUID[], NOW() - INTERVAL '7 days'),
-    ('k8000000-0000-0000-0000-000000000008', 'Test-AK', 'Testberg-37', '1936-12-18', 'männlich', '5', 'Schwere Demenz, Weglauftendenz', 'Kontakt Testberg-37', 'Ehefrau', '+49 30 00000005', 'anonym37@example.de', 'entscheidung_ausstehend', 'empfehlung', 'sofort', NULL, ARRAY['wg400000-0000-0000-0000-000000000004']::UUID[], NOW() - INTERVAL '10 days');
+    ('k4000000-0000-0000-0000-000000000004', 'Erika', 'Testfrau', '1942-05-20', 'weiblich', '3', 'Testnotiz Pflegebedarf A', 'Thomas Testfrau', 'Sohn', '+49 30 55500001', 'test1@example.com', 'neu', 'email', 'sofort', NULL, ARRAY['wg400000-0000-0000-0000-000000000004', 'wg500000-0000-0000-0000-000000000005']::UUID[], NOW() - INTERVAL '2 days'),
+    ('k5000000-0000-0000-0000-000000000005', 'Friedrich', 'Mustermann', '1937-09-12', 'männlich', '2', 'Testnotiz Pflegebedarf B', 'Maria Mustermann', 'Tochter', '+49 30 55500002', 'test2@example.com', 'erstgespraech', 'telefon', '4_wochen', NULL, ARRAY['wg100000-0000-0000-0000-000000000001']::UUID[], NOW() - INTERVAL '5 days'),
+    ('k6000000-0000-0000-0000-000000000006', 'Hildegard', 'Beispielfrau', '1939-02-28', 'weiblich', '4', 'Testnotiz Pflegebedarf C', 'Sandra Beispielfrau', 'Tochter', '+49 30 55500003', 'test3@example.com', 'besichtigung_geplant', 'vermittlung', 'sofort', 'Beispiel-Klinik Berlin', ARRAY['wg400000-0000-0000-0000-000000000004']::UUID[], NOW() - INTERVAL '3 days'),
+    ('k7000000-0000-0000-0000-000000000007', 'Gertrud', 'Musterfrau', '1944-08-05', 'weiblich', '3', 'Testnotiz Pflegebedarf D', 'Hans Musterfrau', 'Sohn', '+49 30 55500004', 'test4@example.com', 'unterlagen_gesendet', 'website', '3_monate', NULL, ARRAY['wg300000-0000-0000-0000-000000000003', 'wg500000-0000-0000-0000-000000000005']::UUID[], NOW() - INTERVAL '7 days'),
+    ('k8000000-0000-0000-0000-000000000008', 'Otto', 'Platzhalter', '1936-12-18', 'männlich', '5', 'Testnotiz Pflegebedarf E', 'Helene Platzhalter', 'Ehefrau', '+49 30 55500005', 'test5@example.com', 'entscheidung_ausstehend', 'empfehlung', 'sofort', NULL, ARRAY['wg400000-0000-0000-0000-000000000004']::UUID[], NOW() - INTERVAL '10 days');
 
 -- =====================================================
 -- BEISPIEL-KOMMUNIKATION
 -- =====================================================
 
 INSERT INTO klient_kommunikation (klient_id, typ, betreff, inhalt, erstellt_von_name, erstellt_am) VALUES
-    ('k4000000-0000-0000-0000-000000000004', 'email_ein', 'Anfrage Pflegeplatz für meine Mutter', 'Sehr geehrte Damen und Herren,\n\nmeine Mutter (82 Jahre, Pflegegrad 3) benötigt dringend einen Pflegeplatz. Sie leidet an fortgeschrittener Demenz und benötigt 24-Stunden-Betreuung.\n\nKönnten Sie mir bitte Informationen zu freien Plätzen zusenden?\n\nMit freundlichen Grüßen\nMichael Hoffmann', 'System', NOW() - INTERVAL '2 days'),
+    ('k4000000-0000-0000-0000-000000000004', 'email_ein', 'Anfrage Pflegeplatz für meine Mutter', 'Sehr geehrte Damen und Herren,\n\nmeine Mutter (82 Jahre, Pflegegrad 3) benötigt dringend einen Pflegeplatz. Sie leidet an fortgeschrittener Demenz und benötigt 24-Stunden-Betreuung.\n\nKönnten Sie mir bitte Informationen zu freien Plätzen zusenden?\n\nMit freundlichen Grüßen\nThomas Testfrau', 'System', NOW() - INTERVAL '2 days'),
     ('k5000000-0000-0000-0000-000000000005', 'anruf_ein', NULL, 'Tochter hat angerufen, möchte Platz für Vater. Vater ist noch relativ fit, Pflegegrad 2. Interessiert an kleiner WG. Rückruf vereinbart für morgen 10:00.', 'Anna Schmidt', NOW() - INTERVAL '5 days'),
-    ('k5000000-0000-0000-0000-000000000005', 'anruf_aus', NULL, 'Rückruf durchgeführt. Details besprochen. Frau Meyer möchte mit ihrem Bruder sprechen und meldet sich Ende der Woche.', 'Anna Schmidt', NOW() - INTERVAL '4 days'),
-    ('k6000000-0000-0000-0000-000000000006', 'email_aus', 'Besichtigungstermin WG Drachenwiese', 'Sehr geehrte Frau Wagner,\n\nvielen Dank für Ihr Interesse an unserer Pflege-Wohngemeinschaft Drachenwiese.\n\nGerne möchte ich Sie zu einer Besichtigung am kommenden Mittwoch um 14:00 Uhr einladen.\n\nMit freundlichen Grüßen\nAnna Schmidt\nDomusVita Pflege', 'Anna Schmidt', NOW() - INTERVAL '1 day'),
+    ('k5000000-0000-0000-0000-000000000005', 'anruf_aus', NULL, 'Rückruf durchgeführt. Details besprochen. Frau Mustermann möchte mit ihrem Bruder sprechen und meldet sich Ende der Woche.', 'Anna Schmidt', NOW() - INTERVAL '4 days'),
+    ('k6000000-0000-0000-0000-000000000006', 'email_aus', 'Besichtigungstermin WG Drachenwiese', 'Sehr geehrte Frau Beispielfrau,\n\nvielen Dank für Ihr Interesse an unserer Pflege-Wohngemeinschaft Drachenwiese.\n\nGerne möchte ich Sie zu einer Besichtigung am kommenden Mittwoch um 14:00 Uhr einladen.\n\nMit freundlichen Grüßen\nAnna Schmidt\nDomusVita Pflege', 'Anna Schmidt', NOW() - INTERVAL '1 day'),
     ('k7000000-0000-0000-0000-000000000007', 'notiz', NULL, 'Infomaterial für Kupferkessel Klein und Drachenblick per E-Mail gesendet. Mietvertragsentwurf liegt bei.', 'Anna Schmidt', NOW() - INTERVAL '7 days');
 
 -- =====================================================
@@ -101,7 +101,7 @@ INSERT INTO klient_kommunikation (klient_id, typ, betreff, inhalt, erstellt_von_
 -- =====================================================
 
 INSERT INTO besichtigungen (klient_id, pflege_wg_id, termin, status, notizen) VALUES
-    ('k6000000-0000-0000-0000-000000000006', 'wg400000-0000-0000-0000-000000000004', NOW() + INTERVAL '2 days' + INTERVAL '14 hours', 'geplant', 'Frau Wagner kommt mit Tochter. Interesse an Zimmer 4 oder 9.');
+    ('k6000000-0000-0000-0000-000000000006', 'wg400000-0000-0000-0000-000000000004', NOW() + INTERVAL '2 days' + INTERVAL '14 hours', 'geplant', 'Frau Beispielfrau kommt mit Tochter. Interesse an Zimmer 4 oder 9.');
 
 -- =====================================================
 -- VORLAGEN

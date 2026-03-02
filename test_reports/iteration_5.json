@@ -28,7 +28,7 @@
     "Frontend /pflege-wgs/wg-drachenwiese: Interactive floor plan with 12 room overlays",
     "Frontend /pflege-wgs/pipeline: Kanban board with 6 columns and 5 Interessenten cards",
     "Sidebar Navigation: 'KLIENTENMANAGEMENT' section with 'Pflege-WGs' link working",
-    "Drag & Drop: Successfully moved Gerda Hoffmann from 'Neu eingegangen' to 'Erstgespräch' with toast notification",
+    "Drag & Drop: Successfully moved Erika Testfrau from 'Neu eingegangen' to 'Erstgespräch' with toast notification",
     "Room Dialog: Opens on room click showing room details and assign button"
   ],
   
